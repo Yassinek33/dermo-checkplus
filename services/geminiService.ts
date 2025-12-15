@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { GoogleGenAI, Tool, ToolConfig, RetrievalConfig, LatLng, GenerateContentResponse } from "@google/genai";
 import { getSystemInstruction } from '../constants'; // Import the function
 import { GeminiContent, GeminiImagePart, GeminiTextPart } from '../types'; // Removed GeminiVideoPart
