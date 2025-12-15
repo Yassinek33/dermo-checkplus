@@ -275,30 +275,27 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // Removed uploadedVideoFile and awaitingVideoQuestion resets
 
         try {
-            // Initial prompt to start the conversation, letting the AI generate the first question
+            // OPTIMIZATION: We no longer fetch the first question from the AI to ensure instant loading.
+            // We hardcode the initial state that corresponds to "Démarrer la consultation."
+
             const initialUserPrompt = "Démarrer la consultation.";
-            const aiResponseText = await generateResponse([], initialUserPrompt);
+            // This MUST match the expected output for the "Welcome" UI logic
+            const staticAiResponseText = "Cette auto-analyse concerne : [CHOIX]Moi-même[CHOIX]Une autre personne";
 
-            if (aiResponseText.startsWith("API_ERROR:")) {
-                setError(aiResponseText.replace("API_ERROR:", "").trim());
-                setLastFailedAction({ userText: initialUserPrompt });
-                setIsLoading(false);
-                return;
-            }
+            const initialAiMessage = parseAiResponse(staticAiResponseText, `ai-initial-${Date.now()}`);
 
-            const initialAiMessage = parseAiResponse(aiResponseText, `ai-initial-${Date.now()}`);
             setCurrentAiMessage(initialAiMessage);
             setApiHistory([
                 { role: 'user', parts: [{ text: initialUserPrompt }] },
-                { role: 'model', parts: [{ text: aiResponseText }] }
+                { role: 'model', parts: [{ text: staticAiResponseText }] }
             ]);
         } catch (err) {
-            console.error("Failed to initialize app with AI:", err);
-            setError("Impossible de démarrer la consultation. Veuillez vérifier votre connexion.");
+            console.error("Failed to initialize app locally:", err);
+            setError("Erreur inattendue au démarrage.");
         } finally {
             setIsLoading(false);
         }
-    }, [generateResponse, parseAiResponse, setConsultationType]); // Keeping setConsultationType explicitly for stability
+    }, [parseAiResponse, setConsultationType]); // Removed generateResponse dependency
 
     // Effect for initial app setup, now dependent on the warning popup state
     useEffect(() => {
