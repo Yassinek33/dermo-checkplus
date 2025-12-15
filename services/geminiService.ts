@@ -173,44 +173,25 @@ export const searchDermatologistsWithMaps = async (
         };
     }
 
-    // Dynamic prompt generation with explicit request for JSON output
+    // Dynamic prompt generation - Natural language is best for Grounding Tools
     let prompt = "";
-
-    const basePrompt = `
-    Trouvez les dermatologues correspondants en utilisant Google Maps.
-
-    IMPORTANT : Pour chaque résultat, générez un bloc de texte structuré EXACTEMENT comme suit :
-
-    ---DERMATO---
-    Nom: [Nom du dermatologue ou clinique]
-    Adresse: [Adresse complète]
-    Téléphone: [Numéro ou "Non disponible"]
-    SiteWeb: [URL ou "Non disponible"]
-    GoogleMapsURI: [Lien URI Google Maps]
-    Latitude: [Nombre ou "Non disponible"]
-    Longitude: [Nombre ou "Non disponible"]
-    ----------------
-
-    Ne mettez pas de JSON. Utilisez ce format texte simple pour faciliter l'extraction.
-    Si une information manque, écrivez "Non disponible".
-    `;
+    const detailsRequest = "Pour chacun, fournis l'adresse précise, le numéro de téléphone, et le site web si possible. Priorise les résultats les plus proches et les mieux notés.";
 
     if (city && country) {
-        prompt = `Trouvez des dermatologues à ${city}, ${country}. ${basePrompt}`;
+        prompt = `Trouve les meilleurs dermatologues à ${city}, ${country}. ${detailsRequest}`;
     } else if (userLatLng) {
-        prompt = `Trouvez les dermatologues à proximité (Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}). Rayon 15km. ${basePrompt}`;
+        prompt = `Trouve les dermatologues les plus proches de ma position (Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}) dans un rayon de 15km. ${detailsRequest}`;
     } else {
-        prompt = `Trouvez des dermatologues. ${basePrompt}`;
+        prompt = `Trouve des dermatologues compétents. ${detailsRequest}`;
     }
 
     try {
         const response = await aiClient.models.generateContent({
-            model: "gemini-2.0-flash-exp",
+            model: "gemini-1.5-pro", // Gemini 1.5 Pro is often better at tool orchestration/details than Flash
             contents: [{ parts: [{ text: prompt }] }],
             config: {
                 tools: tools,
                 toolConfig: toolConfig,
-                // Removed responseMimeType to allow natural text generation with tool usage
             },
         });
         return response;

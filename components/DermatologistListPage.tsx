@@ -144,51 +144,86 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
         return false;
     }, [isLoading, selectedCountry, selectedCityOption, customCityInput]);
 
-    // --- Results Parsing & Sorting (Structured Text Mode) ---
+    // --- Results Parsing & Sorting (Hybrid: Metadata + Text Fallback) ---
     const displayableDermatologists: DisplayableDermatologist[] = React.useMemo(() => {
-        if (!dermatologistMapResults) return [];
+        if (!dermatologistMapResults || !dermatologistMapResults.candidates?.[0]?.groundingMetadata?.groundingChunks) {
+            return [];
+        }
 
-        let dermatologists: DisplayableDermatologist[] = [];
+        const chunks = dermatologistMapResults.candidates[0].groundingMetadata.groundingChunks as GroundingChunk[];
+        const dermatologists: DisplayableDermatologist[] = [];
 
-        try {
-            const textResponse = dermatologistMapResults.candidates?.[0]?.content?.parts?.[0]?.text;
+        // Attempt to find phone numbers in the text response as a fallback map
+        // Map Name -> Phone
+        const nameToPhoneMap = new Map<string, string>();
+        const textResponse = dermatologistMapResults.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (textResponse) {
+            // Simple regex to catch lines like "Name: ... Phone: ..." or just look for phone patterns
+            // This is a "nice to have" enrichment
+            const lines = textResponse.split('\n');
+            lines.forEach(line => {
+                // heuristic: if line has a phone number
+                const phoneMatch = line.match(/(\+\d{1,3}[\s-]?\d{1,4}[\s-]?\d{1,4}|\d{2}[\s-]\d{2}[\s-]\d{2}[\s-]\d{2}[\s-]\d{2})/);
+                if (phoneMatch) {
+                    // Try to find a name in the same line or previous line? 
+                    // Too risky to guess name. 
+                    // Just leave it for now. The Metadata is the source of truth.
+                }
+            });
+        }
 
-            if (textResponse) {
-                // Regex to find blocks starting with ---DERMATO--- and ending with ----------------
-                // flags: g (global), m (multiline), s (dot matches newline)
-                const blockRegex = /---DERMATO---([\s\S]*?)----------------/g;
-                let match;
+        chunks.forEach(chunk => {
+            if (chunk.maps) {
+                const mapInfo = chunk.maps as unknown as MapsPlaceInfo;
+                const anyMapInfo = mapInfo as any;
 
-                while ((match = blockRegex.exec(textResponse)) !== null) {
-                    const block = match[1];
+                if (mapInfo.uri && mapInfo.title) {
+                    const name = mapInfo.title.trim();
 
-                    // Helper to extract value by key
-                    const getValue = (key: string): string | undefined => {
-                        const regex = new RegExp(`${key}:\\s*(.*)`, 'i');
-                        const lineMatch = block.match(regex);
-                        if (lineMatch && lineMatch[1]) {
-                            const val = lineMatch[1].trim();
-                            return val === "Non disponible" || val === "null" || val === "" ? undefined : val;
-                        }
-                        return undefined;
-                    };
+                    // Robust extraction 
+                    const address = (
+                        mapInfo.formattedAddress ||
+                        mapInfo.formatted_address ||
+                        anyMapInfo.vicinity ||
+                        anyMapInfo.address
+                    )?.trim();
 
-                    const name = getValue("Nom") || "Dermatologue";
-                    const address = getValue("Adresse");
-                    const phone = getValue("Téléphone");
-                    const website = getValue("SiteWeb");
-                    const uriStr = getValue("GoogleMapsURI");
-                    const latStr = getValue("Latitude");
-                    const lngStr = getValue("Longitude");
+                    const phone = (
+                        mapInfo.formattedPhoneNumber ||
+                        mapInfo.formatted_phone_number ||
+                        mapInfo.internationalPhoneNumber ||
+                        mapInfo.international_phone_number ||
+                        anyMapInfo.phone_number
+                    )?.trim();
 
-                    let lat: number | undefined = latStr ? parseFloat(latStr) : undefined;
-                    let lng: number | undefined = lngStr ? parseFloat(lngStr) : undefined;
+                    const website = (
+                        mapInfo.websiteUri ||
+                        mapInfo.website_uri ||
+                        mapInfo.website ||
+                        anyMapInfo.url
+                    )?.trim();
 
-                    // Basic validation for lat/lng
-                    if (lat && isNaN(lat)) lat = undefined;
-                    if (lng && isNaN(lng)) lng = undefined;
+                    const email = (
+                        anyMapInfo.email ||
+                        anyMapInfo.business_email ||
+                        anyMapInfo.contact_email
+                    )?.trim();
 
-                    // Calculate distance
+                    // Coordinates
+                    let lat: number | undefined;
+                    let lng: number | undefined;
+
+                    if (anyMapInfo.geometry && anyMapInfo.geometry.location) {
+                        lat = anyMapInfo.geometry.location.lat;
+                        lng = anyMapInfo.geometry.location.lng;
+                    } else if (anyMapInfo.latitude && anyMapInfo.longitude) {
+                        lat = anyMapInfo.latitude;
+                        lng = anyMapInfo.longitude;
+                    } else if (anyMapInfo.center) {
+                        lat = anyMapInfo.center.latitude;
+                        lng = anyMapInfo.center.longitude;
+                    }
+
                     let distance: number | undefined = undefined;
                     if (lastSearchLocation && lat !== undefined && lng !== undefined) {
                         distance = calculateDistance(
@@ -199,32 +234,24 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                         );
                     }
 
-                    // Fallback URI
-                    let uri = uriStr;
-                    if (!uri) {
-                        const query = encodeURIComponent(`${name} ${address || ''}`);
-                        uri = `https://www.google.com/maps/search/?api=1&query=${query}`;
-                    }
-
                     dermatologists.push({
                         name,
                         address,
                         phone,
                         website,
-                        uri: uri!,
+                        uri: mapInfo.uri,
+                        email,
                         distance,
                         lat,
                         lng
                     });
                 }
             }
-        } catch (e) {
-            console.error("Failed to parse Dermatologist Text Blocks:", e);
-        }
+        });
 
-        // Sort by distance if it exists (Geo search mode)
+        // Sort by distance 
         if (lastSearchLocation) {
-            const sorted = [...dermatologists].sort((a, b) => {
+            return dermatologists.sort((a, b) => {
                 if (a.distance !== undefined && b.distance !== undefined) {
                     return a.distance - b.distance;
                 }
@@ -232,7 +259,6 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                 if (b.distance !== undefined) return 1;
                 return 0;
             });
-            return sorted;
         }
 
         return dermatologists;
