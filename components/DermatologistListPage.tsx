@@ -144,73 +144,59 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
         return false;
     }, [isLoading, selectedCountry, selectedCityOption, customCityInput]);
 
-    // --- Results Parsing & Sorting ---
+    // --- Results Parsing & Sorting (JSON Mode) ---
     const displayableDermatologists: DisplayableDermatologist[] = React.useMemo(() => {
-        if (!dermatologistMapResults || !dermatologistMapResults.candidates?.[0]?.groundingMetadata?.groundingChunks) {
-            return [];
-        }
+        if (!dermatologistMapResults) return [];
 
-        const chunks = dermatologistMapResults.candidates[0].groundingMetadata.groundingChunks as GroundingChunk[];
-        const dermatologists: DisplayableDermatologist[] = [];
+        let dermatologists: DisplayableDermatologist[] = [];
 
-        chunks.forEach(chunk => {
-            if (chunk.maps) {
-                const mapInfo = chunk.maps as unknown as MapsPlaceInfo;
-                const anyMapInfo = mapInfo as any; // For accessing potential non-typed properties
+        try {
+            // Attempt to parse JSON from the text response
+            const textResponse = dermatologistMapResults.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textResponse) {
+                // Cleanup potential markdown wrappers just in case
+                const cleanJson = textResponse.replace(/^```json/, '').replace(/```$/, '').trim();
+                const rawData = JSON.parse(cleanJson);
 
-                if (mapInfo.uri && mapInfo.title) {
-                    const name = mapInfo.title.trim();
+                if (Array.isArray(rawData)) {
+                    dermatologists = rawData.map((item: any) => {
+                        let distance: number | undefined = undefined;
+                        // Calculate distance if we have coordinates
+                        if (lastSearchLocation && item.latitude && item.longitude) {
+                            distance = calculateDistance(
+                                lastSearchLocation.latitude,
+                                lastSearchLocation.longitude,
+                                item.latitude,
+                                item.longitude
+                            );
+                        }
 
-                    // Robust extraction with fallback to snake_case
-                    const address = (mapInfo.formattedAddress || mapInfo.formatted_address || anyMapInfo.vicinity || anyMapInfo.address)?.trim();
-                    const phone = (mapInfo.formattedPhoneNumber || mapInfo.formatted_phone_number || mapInfo.internationalPhoneNumber || mapInfo.international_phone_number || anyMapInfo.phone_number)?.trim();
-                    const website = (mapInfo.websiteUri || mapInfo.website_uri || mapInfo.website || anyMapInfo.url)?.trim();
-                    const email = (anyMapInfo.email || anyMapInfo.business_email || anyMapInfo.contact_email)?.trim();
+                        // Construct URI (Google Maps Link)
+                        // If uri is not provided by JSON, construct a search query link
+                        let uri = item.google_maps_uri || item.uri;
+                        if (!uri) {
+                            const query = encodeURIComponent(`${item.name} ${item.address || ''}`);
+                            uri = `https://www.google.com/maps/search/?api=1&query=${query}`;
+                        }
 
-                    // Coordinate extraction logic
-                    let lat: number | undefined;
-                    let lng: number | undefined;
-
-                    if (anyMapInfo.geometry && anyMapInfo.geometry.location) {
-                        lat = anyMapInfo.geometry.location.lat;
-                        lng = anyMapInfo.geometry.location.lng;
-                    } else if (anyMapInfo.latitude && anyMapInfo.longitude) {
-                        lat = anyMapInfo.latitude;
-                        lng = anyMapInfo.longitude;
-                    } else if (anyMapInfo.center) {
-                        lat = anyMapInfo.center.latitude;
-                        lng = anyMapInfo.center.longitude;
-                    }
-
-                    let distance: number | undefined = undefined;
-                    if (lastSearchLocation && lat !== undefined && lng !== undefined) {
-                        distance = calculateDistance(lastSearchLocation.latitude, lastSearchLocation.longitude, lat, lng);
-                    }
-
-                    const reviewSnippets: MapsReviewSnippet[] = [];
-                    if (mapInfo.placeAnswerSources && Array.isArray(mapInfo.placeAnswerSources)) {
-                        mapInfo.placeAnswerSources.forEach((source: MapsPlaceAnswerSource) => {
-                            if (source.reviewSnippets && Array.isArray(source.reviewSnippets)) {
-                                reviewSnippets.push(...source.reviewSnippets);
-                            }
-                        });
-                    }
-
-                    dermatologists.push({
-                        name,
-                        address,
-                        phone,
-                        website,
-                        uri: mapInfo.uri,
-                        email,
-                        reviewSnippets: reviewSnippets.length > 0 ? reviewSnippets : undefined,
-                        distance,
-                        lat,
-                        lng
+                        return {
+                            name: item.name || "Dermatologue",
+                            address: item.address || undefined,
+                            phone: item.phone || undefined,
+                            website: item.website || undefined,
+                            email: item.email || undefined,
+                            uri: uri,
+                            distance: distance,
+                            lat: item.latitude,
+                            lng: item.longitude
+                        };
                     });
                 }
             }
-        });
+        } catch (e) {
+            console.error("Failed to parse Dermatologist JSON:", e);
+            // Fallback: If JSON parsing fails, return empty or try grounding chunks if mixed (unlikely with responseMimeType)
+        }
 
         // Sort by distance if it exists (Geo search mode)
         if (lastSearchLocation) {
@@ -218,7 +204,6 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                 if (a.distance !== undefined && b.distance !== undefined) {
                     return a.distance - b.distance;
                 }
-                // If one has distance and other doesn't, prioritize the one with distance
                 if (a.distance !== undefined) return -1;
                 if (b.distance !== undefined) return 1;
                 return 0;

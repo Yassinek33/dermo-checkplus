@@ -172,31 +172,50 @@ export const searchDermatologistsWithMaps = async (
         };
     }
 
-    // Dynamic prompt generation with explicit request for detailed contact info and coordinates
+    // Dynamic prompt generation with explicit request for JSON output
     let prompt = "";
-    const detailsRequest = "Pour chaque dermatologue trouvé, il est IMPÉRATIF de fournir : l'adresse complète, le numéro de téléphone, l'URL du site web (si disponible), l'adresse email (si disponible) et les coordonnées géographiques précises (latitude/longitude) pour le calcul de distance. Si une information n'est pas disponible, ne l'inventez pas.";
+
+    const basePrompt = `
+    Trouvez les dermatologues correspondants.
+    
+    IMPORTANT : Vous devez répondre UNIQUEMENT avec un tableau JSON valide contenant les informations détaillées pour chaque dermatologue trouvé.
+    N'ajoutez aucun texte avant ou après le JSON.
+    
+    Pour chaque dermatologue, l'objet JSON doit avoir cette structure exacte :
+    {
+      "name": "Nom du dermatologue ou de la clinique",
+      "address": "Adresse complète",
+      "phone": "Numéro de téléphone (format international si possible)",
+      "website": "URL du site web (optionnel)",
+      "email": "Adresse email (optionnel)",
+      "latitude": 0.0000 (nombre, coordonnées GPS précises),
+      "longitude": 0.0000 (nombre, coordonnées GPS précises)
+    }
+    
+    Utilisez les outils Google Maps pour trouver ces informations. Si une info n'est pas trouvable, mettez null.
+    `;
 
     if (city && country) {
-        prompt = `Trouvez les meilleurs dermatologues à ${city}, ${country}. ${detailsRequest}`;
+        prompt = `Recherche à ${city}, ${country}. ${basePrompt}`;
     } else if (userLatLng) {
-        prompt = `Trouvez les dermatologues les plus proches de ma position actuelle (latitude: ${userLatLng.latitude}, longitude: ${userLatLng.longitude}) dans un rayon de 15km. ${detailsRequest}`;
+        prompt = `Recherche autour de ma position (Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}) dans un rayon de 15km. ${basePrompt}`;
     } else {
-        // Fallback
-        prompt = `Trouvez des dermatologues recommandés. ${detailsRequest}`;
+        prompt = `Recherche générale. ${basePrompt}`;
     }
 
     try {
         const response = await aiClient.models.generateContent({
-            model: "gemini-2.0-flash-exp", // Upgraded to 2.0-flash-exp for better grounding performance if available, or stick to 1.5-flash
+            model: "gemini-2.0-flash-exp",
             contents: [{ parts: [{ text: prompt }] }],
             config: {
                 tools: tools,
                 toolConfig: toolConfig,
+                responseMimeType: "application/json" // Enforce JSON response
             },
         });
         return response;
     } catch (error: any) {
-        console.error("Error searching dermatologists with Maps Grounding:", error);
+        console.error("Error searching dermatologists with Maps Grounding (JSON Mode):", error);
         throw new Error(`MAPS_API_ERROR: ${error.message || "Failed to search for dermatologists."}`);
     }
 };
