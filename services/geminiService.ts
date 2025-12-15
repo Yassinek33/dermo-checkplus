@@ -187,7 +187,7 @@ export const searchDermatologistsWithMaps = async (
 
     try {
         const response = await aiClient.models.generateContent({
-            model: "gemini-1.5-flash", // Reverting to stable Flash model to fix 404 error
+            model: "gemini-2.0-flash-exp",
             contents: [{ parts: [{ text: prompt }] }],
             config: {
                 tools: tools,
