@@ -2,18 +2,22 @@ import { GoogleGenAI, Tool, ToolConfig, RetrievalConfig, LatLng, GenerateContent
 import { getSystemInstruction } from '../constants'; // Import the function
 import { GeminiContent, GeminiImagePart, GeminiTextPart } from '../types'; // Removed GeminiVideoPart
 
-if (!import.meta.env.VITE_API_KEY) {
-    throw new Error("VITE_API_KEY environment variable not set");
-}
+// if (!import.meta.env.VITE_API_KEY) {
+//     throw new Error("VITE_API_KEY environment variable not set");
+// }
 
 let ai: GoogleGenAI | null = null; // Initialize lazily
 
 // Function to get or create the GoogleGenAI client
 const getGeminiClient = () => {
     // Recreate the client each time to ensure it uses the most up-to-date API key
-    // This addresses the race condition mentioned in the guidelines for Veo video generation,
-    // and applies generally for dynamic API key selection.
-    ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY! });
+    const apiKey = import.meta.env.VITE_API_KEY;
+    if (!apiKey) {
+        console.warn("VITE_API_KEY is not set. AI features will not work.");
+        // We can throw here, or let the specific call fail. Throwing here is safer for the call.
+        throw new Error("VITE_API_KEY environment variable not set. Please configure it in Netlify.");
+    }
+    ai = new GoogleGenAI({ apiKey });
     return ai;
 };
 
@@ -51,7 +55,7 @@ export const generateResponse = async (
         const imageParts = await Promise.all(imageFiles.map(file => fileToGenerativePart(file)));
         userParts.push(...imageParts);
     }
-    
+
     const contents: GeminiContent[] = [
         ...history,
         { role: 'user', parts: userParts }
@@ -60,7 +64,7 @@ export const generateResponse = async (
     for (let i = 0; i < MAX_RETRIES; i++) {
         try {
             const response = await aiClient.models.generateContent({
-                model: "gemini-2.5-flash", 
+                model: "gemini-2.5-flash",
                 contents: contents,
                 config: {
                     systemInstruction: getSystemInstruction() // Call the function here
@@ -85,7 +89,7 @@ export const generateResponse = async (
                 await new Promise(resolve => setTimeout(resolve, delay));
                 continue; // Go to next iteration to retry
             }
-            
+
             // For other errors or max retries reached, handle and return error message
             console.error("Error generating response from Gemini:", error);
             if (isRetriableError) { // If it was a retriable error but retries failed
@@ -94,7 +98,7 @@ export const generateResponse = async (
             return "API_ERROR: Désolé, une erreur de communication inattendue s'est produite. Veuillez réessayer.";
         }
     }
-    
+
     // This should not be reached, but as a fallback.
     return "API_ERROR: Échec de la communication après plusieurs tentatives.";
 };
@@ -175,8 +179,8 @@ export const searchDermatologistsWithMaps = async (
     } else if (userLatLng) {
         prompt = `Trouvez les dermatologues les plus proches de ma position actuelle (rayon 10-15km).`;
     } else {
-         // Fallback if neither location info is present properly
-         prompt = "Trouvez des dermatologues.";
+        // Fallback if neither location info is present properly
+        prompt = "Trouvez des dermatologues.";
     }
 
     try {
