@@ -180,7 +180,7 @@ export const searchDermatologistsWithMaps = async (
     if (city && country) {
         prompt = `Trouve les meilleurs dermatologues à ${city}, ${country}. ${detailsRequest}`;
     } else if (userLatLng) {
-        prompt = `Trouve les dermatologues les plus proches de ma position (Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}) dans un rayon de 15km. ${detailsRequest}`;
+        prompt = `Trouve les dermatologues STRICTEMENT les plus proches de ma position exacte (Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}). Rayon MAX 10km. Trie les résultats par distance croissante. ${detailsRequest}`;
     } else {
         prompt = `Trouve des dermatologues compétents. ${detailsRequest}`;
     }
