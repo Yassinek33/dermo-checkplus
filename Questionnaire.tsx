@@ -30,7 +30,7 @@ interface QuestionnaireProps {
 // 9. ENVIRONNEMENT ET HYGIÈNE DE VIE: up to 3 steps (Facteurs + Autre_préciser + Voyages récents préciser)
 // 10. MÉDIA (Photo): 1 step
 // Total maximum potential unique user inputs: 6 + 2 + 3 + 3 + 2 + 2 + 1 + 2 + 3 + 3 + 1 = 28 stages
-const TOTAL_QUESTIONNAIRE_STAGES = 28; 
+const TOTAL_QUESTIONNAIRE_STAGES = 28;
 
 // Constants for age validation, matching the AgeDropdown component
 const MIN_VALID_AGE = 18;
@@ -39,7 +39,7 @@ const MAX_VALID_AGE = 120;
 const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const [currentAiMessage, setCurrentAiMessage] = useState<Message | null>(null);
     const [apiHistory, setApiHistory] = useState<GeminiContent[]>([]
-);
+    );
     const [isLoading, setIsLoading] = useState(true);
     const [isGameOver, setIsGameOver] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -84,7 +84,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                         }
                     } else {
                         // Only modify if it's currently focusable
-                        if (element.tabIndex !== -1 && !element.hasAttribute('disabled')) { 
+                        if (element.tabIndex !== -1 && !element.hasAttribute('disabled')) {
                             element.dataset.originalTabIndex = element.tabIndex.toString(); // Store original
                             element.tabIndex = -1; // Make unfocusable
                         }
@@ -116,7 +116,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             } else if (currentAiMessage.text.includes("Dans quel pays résidez-vous ?")) {
                 elementToFocus = countryDropdownRef.current;
             }
-            
+
             if (elementToFocus) {
                 elementToFocus.focus();
             } else if (containerRef.current) {
@@ -130,16 +130,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         const photoRequestMatch = text.includes('[PHOTO_REQUEST]');
         const finalReportMatch = text.includes('[FINAL_REPORT]');
         // Updated regex to capture optional none button text
-        const textInputMatch = text.match(/\[TEXT_INPUT(_WITH_NONE)?(?::([^:]+?))?(?::([^\]]+?))?\]/); 
+        const textInputMatch = text.match(/\[TEXT_INPUT(_WITH_NONE)?(?::([^:]+?))?(?::([^\]]+?))?\]/);
         const comboInputMatch = text.match(/\[COMBO_INPUT(?::([^\]]+?))?\]/); // New: Capture placeholder for combo input, non-greedy
         const ageDropdownMatch = text.match(/\[AGE_DROPDOWN:(\d+):(\d+)\]/); // New: Match for age dropdown with min/max
         const multiChoiceMatch = text.includes('[MULTI_CHOIX]');
         const singleChoiceMatch = text.includes('[CHOIX]');
-        
+
         const isTextInputWithNone = !!(textInputMatch && textInputMatch[1]);
         const textInputPlaceholder = textInputMatch && textInputMatch[2] ? textInputMatch[2].trim() : undefined;
         const comboInputPlaceholder = comboInputMatch && comboInputMatch[1] ? comboInputMatch[1].trim() : undefined; // Fix: comboInputMatch[1] for placeholder
-        
+
         const ageDropdownMin = ageDropdownMatch ? parseInt(ageDropdownMatch[1], 10) : undefined;
         const ageDropdownMax = ageDropdownMatch ? parseInt(ageDropdownMatch[2], 10) : undefined;
 
@@ -155,11 +155,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // Extract specific noneButtonText for TEXT_INPUT_WITH_NONE if provided in the tag
         let noneButtonTextForTextInput: string | undefined;
         if (isTextInputWithNone) {
-            noneButtonTextForTextInput = textInputMatch && textInputMatch[3] ? textInputMatch[3].trim() : "Ignorer cette étape"; 
+            noneButtonTextForTextInput = textInputMatch && textInputMatch[3] ? textInputMatch[3].trim() : "Ignorer cette étape";
         }
 
         if (photoRequestMatch || finalReportMatch) {
-             cleanText = cleanText.replace(/\[(PHOTO_REQUEST|FINAL_REPORT)\]/g, '').trim();
+            cleanText = cleanText.replace(/\[(PHOTO_REQUEST|FINAL_REPORT)\]/g, '').trim();
         }
         if (textInputMatch) {
             // Updated to match the new regex for cleaning
@@ -171,7 +171,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         if (ageDropdownMatch) { // New: Clean text for age dropdown
             cleanText = cleanText.replace(/\[AGE_DROPDOWN:\d+:\d+\]/g, '').trim();
         }
-        
+
         if (multiChoiceMatch) {
             const parts = cleanText.split('[MULTI_CHOIX]');
             cleanText = parts[0].trim();
@@ -240,8 +240,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             ageDropdownMin,
             ageDropdownMax,
             // If TEXT_INPUT_WITH_NONE, `hasNoneButton` is true and `noneButtonText` comes from the tag
-            hasNoneButton: hasNoneButton || isTextInputWithNone, 
-            noneButtonText: noneButtonTextForTextInput || noneButtonText, 
+            hasNoneButton: hasNoneButton || isTextInputWithNone,
+            noneButtonText: noneButtonTextForTextInput || noneButtonText,
             // Removed: isQuestionForVideoAnalysis: false, // Default to false
         };
     }, [setIsGameOver]);
@@ -252,9 +252,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // The prompt no longer contains a distinct "NOTICE AVANT QUESTIONNAIRE" section,
         // so we only extract the persistent medical warning.
         const medicalWarningMatch = fullInstruction.match(/⚠️ AVERTISSEMENT MÉDICAL \(.+\)\n"([^"]+)"/);
-        
+
         const warning = medicalWarningMatch ? medicalWarningMatch[1].replace(/\\n/g, '\n') : '';
-        
+
         return { notice: '', warning }; // Return empty notice as it's not present
     }, [getSystemInstruction]); // Added getSystemInstruction to dependencies
 
@@ -306,7 +306,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             initializeApp();
         }
     }, [initializeApp, showInitialWarningPopup]);
-    
+
     // Effect for handling the initial warning popup's focus and tab index
     useEffect(() => {
         if (showInitialWarningPopup) {
@@ -381,35 +381,35 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         } else if (consultationType === 'self' && currentAiMessage?.isAgeDropdownRequest) { // Use isAgeDropdownRequest for adult age
             const age = parseInt(userText, 10);
             // AgeDropdown ensures 18-120, but this is a safeguard for unexpected flow
-            if (isNaN(age) || age < MIN_VALID_AGE || age > MAX_VALID_AGE) { 
+            if (isNaN(age) || age < MIN_VALID_AGE || age > MAX_VALID_AGE) {
                 setError(`Veuillez indiquer un âge valide (nombre entier entre ${MIN_VALID_AGE} et ${MAX_VALID_AGE}).`);
                 setIsLoading(false);
                 return; // Do not send to AI
             }
             // If age is valid and >= 18, continue as normal, sending age to AI
-            actualUserTextToSend = userText; 
+            actualUserTextToSend = userText;
         } else if (consultationType === 'other' && currentAiMessage?.text.includes("Quel est son âge ?")) {
             // AgeMonthYearDropdown sends a formatted string like "7 ans et 6 mois"
             // The AI is expected to parse this string, so client-side validation here is minimal
             if (!userText.includes("ans") && !userText.includes("mois") && userText !== "Moins de 1 mois") { // Also allow "Moins de 1 mois"
-                 setError("Veuillez indiquer un âge valide en années et/ou mois.");
-                 setIsLoading(false);
-                 return; // Do not send to AI
+                setError("Veuillez indiquer un âge valide en années et/ou mois.");
+                setIsLoading(false);
+                return; // Do not send to AI
             }
-             // The AI instruction says to continue if "Une autre personne" is <18,
-             // so we don't block here, just ensure it's a valid age string.
-             actualUserTextToSend = userText;
+            // The AI instruction says to continue if "Une autre personne" is <18,
+            // so we don't block here, just ensure it's a valid age string.
+            actualUserTextToSend = userText;
         }
         // --- End client-side interception ---
 
         // Clear current AI message options/inputs to prevent re-submitting
-        setCurrentAiMessage(prev => prev ? { 
-            ...prev, 
-            options: undefined, 
-            isPhotoRequest: false, 
-            isTextInputRequest: false, 
-            isTextInputWithNone: false, 
-            textInputPlaceholder: undefined, 
+        setCurrentAiMessage(prev => prev ? {
+            ...prev,
+            options: undefined,
+            isPhotoRequest: false,
+            isTextInputRequest: false,
+            isTextInputWithNone: false,
+            textInputPlaceholder: undefined,
             isComboInputRequest: false,
             isAgeDropdownRequest: false, // New: Clear age dropdown state
             ageDropdownMin: undefined,
@@ -424,7 +424,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             const imageParts = await Promise.all(imageFiles.map(file => fileToGenerativePart(file)));
             userParts.push(...imageParts);
         }
-        
+
         const newApiHistory: GeminiContent[] = [
             ...apiHistory,
             { role: 'user', parts: userParts }
@@ -463,7 +463,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         setCurrentAiMessage(newAiMessage);
         setIsLoading(false);
     }, [apiHistory, parseAiResponse, currentAiMessage, consultationType, setConsultationType, generateResponse]); // Removed uploadedVideoFile, analyzeVideo
-    
+
     const retryLastAction = useCallback(() => {
         if (lastFailedAction) {
             // Removed video-specific retry logic
@@ -474,7 +474,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
     const handleOptionSelect = (option: string) => {
         if (isLoading) return;
-        
+
         // This is where "Depuis combien de temps" leads to a number input.
         // The text prompt in constants.ts says: "Depuis combien de temps la lésion est apparue ?" [CHOIX]Moins de deux jours[CHOIX]Quelques jours[CHOIX]Quelques semaines[CHOIX]Quelques mois[CHOIX]Plus d’un an
         // If "Moins de deux jours" is selected, it implicitly means "1" or "0-1" days, but the instruction does not ask for explicit number.
@@ -490,7 +490,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             processUserAction(option);
         }
     };
-    
+
     const handleMultiChoiceSubmit = (selectedOptions: string[]) => {
         if (isLoading || selectedOptions.length === 0) return;
         processUserAction(selectedOptions.join(', '));
@@ -522,7 +522,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // It's always an image upload now
         processUserAction("Voici une ou plusieurs photos de la lésion.", files);
     };
-    
+
     const handleSkipMedia = () => { // Renamed from handleSkipPhoto to handleSkipMedia
         if (isLoading) return;
         processUserAction("Je ne peux pas envoyer de média pour le moment.");
@@ -567,7 +567,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         */
 
         if (apiHistory.length <= 2) { // Need at least user input + model response
-             initializeApp(); // Restart if going back before initial AI response
+            initializeApp(); // Restart if going back before initial AI response
             return;
         }
 
@@ -577,10 +577,10 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         setLastFailedAction(null);
 
         const lastModelContent = newApiHistory[newApiHistory.length - 1];
-        
+
         if (lastModelContent && lastModelContent.role === 'model' && lastModelContent.parts.length > 0) {
             const lastModelResponsePart = lastModelContent.parts[0];
-            if ('text' in lastModelResponsePart) { 
+            if ('text' in lastModelResponsePart) {
                 const previousAiMessage = parseAiResponse((lastModelResponsePart as GeminiTextPart).text, `ai-back-${Date.now()}`);
                 setCurrentAiMessage(previousAiMessage);
 
@@ -590,11 +590,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                 }
             } else {
                 console.warn("Expected text part in model response, but found a different type. Reinitializing.");
-                initializeApp(); 
+                initializeApp();
                 return;
             }
         } else {
-            initializeApp(); 
+            initializeApp();
             return;
         }
         setIsGameOver(false);
@@ -665,18 +665,39 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
     // currentStep represents the number of user answers given
     // Exclude initial 'Démarrer la consultation.' from progress count, and any other internal system prompts
-    const currentStep = apiHistory.filter(h => 
-        h.role === 'user' && 
-        h.parts.length > 0 && 
+    const currentStep = apiHistory.filter(h =>
+        h.role === 'user' &&
+        h.parts.length > 0 &&
         'text' in h.parts[0] && // Ensure it's a GeminiTextPart
         (h.parts[0] as GeminiTextPart).text !== "Démarrer la consultation."
     ).length;
-    
+
     // Fix: Wrap the main JSX content of the `Questionnaire` component in a `return` statement.
     return (
         <>
-            {/* The main questionnaire UI, hidden until initial warning is dismissed */}
-            {currentAiMessage && !currentAiMessage.isFinalReport && !showInitialWarningPopup ? (
+            {/* Error display - NOW VISIBLE even if currentAiMessage is null */}
+            {error && (
+                <div className="w-full max-w-2xl mx-auto border border-red-200 bg-red-50 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col items-center text-center animate-fade-in mb-8" role="alert">
+                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-red-900 mb-2">Impossible de démarrer l'analyse</h3>
+                    <p className="text-red-800 mb-6">{error}</p>
+                    <button onClick={retryLastAction || initializeApp} className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors font-medium">
+                        Réessayer
+                    </button>
+                    {(error.includes("API_KEY") || error.includes("VITE_API_KEY")) && (
+                        <p className="mt-4 text-xs text-red-600/80 bg-red-100/50 p-2 rounded">
+                            Note au propriétaire : La clé API n'est pas configurée.
+                        </p>
+                    )}
+                </div>
+            )}
+
+            {/* The main questionnaire UI, hidden until initial warning is dismissed AND we have a message */}
+            {currentAiMessage && !currentAiMessage.isFinalReport && !showInitialWarningPopup && !error ? (
                 <div ref={containerRef} tabIndex={-1} role="region" aria-live="polite" aria-atomic="true" className="w-full max-w-2xl mx-auto border border-gray-200 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col animate-fade-in" style={{ backgroundColor: '#E8F5EF' }}>
                     {(currentStep > 0 && !isGameOver) && ( // Start conditional rendering for the entire progress bar container
                         <div className="flex items-center justify-between mb-8 px-4 py-3 bg-gray-50 rounded-xl">
@@ -684,29 +705,21 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                                 <BackArrowIcon />
                             </button>
                             <div className="flex-grow mx-4" role="progressbar" aria-valuenow={currentStep} aria-valuemin={0} aria-valuemax={TOTAL_QUESTIONNAIRE_STAGES} aria-label={`Progression du questionnaire, étape ${currentStep} sur ${TOTAL_QUESTIONNAIRE_STAGES}`}>
-                                <div 
-                                    className="bg-emerald-500 h-2 rounded-full transition-all duration-300 ease-in-out" 
+                                <div
+                                    className="bg-emerald-500 h-2 rounded-full transition-all duration-300 ease-in-out"
                                     style={{ width: `${(currentStep / TOTAL_QUESTIONNAIRE_STAGES) * 100}%` }}
                                 ></div>
                             </div>
                             {/* Reset Button */}
-                            <button 
-                                onClick={handleReset} 
-                                className="group p-2 bg-red-100 text-red-600 hover:bg-red-200 transition-colors rounded-full hover:shadow-md active:scale-90 transform-gpu" 
+                            <button
+                                onClick={handleReset}
+                                className="group p-2 bg-red-100 text-red-600 hover:bg-red-200 transition-colors rounded-full hover:shadow-md active:scale-90 transform-gpu"
                                 aria-label="Recommencer la consultation"
                             >
                                 <RedoIcon className="transition-transform group-hover:rotate-180 group-active:rotate-180" />
                             </button>
                         </div>
                     )} {/* End conditional rendering for the entire progress bar container */}
-                    
-                    {error && (
-                        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-900 text-sm rounded-lg text-center" role="alert">
-                            <p className="font-bold">Erreur de communication</p>
-                            <p>{error}</p>
-                            <button onClick={retryLastAction} className="mt-3 px-4 py-1.5 bg-red-600 text-white text-xs rounded-full hover:bg-red-700 transition-colors">Réessayer</button>
-                        </div>
-                    )}
 
                     {currentAiMessage.text.includes("Cette auto-analyse concerne :") ? (
                         <div className="text-center mb-8 animate-fade-in">
@@ -737,7 +750,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                                 const qIndex = text.indexOf('?');
                                 if (qIndex !== -1) {
                                     const remainder = text.substring(qIndex + 1).trim();
-                                    if (remainder && !remainder.startsWith('[CHOIX]') && !remainder.startsWith('[MULTI_CHOIX]') && !remainder.startsWith('[COMBO_INPUT]') && !remainder.startsWith('[AGE_DROPDOWN]')) { 
+                                    if (remainder && !remainder.startsWith('[CHOIX]') && !remainder.startsWith('[MULTI_CHOIX]') && !remainder.startsWith('[COMBO_INPUT]') && !remainder.startsWith('[AGE_DROPDOWN]')) {
                                         return <p className="text-base text-slate-600 mt-3 leading-snug">{remainder}</p>;
                                     }
                                 }
@@ -760,8 +773,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                             {currentAiMessage.isPhotoRequest ? (
                                 <FileUpload onFileSelect={handleFileSelect} onSkip={handleSkipMedia} ref={fileUploadRef} />
                             ) : currentAiMessage.isAgeDropdownRequest ? ( // New: Conditional rendering for AgeDropdown
-                                <AgeDropdown 
-                                    onSubmit={handleTextSubmit} 
+                                <AgeDropdown
+                                    onSubmit={handleTextSubmit}
                                     ref={ageDropdownRef}
                                     minAge={currentAiMessage.ageDropdownMin}
                                     maxAge={currentAiMessage.ageDropdownMax}
@@ -771,8 +784,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                             ) : currentAiMessage.text.includes("Dans quel pays résidez-vous ?") ? ( // Conditional rendering for country dropdown
                                 <CountryDropdown onSubmit={handleTextSubmit} ref={countryDropdownRef} />
                             ) : currentAiMessage.isTextInputRequest || awaitingNumberInputForOption ? ( // Removed currentAiMessage.isQuestionForVideoAnalysis
-                                <TextInput 
-                                    onSubmit={handleTextSubmit} 
+                                <TextInput
+                                    onSubmit={handleTextSubmit}
                                     placeholder={currentAiMessage.textInputPlaceholder || "Ex: Apparu il y a 3 jours comme un point rouge..."}
                                     showNoneButton={currentAiMessage.hasNoneButton} // Pass this prop to TextInput
                                     onNoneClick={handleNoneSubmit} // Pass generic 'aucun' for text input none
@@ -781,9 +794,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                                 />
                             ) : null}
                             {currentAiMessage.options && currentAiMessage.isMultiChoice && (
-                                <MultiChoiceOptions 
-                                    options={currentAiMessage.options} 
-                                    onSubmit={handleMultiChoiceSubmit} 
+                                <MultiChoiceOptions
+                                    options={currentAiMessage.options}
+                                    onSubmit={handleMultiChoiceSubmit}
                                     hasNoneButton={currentAiMessage.hasNoneButton} // Pass the dedicated none button flag
                                     noneButtonText={currentAiMessage.noneButtonText} // Pass the dedicated none button text
                                     onNoneClick={handleNoneSubmit}
@@ -803,20 +816,20 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                                 </div>
                             )}
                             {/* Render dedicated "None" button for single choice questions that have one */}
-                            {currentAiMessage.hasNoneButton && currentAiMessage.noneButtonText && 
-                            !currentAiMessage.isMultiChoice && !currentAiMessage.isTextInputRequest && 
-                            !currentAiMessage.isPhotoRequest && !currentAiMessage.isAgeDropdownRequest && // New: exclude age dropdown
-                            !(consultationType === 'other' && currentAiMessage.text.includes("Quel est son âge ?") && currentAiMessage.isComboInputRequest) && !currentAiMessage.text.includes("Dans quel pays résidez-vous ?") && (
-                                <button
-                                    type="button"
-                                    onClick={() => handleNoneSubmit(currentAiMessage.noneButtonText!)}
-                                    className="w-full max-w-md p-4 md:p-5 bg-white border border-gray-200 text-slate-700 rounded-2xl shadow-sm
+                            {currentAiMessage.hasNoneButton && currentAiMessage.noneButtonText &&
+                                !currentAiMessage.isMultiChoice && !currentAiMessage.isTextInputRequest &&
+                                !currentAiMessage.isPhotoRequest && !currentAiMessage.isAgeDropdownRequest && // New: exclude age dropdown
+                                !(consultationType === 'other' && currentAiMessage.text.includes("Quel est son âge ?") && currentAiMessage.isComboInputRequest) && !currentAiMessage.text.includes("Dans quel pays résidez-vous ?") && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleNoneSubmit(currentAiMessage.noneButtonText!)}
+                                        className="w-full max-w-md p-4 md:p-5 bg-white border border-gray-200 text-slate-700 rounded-2xl shadow-sm
                                             hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200
                                             ease-in-out transform hover:-translate-y-1 capitalize font-medium text-base md:text-lg mt-2"
-                                >
-                                    {currentAiMessage.noneButtonText}
-                                </button>
-                            )}
+                                    >
+                                        {currentAiMessage.noneButtonText}
+                                    </button>
+                                )}
                         </div>
                     )}
                 </div>
@@ -828,11 +841,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
             {/* Reset Confirmation Modal */}
             {showResetConfirmation && (
-                <div 
+                <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/70 animate-fade-in p-4"
                     role="dialog" aria-modal="true" aria-labelledby="reset-confirmation-title"
                 >
-                    <div 
+                    <div
                         ref={resetModalRef}
                         className="bg-white rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl minor-check-popup-scale-in"
                     >
@@ -864,20 +877,20 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
             {/* Initial Warning Popup - Full Screen Overlay */}
             {showInitialWarningPopup && (
-                <div 
-                    className="fixed inset-0 z-[1000] flex items-center justify-center p-4" 
-                    role="dialog" 
-                    aria-modal="true" 
+                <div
+                    className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
+                    role="dialog"
+                    aria-modal="true"
                     aria-labelledby="initial-warning-title"
                 >
                     {/* Opaque Backdrop to hide header/footer completely */}
                     <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity duration-300 animate-fade-in" aria-hidden="true"></div>
 
                     {/* Popup Card */}
-                    <div 
-                        ref={initialWarningModalRef} 
+                    <div
+                        ref={initialWarningModalRef}
                         className="relative w-full max-w-lg bg-gradient-to-b from-[#D1FAE6] to-[#A8E6CF] rounded-[16px] shadow-2xl p-8 flex flex-col items-center text-center transform transition-all duration-500 ease-out animate-fade-in"
-                        style={{ 
+                        style={{
                             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
                         }}
                         tabIndex={-1}
@@ -906,8 +919,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                         </div>
 
                         {/* Close Button */}
-                        <button 
-                            className="mt-8 bg-white text-[#063E2E] text-base font-bold py-3 px-12 rounded-[12px] shadow-md hover:shadow-lg hover:bg-gray-50 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#063E2E]/50" 
+                        <button
+                            className="mt-8 bg-white text-[#063E2E] text-base font-bold py-3 px-12 rounded-[12px] shadow-md hover:shadow-lg hover:bg-gray-50 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#063E2E]/50"
                             onClick={() => setShowInitialWarningPopup(false)}
                             aria-label="Fermer l'avertissement et commencer"
                         >
