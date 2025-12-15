@@ -172,25 +172,26 @@ export const searchDermatologistsWithMaps = async (
         };
     }
 
-    // Dynamic prompt generation based on whether city/country are provided or if it's a geolocation search
+    // Dynamic prompt generation with explicit request for detailed contact info and coordinates
     let prompt = "";
+    const detailsRequest = "Pour chaque dermatologue trouvé, il est IMPÉRATIF de fournir : l'adresse complète, le numéro de téléphone, l'URL du site web (si disponible), l'adresse email (si disponible) et les coordonnées géographiques précises (latitude/longitude) pour le calcul de distance. Si une information n'est pas disponible, ne l'inventez pas.";
+
     if (city && country) {
-        prompt = `Trouvez des dermatologues à ${city}, ${country}.`;
+        prompt = `Trouvez les meilleurs dermatologues à ${city}, ${country}. ${detailsRequest}`;
     } else if (userLatLng) {
-        prompt = `Trouvez les dermatologues les plus proches de ma position actuelle (rayon 10-15km).`;
+        prompt = `Trouvez les dermatologues les plus proches de ma position actuelle (latitude: ${userLatLng.latitude}, longitude: ${userLatLng.longitude}) dans un rayon de 15km. ${detailsRequest}`;
     } else {
-        // Fallback if neither location info is present properly
-        prompt = "Trouvez des dermatologues.";
+        // Fallback
+        prompt = `Trouvez des dermatologues recommandés. ${detailsRequest}`;
     }
 
     try {
         const response = await aiClient.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-2.0-flash-exp", // Upgraded to 2.0-flash-exp for better grounding performance if available, or stick to 1.5-flash
             contents: [{ parts: [{ text: prompt }] }],
             config: {
                 tools: tools,
                 toolConfig: toolConfig,
-                // DO NOT set responseMimeType or responseSchema as per guidelines for googleMaps tool
             },
         });
         return response;
