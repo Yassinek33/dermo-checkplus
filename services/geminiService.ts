@@ -177,31 +177,30 @@ export const searchDermatologistsWithMaps = async (
     let prompt = "";
 
     const basePrompt = `
-    Trouvez les dermatologues correspondants.
-    
-    IMPORTANT : Vous devez répondre UNIQUEMENT avec un tableau JSON valide contenant les informations détaillées pour chaque dermatologue trouvé.
-    N'ajoutez aucun texte avant ou après le JSON.
-    
-    Pour chaque dermatologue, l'objet JSON doit avoir cette structure exacte :
-    {
-      "name": "Nom du dermatologue ou de la clinique",
-      "address": "Adresse complète",
-      "phone": "Numéro de téléphone (format international si possible)",
-      "website": "URL du site web (optionnel)",
-      "email": "Adresse email (optionnel)",
-      "latitude": 0.0000 (nombre, coordonnées GPS précises),
-      "longitude": 0.0000 (nombre, coordonnées GPS précises)
-    }
-    
-    Utilisez les outils Google Maps pour trouver ces informations. Si une info n'est pas trouvable, mettez null.
+    Trouvez les dermatologues correspondants en utilisant Google Maps.
+
+    IMPORTANT : Pour chaque résultat, générez un bloc de texte structuré EXACTEMENT comme suit :
+
+    ---DERMATO---
+    Nom: [Nom du dermatologue ou clinique]
+    Adresse: [Adresse complète]
+    Téléphone: [Numéro ou "Non disponible"]
+    SiteWeb: [URL ou "Non disponible"]
+    GoogleMapsURI: [Lien URI Google Maps]
+    Latitude: [Nombre ou "Non disponible"]
+    Longitude: [Nombre ou "Non disponible"]
+    ----------------
+
+    Ne mettez pas de JSON. Utilisez ce format texte simple pour faciliter l'extraction.
+    Si une information manque, écrivez "Non disponible".
     `;
 
     if (city && country) {
-        prompt = `Recherche à ${city}, ${country}. ${basePrompt}`;
+        prompt = `Trouvez des dermatologues à ${city}, ${country}. ${basePrompt}`;
     } else if (userLatLng) {
-        prompt = `Recherche autour de ma position (Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}) dans un rayon de 15km. ${basePrompt}`;
+        prompt = `Trouvez les dermatologues à proximité (Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}). Rayon 15km. ${basePrompt}`;
     } else {
-        prompt = `Recherche générale. ${basePrompt}`;
+        prompt = `Trouvez des dermatologues. ${basePrompt}`;
     }
 
     try {
@@ -211,7 +210,7 @@ export const searchDermatologistsWithMaps = async (
             config: {
                 tools: tools,
                 toolConfig: toolConfig,
-                responseMimeType: "application/json" // Enforce JSON response
+                // Removed responseMimeType to allow natural text generation with tool usage
             },
         });
         return response;

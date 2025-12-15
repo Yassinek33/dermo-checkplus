@@ -144,63 +144,87 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
         return false;
     }, [isLoading, selectedCountry, selectedCityOption, customCityInput]);
 
-    // --- Results Parsing & Sorting (JSON Mode) ---
+    // --- Results Parsing & Sorting (Structured Text Mode) ---
     const displayableDermatologists: DisplayableDermatologist[] = React.useMemo(() => {
         if (!dermatologistMapResults) return [];
 
         let dermatologists: DisplayableDermatologist[] = [];
 
         try {
-            // Attempt to parse JSON from the text response
             const textResponse = dermatologistMapResults.candidates?.[0]?.content?.parts?.[0]?.text;
+
             if (textResponse) {
-                // Cleanup potential markdown wrappers just in case
-                const cleanJson = textResponse.replace(/^```json/, '').replace(/```$/, '').trim();
-                const rawData = JSON.parse(cleanJson);
+                // Regex to find blocks starting with ---DERMATO--- and ending with ----------------
+                // flags: g (global), m (multiline), s (dot matches newline)
+                const blockRegex = /---DERMATO---([\s\S]*?)----------------/g;
+                let match;
 
-                if (Array.isArray(rawData)) {
-                    dermatologists = rawData.map((item: any) => {
-                        let distance: number | undefined = undefined;
-                        // Calculate distance if we have coordinates
-                        if (lastSearchLocation && item.latitude && item.longitude) {
-                            distance = calculateDistance(
-                                lastSearchLocation.latitude,
-                                lastSearchLocation.longitude,
-                                item.latitude,
-                                item.longitude
-                            );
+                while ((match = blockRegex.exec(textResponse)) !== null) {
+                    const block = match[1];
+
+                    // Helper to extract value by key
+                    const getValue = (key: string): string | undefined => {
+                        const regex = new RegExp(`${key}:\\s*(.*)`, 'i');
+                        const lineMatch = block.match(regex);
+                        if (lineMatch && lineMatch[1]) {
+                            const val = lineMatch[1].trim();
+                            return val === "Non disponible" || val === "null" || val === "" ? undefined : val;
                         }
+                        return undefined;
+                    };
 
-                        // Construct URI (Google Maps Link)
-                        // If uri is not provided by JSON, construct a search query link
-                        let uri = item.google_maps_uri || item.uri;
-                        if (!uri) {
-                            const query = encodeURIComponent(`${item.name} ${item.address || ''}`);
-                            uri = `https://www.google.com/maps/search/?api=1&query=${query}`;
-                        }
+                    const name = getValue("Nom") || "Dermatologue";
+                    const address = getValue("Adresse");
+                    const phone = getValue("Téléphone");
+                    const website = getValue("SiteWeb");
+                    const uriStr = getValue("GoogleMapsURI");
+                    const latStr = getValue("Latitude");
+                    const lngStr = getValue("Longitude");
 
-                        return {
-                            name: item.name || "Dermatologue",
-                            address: item.address || undefined,
-                            phone: item.phone || undefined,
-                            website: item.website || undefined,
-                            email: item.email || undefined,
-                            uri: uri,
-                            distance: distance,
-                            lat: item.latitude,
-                            lng: item.longitude
-                        };
+                    let lat: number | undefined = latStr ? parseFloat(latStr) : undefined;
+                    let lng: number | undefined = lngStr ? parseFloat(lngStr) : undefined;
+
+                    // Basic validation for lat/lng
+                    if (lat && isNaN(lat)) lat = undefined;
+                    if (lng && isNaN(lng)) lng = undefined;
+
+                    // Calculate distance
+                    let distance: number | undefined = undefined;
+                    if (lastSearchLocation && lat !== undefined && lng !== undefined) {
+                        distance = calculateDistance(
+                            lastSearchLocation.latitude,
+                            lastSearchLocation.longitude,
+                            lat,
+                            lng
+                        );
+                    }
+
+                    // Fallback URI
+                    let uri = uriStr;
+                    if (!uri) {
+                        const query = encodeURIComponent(`${name} ${address || ''}`);
+                        uri = `https://www.google.com/maps/search/?api=1&query=${query}`;
+                    }
+
+                    dermatologists.push({
+                        name,
+                        address,
+                        phone,
+                        website,
+                        uri: uri!,
+                        distance,
+                        lat,
+                        lng
                     });
                 }
             }
         } catch (e) {
-            console.error("Failed to parse Dermatologist JSON:", e);
-            // Fallback: If JSON parsing fails, return empty or try grounding chunks if mixed (unlikely with responseMimeType)
+            console.error("Failed to parse Dermatologist Text Blocks:", e);
         }
 
         // Sort by distance if it exists (Geo search mode)
         if (lastSearchLocation) {
-            return dermatologists.sort((a, b) => {
+            const sorted = [...dermatologists].sort((a, b) => {
                 if (a.distance !== undefined && b.distance !== undefined) {
                     return a.distance - b.distance;
                 }
@@ -208,6 +232,7 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                 if (b.distance !== undefined) return 1;
                 return 0;
             });
+            return sorted;
         }
 
         return dermatologists;
