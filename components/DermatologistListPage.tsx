@@ -1,33 +1,29 @@
 
 import React, { useState, useMemo } from 'react';
-import { sortedCountries } from './CountryDropdown'; // Reusing for manual search block
-import { BackArrowIcon } from './icons';
+import { motion, AnimatePresence } from 'framer-motion';
+import { sortedCountries } from './CountryDropdown';
 import { GenerateContentResponse, GroundingChunk, LatLng } from '@google/genai';
+import { CITY_DATA, DEFAULT_CITIES } from '../data/cities';
 
-// --- Types and Interfaces ---
-
+// --- Types & Interfaces ---
 interface MapsPlaceInfo {
     uri: string;
     title: string;
     formattedAddress?: string;
-    formatted_address?: string; // Snake case fallback
+    formatted_address?: string;
     formattedPhoneNumber?: string;
-    formatted_phone_number?: string; // Snake case fallback
+    formatted_phone_number?: string;
     internationalPhoneNumber?: string;
-    international_phone_number?: string; // Snake case fallback
+    international_phone_number?: string;
     websiteUri?: string;
-    website_uri?: string; // Snake case fallback
-    website?: string; // Simple fallback
-    placeAnswerSources?: MapsPlaceAnswerSource[];
+    website_uri?: string;
+    website?: string;
+    placeAnswerSources?: any[];
 }
 
 interface MapsReviewSnippet {
     uri: string;
     title?: string;
-}
-
-interface MapsPlaceAnswerSource {
-    reviewSnippets?: MapsReviewSnippet[];
 }
 
 interface DermatologistListPageProps {
@@ -47,33 +43,23 @@ interface DisplayableDermatologist {
     website?: string;
     uri: string;
     email?: string;
-    reviewSnippets?: MapsReviewSnippet[];
-    distance?: number; // Distance in km
+    distance?: number;
     lat?: number;
     lng?: number;
 }
 
 // --- Utils ---
-
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
     const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const d = R * c; // Distance in km
-    return parseFloat(d.toFixed(1));
+    return parseFloat((R * c).toFixed(1));
 };
-
-const deg2rad = (deg: number): number => {
-    return deg * (Math.PI / 180);
-};
-
-import { CITY_DATA, DEFAULT_CITIES } from '../data/cities'; // Import from centralized file
-
 
 const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
     dermatologistMapResults,
@@ -84,7 +70,7 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
     onSearch,
     lastSearchLocation
 }) => {
-    // --- Input State for "Search Again" functionality ---
+    // --- Input State ---
     const [selectedCountry, setSelectedCountry] = useState<string>('');
     const [selectedCityOption, setSelectedCityOption] = useState<string>('');
     const [customCityInput, setCustomCityInput] = useState<string>('');
@@ -93,32 +79,23 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
     const availableCities = useMemo(() => {
         if (!selectedCountry) return [];
         const cities = CITY_DATA[selectedCountry];
-        // Ensure that even if the country exists but has an empty array, we don't break, though ideally we populate CITY_DATA
         return cities && cities.length > 0 ? cities : DEFAULT_CITIES;
     }, [selectedCountry]);
 
-    const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedCountry(e.target.value);
-        setSelectedCityOption('');
-        setCustomCityInput('');
-    };
-
     const handleManualSearch = async () => {
-        const finalCity = (selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)' || selectedCityOption === 'Capitale / Ville principale')
+        const finalCity = (selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)')
             ? customCityInput.trim()
             : selectedCityOption;
 
-        if (selectedCountry && finalCity) {
-            await onSearch(selectedCountry, finalCity, null);
-        } else if (selectedCountry && !finalCity) {
-            await onSearch(selectedCountry, "", null);
+        if (selectedCountry) {
+            await onSearch(selectedCountry, finalCity || "", null);
         }
     };
 
     const handleGeoSearch = async () => {
         setGeoError(null);
         if (!navigator.geolocation) {
-            setGeoError("La géolocalisation n'est pas supportée.");
+            setGeoError("Géolocalisation non supportée.");
             return;
         }
         navigator.geolocation.getCurrentPosition(
@@ -131,46 +108,20 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
             },
             (err) => {
                 console.warn("Geolocation error:", err);
-                setGeoError("Impossible de récupérer votre position.");
+                setGeoError("Position introuvable.");
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
     };
 
-    const isManualSearchDisabled = useMemo(() => {
-        if (isLoading || !selectedCountry) return true;
-        if ((selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)') && !customCityInput.trim()) return true;
-        if (!selectedCityOption && !customCityInput.trim()) return true;
-        return false;
-    }, [isLoading, selectedCountry, selectedCityOption, customCityInput]);
-
-    // --- Results Parsing & Sorting (Hybrid: Metadata + Text Fallback) ---
+    // --- Data Extraction ---
     const displayableDermatologists: DisplayableDermatologist[] = React.useMemo(() => {
-        if (!dermatologistMapResults || !dermatologistMapResults.candidates?.[0]?.groundingMetadata?.groundingChunks) {
+        if (!dermatologistMapResults?.candidates?.[0]?.groundingMetadata?.groundingChunks) {
             return [];
         }
 
         const chunks = dermatologistMapResults.candidates[0].groundingMetadata.groundingChunks as GroundingChunk[];
         const dermatologists: DisplayableDermatologist[] = [];
-
-        // Attempt to find phone numbers in the text response as a fallback map
-        // Map Name -> Phone
-        const nameToPhoneMap = new Map<string, string>();
-        const textResponse = dermatologistMapResults.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (textResponse) {
-            // Simple regex to catch lines like "Name: ... Phone: ..." or just look for phone patterns
-            // This is a "nice to have" enrichment
-            const lines = textResponse.split('\n');
-            lines.forEach(line => {
-                // heuristic: if line has a phone number
-                const phoneMatch = line.match(/(\+\d{1,3}[\s-]?\d{1,4}[\s-]?\d{1,4}|\d{2}[\s-]\d{2}[\s-]\d{2}[\s-]\d{2}[\s-]\d{2})/);
-                if (phoneMatch) {
-                    // Try to find a name in the same line or previous line? 
-                    // Too risky to guess name. 
-                    // Just leave it for now. The Metadata is the source of truth.
-                }
-            });
-        }
 
         chunks.forEach(chunk => {
             if (chunk.maps) {
@@ -179,299 +130,255 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
 
                 if (mapInfo.uri && mapInfo.title) {
                     const name = mapInfo.title.trim();
+                    const address = (mapInfo.formattedAddress || anyMapInfo.vicinity || anyMapInfo.address)?.trim();
+                    const phone = (mapInfo.formattedPhoneNumber || mapInfo.internationalPhoneNumber || anyMapInfo.phone_number)?.trim();
+                    const website = (mapInfo.websiteUri || mapInfo.website || anyMapInfo.url)?.trim();
 
-                    // Robust extraction 
-                    const address = (
-                        mapInfo.formattedAddress ||
-                        mapInfo.formatted_address ||
-                        anyMapInfo.vicinity ||
-                        anyMapInfo.address
-                    )?.trim();
-
-                    const phone = (
-                        mapInfo.formattedPhoneNumber ||
-                        mapInfo.formatted_phone_number ||
-                        mapInfo.internationalPhoneNumber ||
-                        mapInfo.international_phone_number ||
-                        anyMapInfo.phone_number
-                    )?.trim();
-
-                    const website = (
-                        mapInfo.websiteUri ||
-                        mapInfo.website_uri ||
-                        mapInfo.website ||
-                        anyMapInfo.url
-                    )?.trim();
-
-                    const email = (
-                        anyMapInfo.email ||
-                        anyMapInfo.business_email ||
-                        anyMapInfo.contact_email
-                    )?.trim();
-
-                    // Coordinates
                     let lat: number | undefined;
                     let lng: number | undefined;
-
-                    if (anyMapInfo.geometry && anyMapInfo.geometry.location) {
+                    if (anyMapInfo.geometry?.location) {
                         lat = anyMapInfo.geometry.location.lat;
                         lng = anyMapInfo.geometry.location.lng;
-                    } else if (anyMapInfo.latitude && anyMapInfo.longitude) {
+                    } else if (anyMapInfo.latitude) {
                         lat = anyMapInfo.latitude;
                         lng = anyMapInfo.longitude;
-                    } else if (anyMapInfo.center) {
-                        lat = anyMapInfo.center.latitude;
-                        lng = anyMapInfo.center.longitude;
                     }
 
                     let distance: number | undefined = undefined;
                     if (lastSearchLocation && lat !== undefined && lng !== undefined) {
-                        distance = calculateDistance(
-                            lastSearchLocation.latitude,
-                            lastSearchLocation.longitude,
-                            lat,
-                            lng
-                        );
+                        distance = calculateDistance(lastSearchLocation.latitude, lastSearchLocation.longitude, lat, lng);
                     }
 
-                    dermatologists.push({
-                        name,
-                        address,
-                        phone,
-                        website,
-                        uri: mapInfo.uri,
-                        email,
-                        distance,
-                        lat,
-                        lng
-                    });
+                    dermatologists.push({ name, address, phone, website, uri: mapInfo.uri, distance, lat, lng });
                 }
             }
         });
 
-        // Sort by distance 
         if (lastSearchLocation) {
-            return dermatologists.sort((a, b) => {
-                if (a.distance !== undefined && b.distance !== undefined) {
-                    return a.distance - b.distance;
-                }
-                if (a.distance !== undefined) return -1;
-                if (b.distance !== undefined) return 1;
-                return 0;
-            });
+            return dermatologists.sort((a, b) => (a.distance || 9999) - (b.distance || 9999));
         }
-
         return dermatologists;
     }, [dermatologistMapResults, lastSearchLocation]);
 
-
-    // --- Render Logic ---
-    const renderResults = () => {
-        if (isLoading) {
-            return (
-                <div className="flex flex-col items-center justify-center h-48 bg-gray-50 rounded-3xl" aria-live="polite" aria-atomic="true" role="status">
-                    <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse"></span>
-                        <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: '100ms' }}></span>
-                        <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></span>
-                    </div>
-                    <p className="mt-4 text-slate-600 text-base md:text-lg animate-fade-in">Recherche en cours...</p>
-                </div>
-            );
-        }
-
-        if (error) {
-            return (
-                <div className="p-6 bg-red-50 border border-red-200 text-red-900 text-base rounded-xl text-center mt-4" role="alert">
-                    <p className="font-bold mb-1">Erreur</p>
-                    <p>{error}</p>
-                </div>
-            );
-        }
-
-        if (displayableDermatologists.length > 0) {
-            return (
-                <div className="w-full space-y-5 text-left mt-6" role="region" aria-label="Liste des dermatologues">
-                    <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xl md:text-2xl font-bold text-slate-900">
-                            {lastSearchLocation ? `Résultats autour de moi (${displayableDermatologists.length})` : `Dermatologues à ${searchQuery.city || 'proximité'} (${displayableDermatologists.length})`}
-                        </h3>
-                    </div>
-
-                    {displayableDermatologists.map((derm, index) => (
-                        <div key={index} className="bg-white p-6 rounded-[16px] shadow-md border border-gray-100 transition-shadow hover:shadow-lg flex flex-col gap-3 animate-fade-in">
-                            {/* Header: Name */}
-                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                                <h4 className="font-['Poppins'] font-semibold text-lg md:text-xl" style={{ color: '#00B37E' }}>
-                                    {derm.name}
-                                </h4>
-                            </div>
-
-                            {/* Content Block */}
-                            <div className="font-['Inter'] text-sm md:text-base space-y-2 text-[#0A2840]">
-
-                                {/* Address */}
-                                {derm.address && (
-                                    <p className="leading-relaxed flex gap-2 items-start">
-                                        <span className="font-medium min-w-[24px] text-slate-500">📍</span>
-                                        <span>{derm.address}</span>
-                                    </p>
-                                )}
-
-                                {/* Distance */}
-                                {derm.distance !== undefined && (
-                                    <p className="leading-relaxed flex gap-2 items-center text-emerald-700 font-medium">
-                                        <span className="font-medium min-w-[24px]">📍</span>
-                                        <span>à {derm.distance} km</span>
-                                    </p>
-                                )}
-
-                                {/* Phone */}
-                                {derm.phone && (
-                                    <p className="leading-relaxed flex gap-2 items-center">
-                                        <span className="font-medium min-w-[24px] text-slate-500">📞</span>
-                                        <a href={`tel:${derm.phone.replace(/[^\d+]/g, '')}`} className="hover:text-[#00B37E] font-medium transition-colors">
-                                            {derm.phone}
-                                        </a>
-                                    </p>
-                                )}
-
-                                {/* Website */}
-                                {derm.website && (
-                                    <p className="leading-relaxed flex gap-2 items-center">
-                                        <span className="font-medium min-w-[24px] text-slate-500">🌐</span>
-                                        <a
-                                            href={derm.website}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-[#0066CC] hover:underline truncate block max-w-full"
-                                        >
-                                            {derm.website.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]}
-                                        </a>
-                                    </p>
-                                )}
-
-                                {/* Email */}
-                                {derm.email && (
-                                    <p className="leading-relaxed flex gap-2 items-center">
-                                        <span className="font-medium min-w-[24px] text-slate-500">✉️</span>
-                                        <a href={`mailto:${derm.email}`} className="text-[#0066CC] hover:underline break-all">
-                                            {derm.email}
-                                        </a>
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Footer: Link */}
-                            <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-end">
-                                <a
-                                    href={derm.uri}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 bg-gray-100 text-slate-700 hover:bg-[#00B37E] hover:text-white px-4 py-2 rounded-full font-['Inter'] font-medium text-sm transition-colors duration-200"
-                                >
-                                    Voir sur Google Maps
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-
-        return (
-            <div className="text-center py-10 bg-gray-50 rounded-2xl mt-6">
-                <p className="text-slate-600 text-lg font-medium">
-                    Aucun résultat trouvé.
-                </p>
-                <p className="text-slate-500 text-sm mt-2">
-                    Essayez d'élargir la zone de recherche ou de vérifier l'orthographe.
-                </p>
-            </div>
-        );
+    // --- Animation Variants ---
+    const container = {
+        hidden: { opacity: 0 },
+        show: { opacity: 1, transition: { staggerChildren: 0.1 } }
     };
 
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
+    // --- Render ---
     return (
-        <div className="flex flex-col gap-6 w-full animate-fade-in relative pt-4">
-            {/* The Search Header Block (Dual Mode) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full mb-4 border-b border-gray-100 pb-8">
+        <div className="flex flex-col gap-8 w-full relative pt-2">
 
-                {/* BLOC 1 : Autour de moi (Compact) */}
-                <div className="bg-[#F0FDFA] border border-[#D1FAE6] rounded-2xl p-5 flex flex-col shadow-sm">
-                    <h3 className="text-lg font-bold font-['Poppins'] text-[#0A2840] mb-2 flex items-center gap-2">
-                        📍 Autour de moi
-                    </h3>
-                    <p className="text-xs text-[#195E49] mb-3 font-['Inter'] flex-grow">
-                        Recherche géolocalisée (10-15 km).
-                    </p>
-                    {geoError && <p className="text-red-500 text-xs mb-2">{geoError}</p>}
-                    <button
-                        onClick={handleGeoSearch}
-                        disabled={isLoading}
-                        className="w-full px-4 py-2.5 bg-white border border-[#00B37E] text-[#00B37E] hover:bg-[#00B37E] hover:text-white rounded-full transition-all duration-200 font-bold text-sm font-['Poppins']"
-                    >
-                        Trouver les proches
-                    </button>
-                </div>
+            {/* Search Controls (Glass Box) */}
+            <div className="glass-card rounded-3xl p-6 md:p-8 flex flex-col gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
+                    {/* Divider for Large Screens */}
+                    <div className="hidden lg:block absolute left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-gray-200 to-transparent" />
 
-                {/* BLOC 2 : Manuel (Compact) */}
-                <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col shadow-sm">
-                    <h3 className="text-lg font-bold font-['Poppins'] text-[#0A2840] mb-2 flex items-center gap-2">
-                        🌍 Par pays et ville
-                    </h3>
-                    <div className="flex flex-col gap-3">
-                        <div className="grid grid-cols-2 gap-2">
+                    {/* Geolocation Block */}
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-3 mb-1">
+                            <div className="p-2 bg-brand-light text-brand-primary rounded-xl">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            </div>
+                            <h3 className="text-lg font-bold text-brand-secondary">Autour de moi</h3>
+                        </div>
+                        <p className="text-sm text-slate-500 font-medium ml-1">Utiliser votre position (Rayon 10km)</p>
+
+                        {geoError && <p className="text-red-500 text-xs bg-red-50 p-2 rounded-lg">{geoError}</p>}
+
+                        <button
+                            onClick={handleGeoSearch}
+                            disabled={isLoading}
+                            className="mt-auto w-full py-3 px-6 bg-white border-2 border-brand-primary text-brand-primary font-bold rounded-xl hover:bg-brand-primary hover:text-white transition-all shadow-sm active:scale-95"
+                        >
+                            {isLoading ? "Localisation..." : "📍 Trouver les proches"}
+                        </button>
+                    </div>
+
+                    {/* Manual Search Block */}
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center gap-3 mb-1">
+                            <div className="p-2 bg-blue-50 text-brand-secondary rounded-xl">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            </div>
+                            <h3 className="text-lg font-bold text-brand-secondary">Par ville</h3>
+                        </div>
+                        <div className="flex flex-col gap-3">
                             <select
                                 value={selectedCountry}
                                 onChange={handleCountryChange}
-                                className="px-3 py-2 border border-gray-200 bg-gray-50 text-[#0A2840] text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-[#00B37E] font-['Inter']"
                                 disabled={isLoading}
+                                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
                             >
-                                <option value="" disabled>Pays</option>
+                                <option value="" disabled>Choisir un pays</option>
                                 {sortedCountries.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
                             </select>
-                            <select
-                                value={selectedCityOption}
-                                onChange={(e) => setSelectedCityOption(e.target.value)}
-                                className="px-3 py-2 border border-gray-200 bg-gray-50 text-[#0A2840] text-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-[#00B37E] font-['Inter']"
-                                disabled={!selectedCountry || isLoading}
+
+                            <div className="flex gap-2">
+                                <select
+                                    value={selectedCityOption}
+                                    onChange={(e) => setSelectedCityOption(e.target.value)}
+                                    disabled={!selectedCountry || isLoading}
+                                    className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+                                >
+                                    <option value="" disabled>Ville</option>
+                                    {availableCities.map((c) => <option key={c} value={c}>{c}</option>)}
+                                    <option value="other" className="text-brand-primary font-bold">Autre...</option>
+                                </select>
+                            </div>
+
+                            {(selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)') && (
+                                <input
+                                    type="text"
+                                    value={customCityInput}
+                                    onChange={(e) => setCustomCityInput(e.target.value)}
+                                    placeholder="Nom de la ville..."
+                                    className="w-full p-3 bg-white border-2 border-brand-primary/30 rounded-xl focus:border-brand-primary outline-none text-slate-700"
+                                />
+                            )}
+
+                            <button
+                                onClick={handleManualSearch}
+                                disabled={isLoading || !selectedCountry}
+                                className="w-full py-3 px-6 bg-brand-primary text-white font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <option value="" disabled>Ville</option>
-                                {availableCities.map((c) => <option key={c} value={c}>{c}</option>)}
-                                <option value="other" className="font-bold text-[#00B37E]">Autre</option>
-                            </select>
+                                🔍 Rechercher
+                            </button>
                         </div>
-
-                        {(selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)' || selectedCityOption === 'Capitale / Ville principale') && (
-                            <input
-                                type="text"
-                                value={customCityInput}
-                                onChange={(e) => setCustomCityInput(e.target.value)}
-                                placeholder="Nom de la ville..."
-                                className="w-full px-3 py-2 border border-[#00B37E] bg-white text-[#0A2840] text-sm rounded-lg focus:outline-none font-['Inter']"
-                                disabled={isLoading}
-                            />
-                        )}
-
-                        <button
-                            onClick={handleManualSearch}
-                            disabled={isManualSearchDisabled}
-                            className="w-full px-4 py-2.5 bg-[#00B37E] text-white rounded-full hover:bg-[#009466] disabled:opacity-50 font-bold text-sm font-['Poppins']"
-                        >
-                            Rechercher
-                        </button>
                     </div>
                 </div>
             </div>
 
-            {renderResults()}
+            {/* Results Section */}
+            <AnimatePresence mode="wait">
+                {isLoading && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex flex-col items-center justify-center py-12"
+                    >
+                        <div className="relative w-16 h-16">
+                            <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
+                            <div className="absolute inset-0 border-4 border-brand-primary rounded-full border-t-transparent animate-spin"></div>
+                        </div>
+                        <p className="mt-4 text-slate-500 font-medium">Recherche des meilleurs spécialistes...</p>
+                    </motion.div>
+                )}
 
-            <p className="text-xs text-gray-400 italic text-center pb-4">
-                *Résultats fournis par Google Maps. Vérifiez les informations avant de vous déplacer.
-            </p>
+                {!isLoading && error && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-6 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-center"
+                    >
+                        <p className="font-bold">Une erreur est survenue</p>
+                        <p className="text-sm opacity-80">{error}</p>
+                    </motion.div>
+                )}
+
+                {!isLoading && !error && displayableDermatologists.length > 0 && (
+                    <motion.div
+                        variants={container}
+                        initial="hidden"
+                        animate="show"
+                        className="flex flex-col gap-4"
+                    >
+                        <div className="flex items-center justify-between px-2 mb-2">
+                            <h3 className="text-xl font-bold text-brand-secondary">
+                                {lastSearchLocation ? `Résultats à proximité (${displayableDermatologists.length})` : `Résultats (${displayableDermatologists.length})`}
+                            </h3>
+                        </div>
+
+                        {displayableDermatologists.map((derm, idx) => (
+                            <motion.div
+                                key={idx}
+                                variants={item}
+                                className="glass-card p-6 rounded-2xl flex flex-col md:flex-row gap-6 hover:border-brand-primary/40 relative group bg-white"
+                            >
+                                {/* Left: Info */}
+                                <div className="flex-1 flex flex-col gap-2 text-left">
+                                    <h4 className="text-xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors">
+                                        {derm.name}
+                                    </h4>
+
+                                    {derm.distance !== undefined && (
+                                        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-primary bg-brand-light px-2 py-1 rounded-md w-fit mb-1">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg>
+                                            {derm.distance} km
+                                        </div>
+                                    )}
+
+                                    <div className="flex flex-col gap-1.5 text-sm text-slate-600 mt-1">
+                                        {derm.address && (
+                                            <div className="flex gap-2 items-start">
+                                                <span className="opacity-50 mt-0.5">📍</span>
+                                                <span>{derm.address}</span>
+                                            </div>
+                                        )}
+                                        {derm.phone && (
+                                            <div className="flex gap-2 items-center">
+                                                <span className="opacity-50">📞</span>
+                                                <a href={`tel:${derm.phone.replace(/[^\d+]/g, '')}`} className="font-semibold text-slate-800 hover:text-brand-primary underline decoration-dotted">
+                                                    {derm.phone}
+                                                </a>
+                                            </div>
+                                        )}
+                                        {derm.website && (
+                                            <div className="flex gap-2 items-center">
+                                                <span className="opacity-50">🌐</span>
+                                                <a href={derm.website} target="_blank" rel="noopener" className="text-blue-600 hover:underline truncate max-w-[200px]">
+                                                    Site web
+                                                </a>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Right: Action */}
+                                <div className="flex flex-col justify-center items-end border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 gap-3">
+                                    <a
+                                        href={derm.uri}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full md:w-auto py-3 px-6 rounded-xl bg-brand-secondary text-white font-semibold text-sm hover:bg-brand-primary transition-all shadow-md flex items-center justify-center gap-2"
+                                    >
+                                        <span>Itinéraire</span>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
+                                    </a>
+                                    {derm.phone && (
+                                        <a
+                                            href={`tel:${derm.phone.replace(/[^\d+]/g, '')}`}
+                                            className="w-full md:w-auto py-2.5 px-6 rounded-xl border border-gray-200 text-slate-700 font-semibold text-sm hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            Appeler
+                                        </a>
+                                    )}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                )}
+
+                {!isLoading && !error && displayableDermatologists.length === 0 && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center py-12 text-slate-400"
+                    >
+                        <p>Aucun résultat pour le moment.</p>
+                        <p className="text-sm">Essayez une autre ville ou utlisez la géolocalisation.</p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            <p className="text-[10px] text-gray-400 text-center mt-8 uppercase tracking-widest opacity-60">Powered by Google Maps Platform</p>
         </div>
     );
 };
