@@ -14,7 +14,7 @@ const MinorCheckPopup: React.FC<MinorCheckPopupProps> = ({ onConfirmAdult, onCon
 
     // Callback to disable/enable tabIndex for elements outside the modal
     const toggleTabIndexForMainContent = useCallback((enable: boolean) => {
-        const mainAppContainer = document.querySelector('.flex.flex-col.min-h-screen.font-sans'); 
+        const mainAppContainer = document.querySelector('.flex.flex-col.min-h-screen.font-sans');
         if (mainAppContainer) {
             const focusableElements = mainAppContainer.querySelectorAll(
                 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -27,12 +27,12 @@ const MinorCheckPopup: React.FC<MinorCheckPopupProps> = ({ onConfirmAdult, onCon
                             element.tabIndex = parseInt(originalTabIndex, 10);
                             delete element.dataset.originalTabIndex;
                         } else if (element.tabIndex === -1) {
-                            element.tabIndex = 0; 
+                            element.tabIndex = 0;
                         }
                     } else {
-                        if (element.tabIndex !== -1 && !element.hasAttribute('disabled')) { 
-                            element.dataset.originalTabIndex = element.tabIndex.toString(); 
-                            element.tabIndex = -1; 
+                        if (element.tabIndex !== -1 && !element.hasAttribute('disabled')) {
+                            element.dataset.originalTabIndex = element.tabIndex.toString();
+                            element.tabIndex = -1;
                         }
                     }
                 }
@@ -85,33 +85,30 @@ const MinorCheckPopup: React.FC<MinorCheckPopupProps> = ({ onConfirmAdult, onCon
     }, [toggleTabIndexForMainContent]);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/70 animate-fade-in p-4"
-             role="dialog" aria-modal="true" aria-labelledby="profile-selection-title"
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#030305]/80 backdrop-blur-sm animate-fade-in p-4"
+            role="dialog" aria-modal="true" aria-labelledby="profile-selection-title"
         >
-            <div 
+            <div
                 ref={modalRef}
-                className="bg-white rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl minor-check-popup-scale-in"
-                style={{ borderRadius: `${themeConfig.radius}px` }}
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl minor-check-popup-scale-in"
             >
-                <div className="mb-6 flex justify-center text-5xl" style={{ color: themeConfig.primaryColor }}>
+                <div className="mb-6 flex justify-center text-5xl opacity-90 drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]">
                     <span role="img" aria-label="Doctor">⚕️</span>
                 </div>
-                <h2 id="profile-selection-title" className="text-2xl font-bold text-slate-900 mb-4">Bienvenue sur DERMO-CHECK</h2>
-                <p className="text-slate-700 text-base mb-6">
+                <h2 id="profile-selection-title" className="text-2xl font-display font-bold text-white mb-4">Bienvenue sur DERMO-CHECK</h2>
+                <p className="text-brand-secondary/70 text-base mb-6 font-light">
                     Pour personnaliser votre expérience, veuillez indiquer votre profil.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <button
                         onClick={onConfirmAdult}
-                        className="px-6 py-3 text-white text-base rounded-full hover:opacity-90 transition-colors font-semibold shadow-lg"
-                        style={{ backgroundColor: themeConfig.primaryColor }}
+                        className="px-6 py-3 bg-brand-primary text-brand-deep text-base rounded-full hover:bg-brand-primary/90 transition-all font-semibold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(45,212,191,0.4)]"
                     >
                         Je suis majeur
                     </button>
                     <button
                         onClick={onConfirmMinor}
-                        className="px-6 py-3 border rounded-full transition-colors font-semibold text-slate-700 hover:bg-gray-100"
-                        style={{ borderColor: themeConfig.primaryColor }}
+                        className="px-6 py-3 border border-white/20 rounded-full transition-colors font-medium text-brand-secondary hover:bg-white/5 hover:border-white/40"
                     >
                         Je suis mineur
                     </button>

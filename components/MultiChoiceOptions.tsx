@@ -15,7 +15,7 @@ const MUTUALLY_EXCLUSIVE_OPTIONS = [
     "Je ne sais pas",
     "Aucun symptôme notable",
     "Aucun antécédent",
-    "Aucun", 
+    "Aucun",
     "Aucun de ces facteurs" // Added for consistency
 ];
 
@@ -60,11 +60,10 @@ const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubm
                     <button
                         key={opt}
                         onClick={() => toggleOption(opt)}
-                        className={`p-3 md:p-4 text-center rounded-2xl border transition-all duration-200 ease-in-out transform hover:-translate-y-1 text-sm md:text-base font-medium shadow-sm ${
-                            selected.includes(opt)
-                                ? 'bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-600/30'
-                                : 'bg-white border-gray-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-600'
-                        }`}
+                        className={`p-3 md:p-4 text-center rounded-2xl border transition-all duration-200 ease-in-out transform hover:-translate-y-1 text-sm md:text-base font-medium backdrop-blur-md shadow-lg ${selected.includes(opt)
+                                ? 'bg-brand-primary border-brand-primary text-brand-deep shadow-[0_0_15px_rgba(45,212,191,0.4)]'
+                                : 'bg-white/5 border-white/10 text-brand-secondary hover:bg-white/10 hover:border-brand-primary/40 hover:text-white'
+                            }`}
                         aria-pressed={selected.includes(opt)}
                         // Fix: Explicitly type `el` as HTMLButtonElement | null to match RefCallback signature
                         ref={(el: HTMLButtonElement | null) => { if (optionButtonRefs && optionButtonRefs.current) optionButtonRefs.current[index] = el; }} // Assign ref
@@ -76,7 +75,7 @@ const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubm
             <button
                 onClick={handleSubmit}
                 disabled={selected.length === 0}
-                className="mt-2 w-full max-w-lg px-7 py-3 md:py-4 bg-emerald-600 text-white text-base md:text-lg rounded-full hover:bg-emerald-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/40"
+                className="mt-2 w-full max-w-lg px-7 py-3 md:py-4 bg-brand-primary text-brand-deep text-base md:text-lg rounded-full hover:bg-brand-primary/90 disabled:bg-white/10 disabled:text-white/20 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(45,212,191,0.4)]"
             >
                 Valider
             </button>
@@ -85,9 +84,9 @@ const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubm
                 <button
                     type="button"
                     onClick={() => onNoneClick(noneButtonText)}
-                    className="w-full max-w-lg p-4 md:p-5 bg-white border border-gray-200 text-slate-700 rounded-2xl shadow-sm
-                               hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200
-                               ease-in-out transform hover:-translate-y-1 capitalize font-medium text-base md:text-lg mt-2"
+                    className="w-full max-w-lg p-4 md:p-5 bg-white/5 border border-white/10 text-brand-secondary rounded-2xl shadow-lg
+                               hover:bg-white/10 hover:border-brand-primary/30 hover:text-white transition-all duration-200
+                               ease-in-out transform hover:-translate-y-1 capitalize font-medium text-base md:text-lg mt-2 backdrop-blur-md"
                 >
                     {noneButtonText}
                 </button>

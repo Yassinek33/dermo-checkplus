@@ -10,9 +10,9 @@ const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(({ text, o
     return (
         <button
             onClick={() => onClick(text)}
-            className="w-full p-4 md:p-5 bg-white border border-gray-200 text-slate-700 rounded-2xl shadow-sm 
-                       hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200 
-                       ease-in-out transform hover:-translate-y-1 text-base font-medium"
+            className="w-full p-4 md:p-5 bg-white/5 border border-white/10 text-brand-secondary rounded-2xl shadow-lg
+                       hover:bg-white/10 hover:border-brand-primary/50 hover:text-white transition-all duration-200 
+                       ease-in-out transform hover:-translate-y-1 text-base font-medium backdrop-blur-md"
             ref={ref}
         >
             {text}

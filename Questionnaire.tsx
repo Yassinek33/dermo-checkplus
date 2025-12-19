@@ -695,146 +695,151 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
             {/* The main questionnaire UI, hidden until initial warning is dismissed AND we have a message */}
             {currentAiMessage && !currentAiMessage.isFinalReport && !showInitialWarningPopup && !error ? (
-                <div ref={containerRef} tabIndex={-1} role="region" aria-live="polite" aria-atomic="true" className="w-full max-w-2xl mx-auto border border-gray-200 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col animate-fade-in" style={{ backgroundColor: '#E8F5EF' }}>
-                    {(currentStep > 0 && !isGameOver) && ( // Start conditional rendering for the entire progress bar container
-                        <div className="flex items-center justify-between mb-8 px-4 py-3 bg-gray-50 rounded-xl">
-                            <button onClick={handleBack} className="p-2 text-gray-500 hover:text-emerald-600 transition-colors rounded-full hover:bg-gray-100" aria-label="Retour à l'étape précédente">
-                                <BackArrowIcon />
-                            </button>
-                            <div className="flex-grow mx-4" role="progressbar" aria-valuenow={currentStep} aria-valuemin={0} aria-valuemax={TOTAL_QUESTIONNAIRE_STAGES} aria-label={`Progression du questionnaire, étape ${currentStep} sur ${TOTAL_QUESTIONNAIRE_STAGES}`}>
-                                <div
-                                    className="bg-emerald-500 h-2 rounded-full transition-all duration-300 ease-in-out"
-                                    style={{ width: `${(currentStep / TOTAL_QUESTIONNAIRE_STAGES) * 100}%` }}
-                                ></div>
+                { currentAiMessage && !currentAiMessage.isFinalReport && !showInitialWarningPopup && !error ? (
+                    <div ref={containerRef} tabIndex={-1} role="region" aria-live="polite" aria-atomic="true" className="w-full max-w-2xl mx-auto glass-panel rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col animate-fade-in relative z-10 transition-all duration-300">
+                        {(currentStep > 0 && !isGameOver) && ( // Start conditional rendering for the entire progress bar container
+                            <div className="flex items-center justify-between mb-8 px-4 py-3 bg-white/5 border border-white/5 rounded-xl backdrop-blur-md">
+                                <button onClick={handleBack} className="p-2 text-brand-secondary/60 hover:text-brand-primary transition-colors rounded-full hover:bg-white/5" aria-label="Retour à l'étape précédente">
+                                    <BackArrowIcon />
+                                </button>
+                                <div className="flex-grow mx-4" role="progressbar" aria-valuenow={currentStep} aria-valuemin={0} aria-valuemax={TOTAL_QUESTIONNAIRE_STAGES} aria-label={`Progression du questionnaire, étape ${currentStep} sur ${TOTAL_QUESTIONNAIRE_STAGES}`}>
+                                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                                        <div
+                                            className="bg-gradient-to-r from-brand-primary to-blue-500 h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(45,212,191,0.5)]"
+                                            style={{ width: `${(currentStep / TOTAL_QUESTIONNAIRE_STAGES) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                                {/* Reset Button */}
+                                <button
+                                    onClick={handleReset}
+                                    className="group p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors rounded-full"
+                                    aria-label="Recommencer la consultation"
+                                >
+                                    <RedoIcon className="transition-transform group-hover:rotate-180 group-active:rotate-180" />
+                                </button>
                             </div>
-                            {/* Reset Button */}
-                            <button
-                                onClick={handleReset}
-                                className="group p-2 bg-red-100 text-red-600 hover:bg-red-200 transition-colors rounded-full hover:shadow-md active:scale-90 transform-gpu"
-                                aria-label="Recommencer la consultation"
-                            >
-                                <RedoIcon className="transition-transform group-hover:rotate-180 group-active:rotate-180" />
-                            </button>
-                        </div>
-                    )} {/* End conditional rendering for the entire progress bar container */}
+                        )} {/* End conditional rendering for the entire progress bar container */}
 
-                    {currentAiMessage.text.includes("Cette auto-analyse concerne :") ? (
-                        <div className="text-center mb-8 animate-fade-in">
-                            <h1 className="text-2xl md:text-3xl font-semibold leading-tight mb-4 font-['Poppins'] text-[#0A2840]">
-                                DermoCheck – analyse rapide de votre peau en ligne
-                            </h1>
-                            <p className="text-base md:text-lg font-normal leading-relaxed mb-6 font-['Inter'] text-[#195E49]">
-                                Répondez à quelques <strong>questions simples et visuelles</strong> pour mieux comprendre l’état de votre peau.
-                                <br className="hidden md:block" />
-                                DermoCheck vous guide pas à pas et vous aide à repérer les <strong>signes qui nécessitent l’avis d’un dermatologue</strong>.
-                            </p>
-                            <p className="text-base md:text-lg font-medium font-['Inter'] text-[#0A2840]">
-                                Choisissez pour qui vous souhaitez lancer l’analyse :
-                            </p>
-                        </div>
-                    ) : (
-                        <div key={currentAiMessage.id} className="text-center mb-8 animate-fade-in">
-                            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
+                        {currentAiMessage.text.includes("Cette auto-analyse concerne :") ? (
+                            <div className="text-center mb-10 animate-fade-in">
+                                <div className="inline-block p-4 rounded-full bg-brand-primary/10 mb-6 ring-1 ring-brand-primary/20">
+                                    <svg className="w-8 h-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                                </div>
+                                <h1 className="text-3xl md:text-4xl font-display font-medium leading-tight mb-6 text-white tracking-tight">
+                                    Analyse Dermatologique <span className="text-brand-primary">IA</span>
+                                </h1>
+                                <p className="text-base md:text-lg font-light leading-relaxed mb-8 text-brand-secondary/80">
+                                    Répondez à quelques questions visuelles. <br />
+                                    <span className="text-brand-primary font-medium">Précision clinique, simplicité absolue.</span>
+                                </p>
+                                <p className="text-sm font-medium uppercase tracking-widest text-brand-secondary/40 mb-4">
+                                    Pour qui est cette analyse ?
+                                </p>
+                            </div>
+                        ) : (
+                            <div key={currentAiMessage.id} className="text-center mb-8 animate-fade-in">
+                                <h2 className="text-2xl md:text-3xl font-display font-bold text-white leading-tight">
+                                    {(() => {
+                                        const text = currentAiMessage.text;
+                                        const qIndex = text.indexOf('?');
+                                        if (qIndex !== -1) return text.substring(0, qIndex + 1);
+                                        return text;
+                                    })()}
+                                </h2>
                                 {(() => {
                                     const text = currentAiMessage.text;
                                     const qIndex = text.indexOf('?');
-                                    if (qIndex !== -1) return text.substring(0, qIndex + 1);
-                                    return text;
-                                })()}
-                            </h2>
-                            {(() => {
-                                const text = currentAiMessage.text;
-                                const qIndex = text.indexOf('?');
-                                if (qIndex !== -1) {
-                                    const remainder = text.substring(qIndex + 1).trim();
-                                    if (remainder && !remainder.startsWith('[CHOIX]') && !remainder.startsWith('[MULTI_CHOIX]') && !remainder.startsWith('[COMBO_INPUT]') && !remainder.startsWith('[AGE_DROPDOWN]')) {
-                                        return <p className="text-base text-slate-600 mt-3 leading-snug">{remainder}</p>;
+                                    if (qIndex !== -1) {
+                                        const remainder = text.substring(qIndex + 1).trim();
+                                        if (remainder && !remainder.startsWith('[CHOIX]') && !remainder.startsWith('[MULTI_CHOIX]') && !remainder.startsWith('[COMBO_INPUT]') && !remainder.startsWith('[AGE_DROPDOWN]')) {
+                                            return <p className="text-lg text-brand-secondary/70 mt-4 leading-relaxed font-light">{remainder}</p>;
+                                        }
                                     }
-                                }
-                                return null;
-                            })()}
-                        </div>
-                    )}
-
-                    {isLoading && !awaitingNumberInputForOption ? ( // Removed awaitingVideoQuestion
-                        <div className="flex flex-col items-center justify-center h-48" aria-live="polite" aria-atomic="true" role="status">
-                            <div className="flex items-center gap-2">
-                                <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: '100ms' }}></span>
-                                <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></span>
+                                    return null;
+                                })()}
                             </div>
-                            <p className="mt-4 text-slate-600 text-base animate-fade-in">DERMO-CHECK analyse...</p>
-                        </div>
-                    ) : (
-                        <div className="w-full flex flex-col items-center gap-4"> {/* Added gap-4 for spacing between components */}
-                            {currentAiMessage.isPhotoRequest ? (
-                                <FileUpload onFileSelect={handleFileSelect} onSkip={handleSkipMedia} ref={fileUploadRef} />
-                            ) : currentAiMessage.isAgeDropdownRequest ? ( // New: Conditional rendering for AgeDropdown
-                                <AgeDropdown
-                                    onSubmit={handleTextSubmit}
-                                    ref={ageDropdownRef}
-                                    minAge={currentAiMessage.ageDropdownMin}
-                                    maxAge={currentAiMessage.ageDropdownMax}
-                                />
-                            ) : consultationType === 'other' && currentAiMessage.text.includes("Quel est son âge ?") && currentAiMessage.isComboInputRequest ? ( // New: Conditional rendering for age dropdown (Autre personne)
-                                <AgeMonthYearDropdown onSubmit={handleTextSubmit} monthsRef={ageMonthYearDropdownMonthsRef} yearsRef={ageMonthYearDropdownYearsRef} />
-                            ) : currentAiMessage.text.includes("Dans quel pays résidez-vous ?") ? ( // Conditional rendering for country dropdown
-                                <CountryDropdown onSubmit={handleTextSubmit} ref={countryDropdownRef} />
-                            ) : currentAiMessage.isTextInputRequest || awaitingNumberInputForOption ? ( // Removed currentAiMessage.isQuestionForVideoAnalysis
-                                <TextInput
-                                    onSubmit={handleTextSubmit}
-                                    placeholder={currentAiMessage.textInputPlaceholder || "Ex: Apparu il y a 3 jours comme un point rouge..."}
-                                    showNoneButton={currentAiMessage.hasNoneButton} // Pass this prop to TextInput
-                                    onNoneClick={handleNoneSubmit} // Pass generic 'aucun' for text input none
-                                    noneButtonText={currentAiMessage.noneButtonText} // Pass the specific none button text
-                                    ref={textInputRef}
-                                />
-                            ) : null}
-                            {currentAiMessage.options && currentAiMessage.isMultiChoice && (
-                                <MultiChoiceOptions
-                                    options={currentAiMessage.options}
-                                    onSubmit={handleMultiChoiceSubmit}
-                                    hasNoneButton={currentAiMessage.hasNoneButton} // Pass the dedicated none button flag
-                                    noneButtonText={currentAiMessage.noneButtonText} // Pass the dedicated none button text
-                                    onNoneClick={handleNoneSubmit}
-                                    optionButtonRefs={optionButtonsRef} // Pass ref for focus
-                                />
-                            )}
-                            {currentAiMessage.options && !currentAiMessage.isMultiChoice && (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md animate-fade-in">
-                                    {currentAiMessage.options.map((opt, index) => (
-                                        // Fix: Changed ref assignment to explicitly return void.
-                                        <OptionButton key={opt} text={opt} onClick={handleOptionSelect} ref={(el: HTMLButtonElement | null) => {
-                                            if (optionButtonsRef.current) {
-                                                optionButtonsRef.current[index] = el;
-                                            }
-                                        }} />
-                                    ))}
+                        )}
+
+                        {isLoading && !awaitingNumberInputForOption ? ( // Removed awaitingVideoQuestion
+                            <div className="flex flex-col items-center justify-center h-48" aria-live="polite" aria-atomic="true" role="status">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                    <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: '100ms' }}></span>
+                                    <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></span>
                                 </div>
-                            )}
-                            {/* Render dedicated "None" button for single choice questions that have one */}
-                            {currentAiMessage.hasNoneButton && currentAiMessage.noneButtonText &&
-                                !currentAiMessage.isMultiChoice && !currentAiMessage.isTextInputRequest &&
-                                !currentAiMessage.isPhotoRequest && !currentAiMessage.isAgeDropdownRequest && // New: exclude age dropdown
-                                !(consultationType === 'other' && currentAiMessage.text.includes("Quel est son âge ?") && currentAiMessage.isComboInputRequest) && !currentAiMessage.text.includes("Dans quel pays résidez-vous ?") && (
-                                    <button
-                                        type="button"
-                                        onClick={() => handleNoneSubmit(currentAiMessage.noneButtonText!)}
-                                        className="w-full max-w-md p-4 md:p-5 bg-white border border-gray-200 text-slate-700 rounded-2xl shadow-sm
+                                <p className="mt-4 text-slate-600 text-base animate-fade-in">DERMO-CHECK analyse...</p>
+                            </div>
+                        ) : (
+                            <div className="w-full flex flex-col items-center gap-4"> {/* Added gap-4 for spacing between components */}
+                                {currentAiMessage.isPhotoRequest ? (
+                                    <FileUpload onFileSelect={handleFileSelect} onSkip={handleSkipMedia} ref={fileUploadRef} />
+                                ) : currentAiMessage.isAgeDropdownRequest ? ( // New: Conditional rendering for AgeDropdown
+                                    <AgeDropdown
+                                        onSubmit={handleTextSubmit}
+                                        ref={ageDropdownRef}
+                                        minAge={currentAiMessage.ageDropdownMin}
+                                        maxAge={currentAiMessage.ageDropdownMax}
+                                    />
+                                ) : consultationType === 'other' && currentAiMessage.text.includes("Quel est son âge ?") && currentAiMessage.isComboInputRequest ? ( // New: Conditional rendering for age dropdown (Autre personne)
+                                    <AgeMonthYearDropdown onSubmit={handleTextSubmit} monthsRef={ageMonthYearDropdownMonthsRef} yearsRef={ageMonthYearDropdownYearsRef} />
+                                ) : currentAiMessage.text.includes("Dans quel pays résidez-vous ?") ? ( // Conditional rendering for country dropdown
+                                    <CountryDropdown onSubmit={handleTextSubmit} ref={countryDropdownRef} />
+                                ) : currentAiMessage.isTextInputRequest || awaitingNumberInputForOption ? ( // Removed currentAiMessage.isQuestionForVideoAnalysis
+                                    <TextInput
+                                        onSubmit={handleTextSubmit}
+                                        placeholder={currentAiMessage.textInputPlaceholder || "Ex: Apparu il y a 3 jours comme un point rouge..."}
+                                        showNoneButton={currentAiMessage.hasNoneButton} // Pass this prop to TextInput
+                                        onNoneClick={handleNoneSubmit} // Pass generic 'aucun' for text input none
+                                        noneButtonText={currentAiMessage.noneButtonText} // Pass the specific none button text
+                                        ref={textInputRef}
+                                    />
+                                ) : null}
+                                {currentAiMessage.options && currentAiMessage.isMultiChoice && (
+                                    <MultiChoiceOptions
+                                        options={currentAiMessage.options}
+                                        onSubmit={handleMultiChoiceSubmit}
+                                        hasNoneButton={currentAiMessage.hasNoneButton} // Pass the dedicated none button flag
+                                        noneButtonText={currentAiMessage.noneButtonText} // Pass the dedicated none button text
+                                        onNoneClick={handleNoneSubmit}
+                                        optionButtonRefs={optionButtonsRef} // Pass ref for focus
+                                    />
+                                )}
+                                {currentAiMessage.options && !currentAiMessage.isMultiChoice && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md animate-fade-in">
+                                        {currentAiMessage.options.map((opt, index) => (
+                                            // Fix: Changed ref assignment to explicitly return void.
+                                            <OptionButton key={opt} text={opt} onClick={handleOptionSelect} ref={(el: HTMLButtonElement | null) => {
+                                                if (optionButtonsRef.current) {
+                                                    optionButtonsRef.current[index] = el;
+                                                }
+                                            }} />
+                                        ))}
+                                    </div>
+                                )}
+                                {/* Render dedicated "None" button for single choice questions that have one */}
+                                {currentAiMessage.hasNoneButton && currentAiMessage.noneButtonText &&
+                                    !currentAiMessage.isMultiChoice && !currentAiMessage.isTextInputRequest &&
+                                    !currentAiMessage.isPhotoRequest && !currentAiMessage.isAgeDropdownRequest && // New: exclude age dropdown
+                                    !(consultationType === 'other' && currentAiMessage.text.includes("Quel est son âge ?") && currentAiMessage.isComboInputRequest) && !currentAiMessage.text.includes("Dans quel pays résidez-vous ?") && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleNoneSubmit(currentAiMessage.noneButtonText!)}
+                                            className="w-full max-w-md p-4 md:p-5 bg-white border border-gray-200 text-slate-700 rounded-2xl shadow-sm
                                             hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200
                                             ease-in-out transform hover:-translate-y-1 capitalize font-medium text-base md:text-lg mt-2"
-                                    >
-                                        {currentAiMessage.noneButtonText}
-                                    </button>
-                                )}
-                        </div>
-                    )}
-                </div>
-            ) : (
-                currentAiMessage && currentAiMessage.isFinalReport && (
-                    <ChatMessage message={currentAiMessage} />
-                )
-            )}
+                                        >
+                                            {currentAiMessage.noneButtonText}
+                                        </button>
+                                    )}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    currentAiMessage && currentAiMessage.isFinalReport && (
+                        <ChatMessage message={currentAiMessage} />
+                    )
+                )}
 
             {/* Reset Confirmation Modal */}
             {showResetConfirmation && (
