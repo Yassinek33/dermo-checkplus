@@ -265,11 +265,26 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                         exit={{ opacity: 0 }}
                         className="flex flex-col items-center justify-center py-12"
                     >
-                        <div className="relative w-16 h-16">
-                            <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
-                            <div className="absolute inset-0 border-4 border-brand-primary rounded-full border-t-transparent animate-spin"></div>
+                        <div className="relative w-24 h-24 mb-6">
+                            {/* Scanning Grid Background */}
+                            <div className="absolute inset-0 z-0 bg-brand-primary/5 rounded-full blur-xl" />
+
+                            {/* Fingerprint / Map Icon */}
+                            <svg className="w-full h-full text-brand-secondary/30" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                            </svg>
+
+                            {/* Scanning Laser Line */}
+                            <motion.div
+                                animate={{ top: ["0%", "100%", "0%"] }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                className="absolute left-0 right-0 h-0.5 bg-brand-primary shadow-[0_0_15px_rgba(0,179,126,1)] z-20"
+                            />
                         </div>
-                        <p className="mt-4 text-slate-500 font-medium">Recherche des meilleurs spécialistes...</p>
+                        <div className="flex flex-col items-center gap-2 relative z-10">
+                            <h3 className="text-xl font-bold text-brand-secondary tracking-widest uppercase">Analyse en cours</h3>
+                            <p className="text-brand-primary font-mono text-sm animate-pulse">Recherche des dermatologues à proximité...</p>
+                        </div>
                     </motion.div>
                 )}
 

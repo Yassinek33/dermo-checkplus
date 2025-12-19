@@ -88,6 +88,34 @@ export default function FeaturesSection() {
             </motion.div>
           ))}
         </div>
+
+        {/* Futuristic AI Visualization */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-16 relative w-full h-64 md:h-80 rounded-3xl overflow-hidden glass-card shadow-2xl group"
+        >
+          <img
+            src="/dermo-check-main/public/hero-ai-scan.png"
+            alt="AI Analysis Visualization"
+            className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A2840] via-transparent to-transparent opacity-90" />
+
+          <div className="absolute bottom-0 left-0 p-8 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-3 py-1 bg-brand-primary/20 border border-brand-primary/50 rounded-full text-xs font-mono text-brand-primary uppercase tracking-wider backdrop-blur-md">
+                Technology 4.0
+              </span>
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold mb-2">Analyse par Intelligence Artificielle</h3>
+            <p className="text-slate-300 max-w-lg">
+              Notre algorithme scanne et compare vos symptômes avec une base de données médicale certifiée pour une orientation précise.
+            </p>
+          </div>
+        </motion.div>
+
       </div>
     </motion.div>
   );
