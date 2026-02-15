@@ -124,6 +124,72 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate }) => {
                 </motion.div>
             </section>
 
+            {/* MOBILE PROTOCOL CAROUSEL (Visible only on Mobile) */}
+            <section className="block md:hidden w-full overflow-hidden py-8">
+                <div className="mb-6 text-center px-4">
+                    <p className="text-brand-secondary/40 font-mono text-xs uppercase tracking-[0.2em]">{t('home.protocol.subtitle')}</p>
+                </div>
+
+                <div className="relative flex w-full h-[320px] items-center">
+                    {/* Gradients to fade edges */}
+                    <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-brand-deep via-brand-deep/80 to-transparent z-20 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-brand-deep via-brand-deep/80 to-transparent z-20 pointer-events-none" />
+
+                    {/* CENTER FOCUS SCANNER */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] z-30 pointer-events-none flex items-center justify-center">
+                        <div className="w-full h-full rounded-[1.8rem] border border-brand-primary/30 shadow-[0_0_30px_rgba(45,212,191,0.15)] bg-brand-primary/[0.02] relative overflow-hidden">
+                            {/* Scanning line animation */}
+                            <motion.div
+                                animate={{ top: ["0%", "100%", "0%"] }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                                className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-brand-primary/50 to-transparent shadow-[0_0_15px_rgba(45,212,191,0.5)]"
+                            />
+                            {/* Corner accents */}
+                            <div className="absolute top-4 left-4 w-3 h-3 border-t border-l border-brand-primary/50 rounded-tl-lg" />
+                            <div className="absolute top-4 right-4 w-3 h-3 border-t border-r border-brand-primary/50 rounded-tr-lg" />
+                            <div className="absolute bottom-4 left-4 w-3 h-3 border-b border-l border-brand-primary/50 rounded-bl-lg" />
+                            <div className="absolute bottom-4 right-4 w-3 h-3 border-b border-r border-brand-primary/50 rounded-br-lg" />
+                        </div>
+                    </div>
+
+                    <motion.div
+                        className="flex delay-0"
+                        animate={{ x: ["0%", "-50%"] }}
+                        transition={{
+                            repeat: Infinity,
+                            ease: "linear",
+                            duration: 40
+                        }}
+                        style={{ width: "max-content" }}
+                    >
+                        {[...Array(4)].map((_, setIndex) => (
+                            <div key={setIndex} className="flex gap-4 px-2">
+                                {[
+                                    { num: "01", title: t('home.protocol.step1.title'), desc: t('home.protocol.step1.desc') },
+                                    { num: "02", title: t('home.protocol.step2.title'), desc: t('home.protocol.step2.desc') },
+                                    { num: "03", title: t('home.protocol.step3.title'), desc: t('home.protocol.step3.desc') },
+                                    { num: "04", title: t('home.protocol.step4.title'), desc: t('home.protocol.step4.desc') }
+                                ].map((step, i) => (
+                                    <div
+                                        key={`${setIndex}-${i}`}
+                                        className="relative flex-shrink-0 w-[280px] h-[280px] p-6 rounded-[1.8rem] bg-white/[0.02] border border-white/5 overflow-hidden flex flex-col justify-center group"
+                                    >
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-brand-primary/50" />
+                                        <div className="text-5xl font-display font-bold text-white/[0.05] absolute -top-2 -right-2">
+                                            {step.num}
+                                        </div>
+                                        <h3 className="text-lg font-bold mb-2 text-white flex items-center gap-2">
+                                            {step.title}
+                                        </h3>
+                                        <p className="text-brand-secondary/60 text-xs leading-relaxed font-light">{step.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
+
             {/* BRAND SHOWCASE - Clinical Style (Hidden on Mobile) */}
             <section className="hidden md:block relative h-[60vh] md:h-[80vh] w-full overflow-hidden rounded-[3rem] border border-white/10 shadow-3xl bg-[#080809]">
                 <div className="absolute inset-0 z-0">
