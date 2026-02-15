@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import SplashScreen from './components/SplashScreen';
 import HomePage from './components/HomePage';
 import AboutPage from './components/AboutPage';
 import Questionnaire from './Questionnaire';
@@ -18,6 +19,7 @@ import AppLayout from './components/AppLayout';
 import { countries } from './components/CountryDropdown';
 import LanguagePopup from './components/LanguagePopup';
 import { useLanguage } from './context/LanguageContext';
+import ConsentPopup from './components/ConsentPopup';
 import { FAQPage } from './components/FAQPage';
 import { BlogListPage } from './components/BlogListPage';
 import { BlogArticlePageComponent } from './components/BlogArticlePage';
@@ -66,7 +68,15 @@ const NavItem: React.FC<{ label: string; active: boolean; onClick: () => void; m
 };
 
 const App: React.FC = () => {
-    const { t } = useLanguage();
+    const { t, isLanguageSelected } = useLanguage();
+    const [showSplash, setShowSplash] = useState(() => {
+        return !sessionStorage.getItem('dermo_splash_shown');
+    });
+
+    const handleSplashComplete = useCallback(() => {
+        sessionStorage.setItem('dermo_splash_shown', 'true');
+        setShowSplash(false);
+    }, []);
     const [currentPageId, setCurrentPageId] = useState<PageId>('home');
     const [currentArticleSlug, setCurrentArticleSlug] = useState<ArticleSlug>(undefined);
     const [userProfile, setUserProfile] = useState<UserProfile>(() => {
@@ -105,7 +115,7 @@ const App: React.FC = () => {
         setUserProfile(profile);
         // Redirect immediately based on profile
         if (profile === 'adult') {
-            navigateTo('questionnaire');
+            navigateTo('home');
         } else {
             navigateTo('find-dermatologist');
         }
@@ -263,6 +273,23 @@ const App: React.FC = () => {
         }
     };
 
+    const [isConsentGiven, setIsConsentGiven] = useState(() => {
+        return localStorage.getItem('dermo_consent_given') === 'true';
+    });
+
+    const handleConsent = useCallback(() => {
+        localStorage.setItem('dermo_consent_given', 'true');
+        setIsConsentGiven(true);
+    }, []);
+
+    if (showSplash) {
+        return <SplashScreen onComplete={handleSplashComplete} />;
+    }
+
+    if (!isLanguageSelected) {
+        return <LanguagePopup />;
+    }
+
     if (!userProfile) {
         return <MinorCheckPopup onConfirmAdult={() => handleProfileSelect('adult')} onConfirmMinor={() => handleProfileSelect('minor')} />;
     }
@@ -277,8 +304,11 @@ const App: React.FC = () => {
                 setUserProfile(null);
                 navigateTo('home');
             }}
+            showLogo={isConsentGiven && isLanguageSelected}
         >
-            <LanguagePopup />
+            {!isConsentGiven && (
+                <ConsentPopup onAccept={handleConsent} />
+            )}
             {renderContent()}
         </AppLayout>
     );

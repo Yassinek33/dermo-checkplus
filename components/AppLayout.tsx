@@ -11,6 +11,7 @@ interface AppLayoutProps {
     onLogout: () => void;
     currentPage: string;
     onNavigate: (pageId: string) => void;
+    showLogo?: boolean;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({
@@ -18,7 +19,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     userProfile,
     onLogout,
     currentPage,
-    onNavigate
+    onNavigate,
+    showLogo = true
 }) => {
     // Scroll detection for logo transparency
     const [scrollY, setScrollY] = React.useState(0);
@@ -39,7 +41,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             <AuroraBackground />
 
             {/* Logo - Centered with beautiful scroll animation - Only visible on home page */}
-            {logoOpacity > 0.01 && currentPage === 'home' && (
+            {showLogo && logoOpacity > 0.01 && currentPage === 'home' && (
                 <motion.div
                     initial={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
                     animate={{

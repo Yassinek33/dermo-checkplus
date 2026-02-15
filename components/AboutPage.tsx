@@ -30,7 +30,7 @@ const AboutPage: React.FC<AboutPageProps> = () => {
             <div className="space-y-2">
                 {Array.isArray(sections) && sections.map((section: any, index: number) => (
                     <Section key={index} title={section.title || ''}>
-                        <p>{section.text}</p>
+                        <p className="whitespace-pre-line">{section.text}</p>
                     </Section>
                 ))}
 
