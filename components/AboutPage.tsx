@@ -1,39 +1,46 @@
 import React from 'react';
 import { PageConfig } from '../types';
-import { appConfig } from '../config';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AboutPageProps {
     config: PageConfig;
 }
 
-const Section: React.FC<{ title: string; children: React.ReactNode; primaryColor: string }> = ({ title, children, primaryColor }) => (
-    <div className="mb-10">
-        <h3 className="text-xl md:text-2xl font-bold mb-4" style={{ color: primaryColor }}>{title}</h3>
-        <div className="space-y-4 text-base md:text-lg text-slate-700 leading-relaxed">{children}</div>
+const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+    <div className="mb-12">
+        <h3 className="text-2xl font-display font-bold mb-6 text-brand-primary tracking-tight">{title}</h3>
+        <div className="space-y-4 text-brand-secondary/80 text-lg leading-relaxed font-light">{children}</div>
     </div>
 );
 
-const AboutPage: React.FC<AboutPageProps> = ({ config }) => {
-    const themeConfig = appConfig.app.theme;
+const AboutPage: React.FC<AboutPageProps> = () => {
+    const { t, language } = useLanguage();
+
+    // We use translations.ts instead of config.tsx for localized text
+    const sections = t('about.sections') as unknown as any[];
+    const title = t('about.title');
+    const warning = t('about.warning');
 
     return (
-        <div 
-            className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-3xl p-6 md:p-10 text-left animate-fade-in shadow-xl"
-            style={{ borderRadius: `${themeConfig.radius}px` }}
-        >
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-8 text-center">{config.title}</h2>
-            
-            {config.sections?.map((section, index) => (
-                <Section key={index} title={section.title || ''} primaryColor={themeConfig.primaryColor}>
-                    {section.type === 'text' && section.text && <p>{section.text}</p>}
-                    {section.type === 'warning' && section.text && (
-                        <div className="mt-6 p-5 bg-red-50 border border-red-200 text-red-900 text-sm md:text-base rounded-xl shadow-inner">
-                            <p className="font-bold mb-3 text-red-800">⚠️ AVERTISSEMENT CRUCIAL</p>
-                            <p>{section.text}</p>
-                        </div>
-                    )}
-                </Section>
-            ))}
+        <div className="w-full max-w-4xl mx-auto glass-panel rounded-3xl p-8 md:p-16 text-left animate-fade-in shadow-2xl relative z-10">
+            <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-12 text-center tracking-tight">
+                {title.split(' ')[0]} <span className="text-brand-primary">{title.split(' ').slice(1).join(' ')}</span>
+            </h2>
+
+            <div className="space-y-2">
+                {Array.isArray(sections) && sections.map((section: any, index: number) => (
+                    <Section key={index} title={section.title || ''}>
+                        <p>{section.text}</p>
+                    </Section>
+                ))}
+
+                <div className="mt-8 p-6 bg-red-500/5 border border-red-500/20 text-brand-secondary text-base rounded-2xl shadow-inner backdrop-blur-md">
+                    <p className="font-bold mb-3 text-red-500 flex items-center gap-2 uppercase tracking-widest text-sm">
+                        <span>⚠️</span> {language === 'fr' ? 'Avertissement Crucial' : 'Crucial Warning'}
+                    </p>
+                    <p className="font-light italic">{warning}</p>
+                </div>
+            </div>
         </div>
     );
 };

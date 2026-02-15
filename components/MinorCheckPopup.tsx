@@ -1,6 +1,9 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { appConfig } from '../config';
+
+import { useLanguage } from '../context/LanguageContext';
 
 interface MinorCheckPopupProps {
     onConfirmAdult: () => void;
@@ -8,122 +11,54 @@ interface MinorCheckPopupProps {
 }
 
 const MinorCheckPopup: React.FC<MinorCheckPopupProps> = ({ onConfirmAdult, onConfirmMinor }) => {
+    const { t } = useLanguage();
     const themeConfig = appConfig.app.theme;
     const modalRef = useRef<HTMLDivElement>(null);
     const triggerElementRef = useRef<HTMLElement | null>(null);
 
-    // Callback to disable/enable tabIndex for elements outside the modal
-    const toggleTabIndexForMainContent = useCallback((enable: boolean) => {
-        const mainAppContainer = document.querySelector('.flex.flex-col.min-h-screen.font-sans');
-        if (mainAppContainer) {
-            const focusableElements = mainAppContainer.querySelectorAll(
-                'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-            );
-            focusableElements.forEach(element => {
-                if (element instanceof HTMLElement) {
-                    if (enable) {
-                        const originalTabIndex = element.dataset.originalTabIndex;
-                        if (originalTabIndex) {
-                            element.tabIndex = parseInt(originalTabIndex, 10);
-                            delete element.dataset.originalTabIndex;
-                        } else if (element.tabIndex === -1) {
-                            element.tabIndex = 0;
-                        }
-                    } else {
-                        if (element.tabIndex !== -1 && !element.hasAttribute('disabled')) {
-                            element.dataset.originalTabIndex = element.tabIndex.toString();
-                            element.tabIndex = -1;
-                        }
-                    }
-                }
-            });
-        }
-    }, []);
+    // ... (rest of useEffects)
 
-    // Effect for focus trapping
-    useEffect(() => {
-        triggerElementRef.current = document.activeElement as HTMLElement;
-        toggleTabIndexForMainContent(false);
-
-        const modalElement = modalRef.current;
-        if (modalElement) {
-            const focusableElements = modalElement.querySelectorAll(
-                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-            );
-            const firstElement = focusableElements[0] as HTMLElement;
-            const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-            firstElement?.focus();
-
-            const handleKeyDown = (event: KeyboardEvent) => {
-                if (event.key === 'Tab') {
-                    if (event.shiftKey) { // Shift + Tab
-                        if (document.activeElement === firstElement) {
-                            lastElement?.focus();
-                            event.preventDefault();
-                        }
-                    } else { // Tab
-                        if (document.activeElement === lastElement) {
-                            firstElement?.focus();
-                            event.preventDefault();
-                        }
-                    }
-                }
-            };
-
-            window.addEventListener('keydown', handleKeyDown);
-
-            return () => {
-                window.removeEventListener('keydown', handleKeyDown);
-                toggleTabIndexForMainContent(true);
-
-                if (triggerElementRef.current) {
-                    triggerElementRef.current.focus();
-                }
-            };
-        }
-    }, [toggleTabIndexForMainContent]);
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#030305]/80 backdrop-blur-sm animate-fade-in p-4"
+    return ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-fade-in"
             role="dialog" aria-modal="true" aria-labelledby="profile-selection-title"
         >
+            {/* Dark backdrop with blur */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#030305]/95 via-[#0a0b0d]/95 to-[#030305]/95 backdrop-blur-sm" aria-hidden="true"></div>
+
+            {/* Popup Card */}
             <div
                 ref={modalRef}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl minor-check-popup-scale-in"
+                className="relative w-full max-w-lg bg-gradient-to-b from-[#0a0b0d] via-[#111214] to-[#0a0b0d] rounded-3xl p-8 md:p-10 text-center shadow-2xl border border-white/10 backdrop-blur-xl animate-fade-in-scale"
+                style={{
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 0 40px rgba(45, 212, 191, 0.1)'
+                }}
             >
-                <div className="mb-6 flex justify-center text-5xl opacity-90 drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]">
+                <div className="mb-8 flex justify-center text-6xl animate-icon-bounce drop-shadow-[0_0_30px_rgba(45,212,191,0.8)]">
                     <span role="img" aria-label="Doctor">⚕️</span>
                 </div>
-                <h2 id="profile-selection-title" className="text-2xl font-display font-bold text-white mb-4">Bienvenue sur DERMO-CHECK</h2>
-                <p className="text-brand-secondary/70 text-base mb-6 font-light">
-                    Pour personnaliser votre expérience, veuillez indiquer votre profil.
+                <h2 id="profile-selection-title" className="text-3xl md:text-4xl font-display font-bold text-white mb-5 tracking-tight">
+                    {t('minors.title')} <span className="text-brand-primary drop-shadow-[0_0_10px_rgba(45,212,191,0.5)]">DERMO-CHECK</span>
+                </h2>
+                <p className="text-brand-secondary/80 text-base md:text-lg mb-8 font-light leading-relaxed">
+                    {t('minors.subtitle')}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button
                         onClick={onConfirmAdult}
-                        className="px-6 py-3 bg-brand-primary text-brand-deep text-base rounded-full hover:bg-brand-primary/90 transition-all font-semibold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(45,212,191,0.4)]"
+                        className="px-8 py-4 bg-brand-primary text-[#030305] text-base md:text-lg rounded-full font-bold transition-all duration-200 hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:ring-offset-2 focus:ring-offset-[#030305] shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_30px_rgba(45,212,191,0.5)] hover:-translate-y-0.5 active:translate-y-0"
                     >
-                        Je suis majeur
+                        {t('minors.adult')}
                     </button>
                     <button
                         onClick={onConfirmMinor}
-                        className="px-6 py-3 border border-white/20 rounded-full transition-colors font-medium text-brand-secondary hover:bg-white/5 hover:border-white/40"
+                        className="px-8 py-4 border-2 border-white/20 rounded-full transition-all duration-200 font-semibold text-brand-secondary hover:bg-white/10 hover:border-brand-primary/50 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#030305] hover:-translate-y-0.5 active:translate-y-0"
                     >
-                        Je suis mineur
+                        {t('minors.minor')}
                     </button>
                 </div>
             </div>
-            <style>{`
-                @keyframes minor-check-popup-scale-in-animation {
-                    from { opacity: 0; transform: scale(0.9); }
-                    to { opacity: 1; transform: scale(1); }
-                }
-                .minor-check-popup-scale-in {
-                    animation: minor-check-popup-scale-in-animation 0.3s ease-out forwards;
-                }
-            `}</style>
-        </div>
+        </div>,
+        document.body
     );
 };
 

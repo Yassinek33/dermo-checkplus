@@ -4,80 +4,89 @@ import { appConfig } from '../config';
 
 interface CountryDropdownProps {
     onSubmit: (country: string) => void;
+    language: string; // Add language prop
 }
 
 export const countries = [ // Export the countries list
-    { name: "Afghanistan", flag: "🇦🇫" }, { name: "Afrique du Sud", flag: "🇿🇦" }, { name: "Albanie", flag: "🇦🇱" },
-    { name: "Algérie", flag: "🇩🇿" }, { name: "Allemagne", flag: "🇩🇪" }, { name: "Andorre", flag: "🇦🇩" },
-    { name: "Angola", flag: "🇦🇴" }, { name: "Arabie Saoudite", flag: "🇸🇦" }, { name: "Argentine", flag: "🇦🇷" },
-    { name: "Arménie", flag: "🇦🇲" }, { name: "Australie", flag: "🇦🇺" }, { name: "Autriche", flag: "🇦🇹" },
-    { name: "Azerbaïdjan", flag: "🇦🇿" }, { name: "Bahamas", flag: "🇧🇸" }, { name: "Bahreïn", flag: "🇧🇭" },
-    { name: "Bangladesh", flag: "🇧🇩" }, { name: "Barbade", flag: "🇧🇧" }, { name: "Belgique", flag: "🇧🇪" },
-    { name: "Belize", flag: "🇧🇿" }, { name: "Bénin", flag: "🇧🇯" }, { name: "Bhoutan", flag: "🇧🇹" },
-    { name: "Biélorussie", flag: "🇧🇾" }, { name: "Bolivie", flag: "🇧🇴" }, { name: "Bosnie-Herzégovine", flag: "🇧🇦" },
-    { name: "Botswana", flag: "🇧🇼" }, { name: "Brésil", flag: "🇧🇷" }, { name: "Brunei", flag: "🇧🇳" },
-    { name: "Bulgarie", flag: "🇧🇬" }, { name: "Burkina Faso", flag: "🇧🇫" }, { name: "Burundi", flag: "🇧🇮" },
-    { name: "Cabo Verde", flag: "🇨🇻" }, { name: "Cambodge", flag: "🇰🇭" }, { name: "Cameroun", flag: "🇨🇲" },
-    { name: "Canada", flag: "🇨🇦" }, { name: "Chili", flag: "🇨🇱" }, { name: "Chine", flag: "🇨🇳" },
-    { name: "Chypre", flag: "🇨🇾" }, { name: "Colombie", flag: "🇨🇴" }, { name: "Comores", flag: "🇰🇲" },
-    { name: "Congo (Brazzaville)", flag: "🇨🇬" }, { name: "Congo (Kinshasa)", flag: "🇨🇩" }, { name: "Corée du Nord", flag: "🇰🇵" },
-    { name: "Corée du Sud", flag: "🇰🇷" }, { name: "Costa Rica", flag: "🇨🇷" }, { name: "Côte d'Ivoire", flag: "🇨🇮" },
-    { name: "Croatie", flag: "🇭🇷" }, { name: "Cuba", flag: "🇨🇺" }, { name: "Danemark", flag: "🇩🇰" },
-    { name: "Djibouti", flag: "🇩🇯" }, { name: "Dominique", flag: "🇩🇲" }, { name: "Égypte", flag: "🇪🇬" },
-    { name: "Émirats Arabes Unis", flag: "🇦🇪" }, { name: "Équateur", flag: "🇪🇨" }, { name: "Érythrée", flag: "🇪🇷" },
-    { name: "Espagne", flag: "🇪🇸" }, { name: "Estonie", flag: "🇪🇪" }, { name: "Eswatini", flag: "🇸🇿" },
-    { name: "États-Unis", flag: "🇺🇸" }, { name: "Éthiopie", flag: "🇪🇹" }, { name: "Fidji", flag: "🇫🇯" },
-    { name: "Finlande", flag: "🇫🇮" }, { name: "France", flag: "🇫🇷" }, { name: "Gabon", flag: "🇬🇦" },
-    { name: "Gambie", flag: "🇬🇲" }, { name: "Géorgie", flag: "🇬🇪" }, { name: "Ghana", flag: "🇬🇭" },
-    { name: "Grèce", flag: "🇬🇷" }, { name: "Grenade", flag: "🇬🇩" }, { name: "Guatemala", flag: "🇬🇹" },
-    { name: "Guinée", flag: "🇬🇳" }, { name: "Guinée-Bissau", flag: "🇬🇼" }, { name: "Guinée équatoriale", flag: "🇬🇶" },
-    { name: "Guyana", flag: "🇬🇾" }, { name: "Haïti", flag: "🇭🇹" }, { name: "Honduras", flag: "🇭🇳" },
-    { name: "Hongrie", flag: "🇭🇺" }, { name: "Îles Salomon", flag: "🇸🇧" }, { name: "Inde", flag: "🇮🇳" },
-    { name: "Indonésie", flag: "🇮🇩" }, { name: "Irak", flag: "🇮🇶" }, { name: "Iran", flag: "🇮🇷" },
-    { name: "Irlande", flag: "🇮🇪" }, { name: "Islande", flag: "🇮🇸" }, { name: "Israël", flag: "🇮🇱" },
-    { name: "Italie", flag: "🇮🇹" }, { name: "Jamaïque", flag: "🇯🇲" }, { name: "Japon", flag: "🇯🇵" },
-    { name: "Jordanie", flag: "🇯🇴" }, { name: "Kazakhstan", flag: "🇰🇿" }, { name: "Kenya", flag: "🇰🇪" },
-    { name: "Kirghizistan", flag: "🇰🇬" }, { name: "Kiribati", flag: "🇰🇮" }, { name: "Koweït", flag: "🇰🇼" },
-    { name: "Laos", flag: "🇱🇦" }, { name: "Lesotho", flag: "🇱🇸" }, { name: "Lettonie", flag: "🇱🇻" },
-    { name: "Liban", flag: "🇱🇧" }, { name: "Libéria", flag: "🇱🇷" }, { name: "Libye", flag: "🇱🇾" },
-    { name: "Liechtenstein", flag: "🇱🇮" }, { name: "Lituanie", flag: "🇱🇹" }, { name: "Luxembourg", flag: "🇱🇺" },
-    { name: "Madagascar", flag: "🇲🇬" }, { name: "Malaisie", flag: "🇲🇾" }, { name: "Malawi", flag: "🇲🇼" },
-    { name: "Maldives", flag: "🇲🇻" }, { name: "Mali", flag: "🇲🇱" }, { name: "Malte", flag: "🇲🇹" },
-    { name: "Maroc", flag: "🇲🇦" }, { name: "Maurice", flag: "🇲🇺" }, { name: "Mauritanie", flag: "🇲🇷" },
-    { name: "Mexique", flag: "🇲🇽" }, { name: "Micronésie", flag: "🇫🇲" }, { name: "Moldavie", flag: "🇲🇩" },
-    { name: "Monaco", flag: "🇲🇨" }, { name: "Mongolie", flag: "🇲🇳" }, { name: "Monténégro", flag: "🇲🇪" },
-    { name: "Mozambique", flag: "🇲🇿" }, { name: "Myanmar", flag: "🇲🇲" }, { name: "N. Macédoine", flag: "🇲🇰" },
-    { name: "Nambie", flag: "🇳🇦" }, { name: "Nauru", flag: "🇳🇷" }, { name: "Népal", flag: "🇳🇵" },
-    { name: "Nicaragua", flag: "🇳🇮" }, { name: "Niger", flag: "🇳🇪" }, { name: "Nigeria", flag: "🇳🇬" },
-    { name: "Norvège", flag: "🇳🇴" }, { name: "Nouvelle-Zélande", flag: "🇳🇿" }, { name: "Oman", flag: "🇴🇲" },
-    { name: "Ouganda", flag: "🇺🇬" }, { name: "Ouzbékistan", flag: "🇺🇿" }, { name: "Pakistan", flag: "🇵🇰" },
-    { name: "Palaos", flag: "🇵🇼" }, { name: "Palestine", flag: "🇵🇸" }, { name: "Panama", flag: "🇵🇦" },
-    { name: "Papouasie-N.G.", flag: "🇵🇬" }, { name: "Paraguay", flag: "🇵🇾" }, { name: "Pays-Bas", flag: "🇳🇱" },
-    { name: "Pérou", flag: "🇵🇪" }, { name: "Philippines", flag: "🇵🇭" }, { name: "Pologne", flag: "🇵🇱" },
-    { name: "Portugal", flag: "🇵🇹" }, { name: "Qatar", flag: "🇶🇦" }, { name: "R. Centrafricaine", flag: "🇨🇫" },
-    { name: "R. Dominicaine", flag: "🇩🇴" }, { name: "Rép. Tchèque", flag: "🇨🇿" }, { name: "Roumanie", flag: "🇷🇴" },
-    { name: "Royaume-Uni", flag: "🇬🇧" }, { name: "Russie", flag: "🇷🇺" }, { name: "Rwanda", flag: "🇷🇼" },
-    { name: "Saint-Marin", flag: "🇸🇲" }, { name: "Salvador", flag: "🇸🇻" }, { name: "Samoa", flag: "🇼🇸" },
-    { name: "São Tomé-et-Príncipe", flag: "🇸🇹" }, { name: "Sénégal", flag: "🇸🇳" }, { name: "Serbie", flag: "🇷🇸" },
-    { name: "Seychelles", flag: "🇸🇨" }, { name: "Sierra Leone", flag: "🇸🇱" }, { name: "Singapour", flag: "🇸🇬" },
-    { name: "Slovaquie", flag: "🇸🇰" }, { name: "Slovénie", flag: "🇸🇮" }, { name: "Somalie", flag: "🇸🇴" },
-    { name: "Soudan", flag: "🇸🇩" }, { name: "Soudan du Sud", flag: "🇸🇸" }, { name: "Sri Lanka", flag: "🇱🇰" },
-    { name: "Suède", flag: "🇸🇪" }, { name: "Suisse", flag: "🇨🇭" }, { name: "Suriname", flag: "🇸🇷" },
-    { name: "Syrie", flag: "🇸🇾" }, { name: "Tadjikistan", flag: "🇹🇯" }, { name: "Tanzanie", flag: "🇹🇿" },
-    { name: "Tchad", flag: "🇹🇩" }, { name: "Thaïlande", flag: "🇹🇭" }, { name: "Timor oriental", flag: "🇹🇱" },
-    { name: "Togo", flag: "🇹🇬" }, { name: "Tonga", flag: "🇹🇴" }, { name: "Trinité-et-Tobago", flag: "🇹🇹" },
-    { name: "Tunisie", flag: "🇹🇳" }, { name: "Turkménistan", flag: "🇹🇲" }, { name: "Turquie", flag: "🇹🇷" },
-    { name: "Tuvalu", flag: "🇹🇻" }, { name: "Ukraine", flag: "🇺🇦" }, { name: "Uruguay", flag: "🇺🇾" },
-    { name: "Vanuatu", flag: "🇻🇺" }, { name: "Vatican", flag: "🇻🇦" }, { name: "Venezuela", flag: "🇻🇪" },
-    { name: "Viêt Nam", flag: "🇻🇳" }, { name: "Yémen", flag: "🇾🇪" }, { name: "Zambie", flag: "🇿🇲" },
-    { name: "Zimbabwe", flag: "🇿🇼" },
+    // Maghreb
+    { name: "Algérie", flag: "🇩🇿", code: "DZ", lang: "fr" },
+    { name: "Libye", flag: "🇱🇾", code: "LY", lang: "ar" },
+    { name: "Maroc", flag: "🇲🇦", code: "MA", lang: "fr" },
+    { name: "Mauritanie", flag: "🇲🇷", code: "MR", lang: "ar" },
+    { name: "Tunisie", flag: "🇹🇳", code: "TN", lang: "fr" },
+
+    // North America
+    { name: "Canada", flag: "🇨🇦", code: "CA", lang: "en" },
+    { name: "États-Unis", flag: "🇺🇸", code: "US", lang: "en" },
+
+    // Europe
+    { name: "Albanie", flag: "🇦🇱", code: "AL", lang: "sq" },
+    { name: "Allemagne", flag: "🇩🇪", code: "DE", lang: "de" },
+    { name: "Andorre", flag: "🇦🇩", code: "AD", lang: "ca" },
+    { name: "Autriche", flag: "🇦🇹", code: "AT", lang: "de" },
+    { name: "Belgique", flag: "🇧🇪", code: "BE", lang: "fr" },
+    { name: "Biélorussie", flag: "🇧🇾", code: "BY", lang: "be" },
+    { name: "Bosnie-Herzégovine", flag: "🇧🇦", code: "BA", lang: "bs" },
+    { name: "Bulgarie", flag: "🇧🇬", code: "BG", lang: "bg" },
+    { name: "Chypre", flag: "🇨🇾", code: "CY", lang: "el" },
+    { name: "Croatie", flag: "🇭🇷", code: "HR", lang: "hr" },
+    { name: "Danemark", flag: "🇩🇰", code: "DK", lang: "da" },
+    { name: "Espagne", flag: "🇪🇸", code: "ES", lang: "es" },
+    { name: "Estonie", flag: "🇪🇪", code: "EE", lang: "et" },
+    { name: "Finlande", flag: "🇫🇮", code: "FI", lang: "fi" },
+    { name: "France", flag: "🇫🇷", code: "FR", lang: "fr" },
+    { name: "Grèce", flag: "🇬🇷", code: "GR", lang: "el" },
+    { name: "Hongrie", flag: "🇭🇺", code: "HU", lang: "hu" },
+    { name: "Irlande", flag: "🇮🇪", code: "IE", lang: "en" },
+    { name: "Islande", flag: "🇮🇸", code: "IS", lang: "is" },
+    { name: "Italie", flag: "🇮🇹", code: "IT", lang: "it" },
+    { name: "Lettonie", flag: "🇱🇻", code: "LV", lang: "lv" },
+    { name: "Liechtenstein", flag: "🇱🇮", code: "LI", lang: "de" },
+    { name: "Lituanie", flag: "🇱🇹", code: "LT", lang: "lt" },
+    { name: "Luxembourg", flag: "🇱🇺", code: "LU", lang: "fr" },
+    { name: "Malte", flag: "🇲🇹", code: "MT", lang: "en" },
+    { name: "Moldavie", flag: "🇲🇩", code: "MD", lang: "ro" },
+    { name: "Monaco", flag: "🇲🇨", code: "MC", lang: "fr" },
+    { name: "Monténégro", flag: "🇲🇪", code: "ME", lang: "sr" },
+    { name: "Norvège", flag: "🇳🇴", code: "NO", lang: "no" },
+    { name: "Pays-Bas", flag: "🇳🇱", code: "NL", lang: "nl" },
+    { name: "Pologne", flag: "🇵🇱", code: "PL", lang: "pl" },
+    { name: "Portugal", flag: "🇵🇹", code: "PT", lang: "pt" },
+    { name: "Rép. Tchèque", flag: "🇨🇿", code: "CZ", lang: "cs" },
+    { name: "Roumanie", flag: "🇷🇴", code: "RO", lang: "ro" },
+    { name: "Royaume-Uni", flag: "🇬🇧", code: "GB", lang: "en" },
+    { name: "Russie", flag: "🇷🇺", code: "RU", lang: "ru" },
+    { name: "Saint-Marin", flag: "🇸🇲", code: "SM", lang: "it" },
+    { name: "Serbie", flag: "🇷🇸", code: "RS", lang: "sr" },
+    { name: "Slovaquie", flag: "🇸🇰", code: "SK", lang: "sk" },
+    { name: "Slovénie", flag: "🇸🇮", code: "SI", lang: "sl" },
+    { name: "Suède", flag: "🇸🇪", code: "SE", lang: "sv" },
+    { name: "Suisse", flag: "🇨🇭", code: "CH", lang: "fr" },
+    { name: "Ukraine", flag: "🇺🇦", code: "UA", lang: "uk" },
+    { name: "Vatican", flag: "🇻🇦", code: "VA", lang: "it" },
 ];
 
 export const sortedCountries = countries.sort((a, b) => a.name.localeCompare(b.name));
 
-const CountryDropdown = forwardRef<HTMLSelectElement, CountryDropdownProps>(({ onSubmit }, ref) => {
+
+
+const CountryDropdown = forwardRef<HTMLSelectElement, CountryDropdownProps>(({ onSubmit, language }, ref) => {
     const themeConfig = appConfig.app.theme;
     const [selectedCountry, setSelectedCountry] = useState<string>('');
+
+    const t = (key: string) => {
+        const translations: Record<string, Record<string, string>> = {
+            fr: {
+                select_country: "Sélectionnez votre pays",
+                validate: "Valider le pays"
+            },
+            en: {
+                select_country: "Select your country",
+                validate: "Validate Country"
+            }
+        };
+        return translations[language as 'fr' | 'en']?.[key] || translations['fr'][key];
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -89,29 +98,34 @@ const CountryDropdown = forwardRef<HTMLSelectElement, CountryDropdownProps>(({ o
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 w-full max-w-xl mx-auto">
-            <select
-                value={selectedCountry}
-                onChange={(e) => setSelectedCountry(e.target.value)}
-                className="w-full px-4 py-3 md:px-5 md:py-4 border border-gray-300 bg-white text-slate-900 text-base md:text-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors shadow-sm"
-                aria-label="Sélectionnez votre pays"
-                required
-                ref={ref} // Forward the ref to the select element
-            >
-                <option value="" disabled>Sélectionnez votre pays</option>
-                {sortedCountries.map((country) => (
-                    <option key={country.name} value={country.name}>
-                        {country.flag} {country.name}
-                    </option>
-                ))}
-            </select>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-6 w-full max-w-lg mx-auto animate-fade-in">
+            <div className="relative w-full">
+                <select
+                    value={selectedCountry}
+                    onChange={(e) => setSelectedCountry(e.target.value)}
+                    className="w-full px-5 py-4 bg-white/10 border border-white/20 text-white text-lg rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-all shadow-inner backdrop-blur-md appearance-none cursor-pointer hover:bg-white/15"
+                    aria-label={t('select_country')}
+                    required
+                    ref={ref}
+                >
+                    <option value="" disabled className="bg-slate-900 text-white/50">{t('select_country')}</option>
+                    {sortedCountries.map((country) => (
+                        <option key={country.name} value={country.name} className="bg-slate-900 text-white">
+                            {country.flag} {country.name}
+                        </option>
+                    ))}
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-brand-primary">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </div>
+            </div>
+
             <button
                 type="submit"
-                className="w-full max-w-lg px-7 py-3 md:py-4 bg-emerald-600 text-white text-base md:text-lg rounded-full hover:bg-emerald-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/40"
+                className="w-full px-7 py-4 bg-brand-primary text-brand-deep text-lg rounded-full hover:bg-brand-primary/90 disabled:bg-white/5 disabled:text-white/10 disabled:cursor-not-allowed transition-all duration-300 font-bold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_40px_rgba(45,212,191,0.4)] active:scale-95"
                 disabled={!selectedCountry}
-                style={{ backgroundColor: themeConfig.primaryColor }}
             >
-                Valider
+                {t('validate')}
             </button>
         </form>
     );

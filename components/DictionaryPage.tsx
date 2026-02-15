@@ -1,5 +1,5 @@
-
 import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { PageConfig } from '../types';
 import { appConfig } from '../config';
 
@@ -41,38 +41,40 @@ const DictionaryPage: React.FC<DictionaryPageProps> = ({ config }) => {
     };
 
     return (
-        <div 
-            className="w-full max-w-3xl mx-auto bg-white border border-gray-200 rounded-3xl p-6 md:p-8 text-left animate-fade-in shadow-xl"
-            style={{ borderRadius: `${themeConfig.radius}px` }}
-        >
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4 text-center">{config.title}</h2>
-            {config.description && <p className="text-base md:text-lg text-slate-600 mb-8 text-center">{config.description}</p>}
+        <div className="w-full max-w-4xl mx-auto glass-panel rounded-3xl p-8 md:p-12 text-left animate-fade-in shadow-2xl relative z-10">
+            <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-6 text-center tracking-tight">{config.title}</h2>
+            {config.description && <p className="text-base md:text-xl text-brand-secondary/70 mb-12 text-center leading-relaxed font-light">{config.description}</p>}
 
             {alphabet.length > 0 ? (
-                <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-12">
                     {alphabet.map(letter => (
-                        <div key={letter} className="bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-sm">
-                            <h3 className="text-2xl font-bold mb-4" style={{ color: themeConfig.primaryColor }}>{letter}</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div key={letter} className="relative">
+                            <h3 className="text-4xl font-display font-black mb-6 text-brand-primary/20 absolute -top-10 -left-6 select-none">{letter}</h3>
+                            <h3 className="text-2xl font-display font-bold mb-6 text-brand-primary border-b border-brand-primary/20 pb-2">{letter}</h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {groupedTerms[letter].map((item, index) => (
                                     <div key={index} className="flex flex-col">
                                         <button
                                             onClick={() => handleTermClick(item.term)}
-                                            className="text-left text-lg md:text-xl font-semibold text-slate-800 hover:text-emerald-600 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-md py-1"
+                                            className={`text-left text-lg font-bold transition-all duration-300 px-4 py-3 rounded-xl border ${selectedTerm === item.term
+                                                ? "bg-brand-primary text-brand-deep border-brand-primary shadow-[0_0_20px_rgba(45,212,191,0.4)]"
+                                                : "bg-white/5 text-white border-white/10 hover:border-brand-primary/50 hover:bg-white/10"
+                                                }`}
                                             aria-expanded={selectedTerm === item.term}
-                                            aria-controls={`definition-${item.term.replace(/\s/g, '-')}`} // Link button to definition
                                         >
                                             {item.term}
                                         </button>
                                         {selectedTerm === item.term && (
-                                            <p 
-                                                id={`definition-${item.term.replace(/\s/g, '-')}`} // ID for aria-controls
-                                                className="mt-2 text-slate-700 text-sm md:text-base bg-blue-50 p-3 rounded-lg animate-fade-in leading-relaxed"
-                                                role="region" // Semantically mark as a region
-                                                aria-labelledby={`definition-label-${item.term.replace(/\s/g, '-')}`} // Link to a label if needed
+                                            <motion.div
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="mt-3 p-5 bg-black/40 border border-brand-primary/20 rounded-2xl backdrop-blur-md shadow-xl"
                                             >
-                                                {item.definition}
-                                            </p>
+                                                <p className="text-brand-secondary/90 text-base leading-relaxed font-light">
+                                                    {item.definition}
+                                                </p>
+                                            </motion.div>
                                         )}
                                     </div>
                                 ))}
@@ -81,7 +83,7 @@ const DictionaryPage: React.FC<DictionaryPageProps> = ({ config }) => {
                     ))}
                 </div>
             ) : (
-                <p className="text-center text-slate-600 text-base md:text-lg">Aucun terme disponible pour le moment.</p>
+                <p className="text-center text-brand-secondary/40 text-lg py-20 font-light italic">Aucun terme disponible pour le moment.</p>
             )}
         </div>
     );

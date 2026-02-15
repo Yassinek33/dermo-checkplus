@@ -5,6 +5,7 @@ import { BackArrowIcon } from './icons';
 import { LatLng } from '@google/genai'; // Import LatLng type
 
 import { CITY_DATA, DEFAULT_CITIES } from '../data/cities'; // Import from centralized file
+import { useLanguage } from '../context/LanguageContext';
 
 // Removed local CITY_DATA variable to use the centralized one imported above.
 
@@ -14,7 +15,12 @@ interface DermatologistFinderProps {
     isLoading: boolean;
 }
 
+import LocationRequestPopup from './LocationRequestPopup';
+
+// ... existing code ...
+
 const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSearch, isLoading }) => {
+    const { t } = useLanguage();
     // Manual Search State
     const [selectedCountry, setSelectedCountry] = useState<string>('');
     const [selectedCityOption, setSelectedCityOption] = useState<string>('');
@@ -23,6 +29,9 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
     // Geolocation Search State
     const [userLocation, setUserLocation] = useState<LatLng | null>(null);
     const [geoError, setGeoError] = useState<string | null>(null);
+
+    // Logic to show popup
+    const [showLocationPopup, setShowLocationPopup] = useState(true);
 
     // Get Cities for selected country
     const availableCities = useMemo(() => {
@@ -54,8 +63,10 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
     // Geolocation Search Handler
     const handleGeoSearch = async () => {
         setGeoError(null);
+        setShowLocationPopup(false); // Close popup if manual button clicked or re-triggered
+
         if (!navigator.geolocation) {
-            setGeoError("La géolocalisation n'est pas supportée par votre navigateur.");
+            setGeoError(t('dermatologist.errors.geo_not_supported'));
             return;
         }
 
@@ -72,9 +83,9 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
             (error) => {
                 console.warn("Geolocation error:", error);
                 if (error.code === error.PERMISSION_DENIED) {
-                    setGeoError("Localisation refusée. Veuillez vérifier vos paramètres.");
+                    setGeoError(t('dermatologist.errors.geo_denied'));
                 } else {
-                    setGeoError("Impossible de récupérer votre position.");
+                    setGeoError(t('dermatologist.errors.geo_unavailable'));
                 }
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -90,19 +101,35 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
         return false;
     }, [isLoading, selectedCountry, selectedCityOption, customCityInput]);
 
+    const handlePopupAllow = () => {
+        setShowLocationPopup(false);
+        handleGeoSearch();
+    };
+
+    const handlePopupDeny = () => {
+        setShowLocationPopup(false);
+    };
+
     return (
         <div className="flex flex-col gap-6 w-full animate-fade-in relative">
+            {showLocationPopup && (
+                <LocationRequestPopup
+                    onAllow={handlePopupAllow}
+                    onDeny={handlePopupDeny}
+                />
+            )}
+
             <button
                 onClick={onBack}
                 className="absolute -top-12 left-0 p-2 text-gray-400 hover:text-[#00B37E] transition-colors rounded-full hover:bg-gray-50"
-                aria-label="Retour"
+                aria-label={t('common.back')}
             >
                 <BackArrowIcon />
             </button>
 
             <div className="w-full text-center mb-4">
                 <p className="text-base md:text-lg font-['Inter'] text-[#195E49]">
-                    Choisissez une méthode pour localiser un spécialiste :
+                    {t('dermatologist.choose_method')}
                 </p>
             </div>
 
@@ -110,10 +137,10 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
                 {/* BLOC 1 : Autour de moi */}
                 <div className="bg-[#F0FDFA] border border-[#D1FAE6] rounded-2xl p-6 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
                     <h3 className="text-xl font-bold font-['Poppins'] text-[#0A2840] mb-4">
-                        📍 Autour de moi
+                        📍 {t('dermatologist.around_me.title')}
                     </h3>
                     <p className="text-sm text-[#195E49] mb-6 text-center font-['Inter']">
-                        Utilisez votre position actuelle pour trouver les dermatologues dans un rayon de 10-15 km.
+                        {t('dermatologist.around_me.description')}
                     </p>
 
                     {geoError && (
@@ -125,14 +152,14 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
                         disabled={isLoading}
                         className="w-full mt-auto px-6 py-4 bg-white border-2 border-[#00B37E] text-[#00B37E] hover:bg-[#00B37E] hover:text-white rounded-full transition-all duration-200 font-bold font-['Poppins'] shadow-sm"
                     >
-                        {isLoading ? "Recherche..." : "Trouver les proches"}
+                        {isLoading ? t('dermatologist.around_me.loading') : t('dermatologist.around_me.button')}
                     </button>
                 </div>
 
                 {/* BLOC 2 : Par pays et ville */}
                 <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col shadow-sm hover:shadow-md transition-shadow">
                     <h3 className="text-xl font-bold font-['Poppins'] text-[#0A2840] mb-4 text-center">
-                        🌍 Par pays et ville
+                        🌍 {t('dermatologist.by_city.title')}
                     </h3>
                     <div className="flex flex-col gap-4 w-full">
                         <select
@@ -141,7 +168,7 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
                             className="w-full px-4 py-3 border border-gray-200 bg-gray-50 text-[#0A2840] text-base rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00B37E]/50 transition-all font-['Inter']"
                             disabled={isLoading}
                         >
-                            <option value="" disabled>Pays</option>
+                            <option value="" disabled>{t('dermatologist.by_city.country_placeholder')}</option>
                             {sortedCountries.map((country) => (
                                 <option key={country.name} value={country.name}>
                                     {country.flag} {country.name}
@@ -156,11 +183,11 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
                                 className="w-full px-4 py-3 border border-gray-200 bg-gray-50 text-[#0A2840] text-base rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00B37E]/50 transition-all font-['Inter']"
                                 disabled={!selectedCountry || isLoading}
                             >
-                                <option value="" disabled>Ville</option>
+                                <option value="" disabled>{t('dermatologist.by_city.city_placeholder')}</option>
                                 {availableCities.map((city) => (
                                     <option key={city} value={city}>{city}</option>
                                 ))}
-                                <option value="other" className="font-bold text-[#00B37E]">Autre (saisir)</option>
+                                <option value="other" className="font-bold text-[#00B37E]">{t('dermatologist.by_city.other_city')}</option>
                             </select>
                         </div>
 
@@ -169,7 +196,7 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
                                 type="text"
                                 value={customCityInput}
                                 onChange={(e) => setCustomCityInput(e.target.value)}
-                                placeholder="Nom de la ville..."
+                                placeholder={t('dermatologist.by_city.input_placeholder')}
                                 className="w-full px-4 py-3 border border-[#00B37E] bg-white text-[#0A2840] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00B37E]/30 font-['Inter'] animate-fade-in"
                                 disabled={isLoading}
                             />
@@ -180,7 +207,7 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
                             disabled={isManualSearchDisabled}
                             className="w-full mt-2 px-6 py-4 bg-[#00B37E] text-white rounded-full hover:bg-[#009466] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-bold font-['Poppins'] shadow-md"
                         >
-                            {isLoading ? "..." : "Rechercher"}
+                            {isLoading ? "..." : t('dermatologist.by_city.button')}
                         </button>
                     </div>
                 </div>

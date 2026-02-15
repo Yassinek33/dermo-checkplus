@@ -1,9 +1,10 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { sortedCountries } from './CountryDropdown';
 import { GenerateContentResponse, GroundingChunk, LatLng } from '@google/genai';
 import { CITY_DATA, DEFAULT_CITIES } from '../data/cities';
+import { fetchPlaceDetails } from '../services/placesService';
 
 // --- Types & Interfaces ---
 interface MapsPlaceInfo {
@@ -61,6 +62,10 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
     return parseFloat((R * c).toFixed(1));
 };
 
+import { useLanguage } from '../context/LanguageContext';
+
+// ...
+
 const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
     dermatologistMapResults,
     onBack,
@@ -70,6 +75,8 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
     onSearch,
     lastSearchLocation
 }) => {
+    const { t } = useLanguage();
+
     // --- Input State ---
     const [selectedCountry, setSelectedCountry] = useState<string>('');
     const [selectedCityOption, setSelectedCityOption] = useState<string>('');
@@ -82,8 +89,14 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
         return cities && cities.length > 0 ? cities : DEFAULT_CITIES;
     }, [selectedCountry]);
 
+    const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedCountry(e.target.value);
+        setSelectedCityOption('');
+        setCustomCityInput('');
+    };
+
     const handleManualSearch = async () => {
-        const finalCity = (selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)')
+        const finalCity = (selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)' || selectedCityOption === 'Capitale / Ville principale')
             ? customCityInput.trim()
             : selectedCityOption;
 
@@ -95,7 +108,7 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
     const handleGeoSearch = async () => {
         setGeoError(null);
         if (!navigator.geolocation) {
-            setGeoError("Géolocalisation non supportée.");
+            setGeoError(t('dermatologist.errors.geo_not_supported'));
             return;
         }
         navigator.geolocation.getCurrentPosition(
@@ -108,11 +121,14 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
             },
             (err) => {
                 console.warn("Geolocation error:", err);
-                setGeoError("Position introuvable.");
+                setGeoError(t('dermatologist.errors.geo_unavailable'));
             },
             { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         );
     };
+
+    // --- State for enriched place details ---
+    const [enrichedDermatologists, setEnrichedDermatologists] = useState<Map<string, { address?: string, phone?: string, website?: string }>>(new Map());
 
     // --- Data Extraction ---
     const displayableDermatologists: DisplayableDermatologist[] = React.useMemo(() => {
@@ -123,25 +139,39 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
         const chunks = dermatologistMapResults.candidates[0].groundingMetadata.groundingChunks as GroundingChunk[];
         const dermatologists: DisplayableDermatologist[] = [];
 
-        chunks.forEach(chunk => {
-            if (chunk.maps) {
-                const mapInfo = chunk.maps as unknown as MapsPlaceInfo;
+        chunks.forEach((chunk, index) => {
+            // Check for googleMapsGroundingChunk which might be the property name in newer versions
+            const mapInfoRaw = chunk.maps || (chunk as any).googleMapsGroundingChunk || (chunk as any).google_maps_grounding_chunk;
+
+            if (mapInfoRaw) {
+                const mapInfo = mapInfoRaw as unknown as MapsPlaceInfo;
                 const anyMapInfo = mapInfo as any;
 
-                if (mapInfo.uri && mapInfo.title) {
-                    const name = mapInfo.title.trim();
-                    const address = (mapInfo.formattedAddress || anyMapInfo.vicinity || anyMapInfo.address)?.trim();
-                    const phone = (mapInfo.formattedPhoneNumber || mapInfo.internationalPhoneNumber || anyMapInfo.phone_number)?.trim();
-                    const website = (mapInfo.websiteUri || mapInfo.website || anyMapInfo.url)?.trim();
+                // Robust title/name extraction
+                const name = (mapInfo.title || anyMapInfo.name || anyMapInfo.place_name || anyMapInfo.displayName?.text)?.trim();
+                const uri = (mapInfo.uri || mapInfo.websiteUri || anyMapInfo.google_maps_uri || anyMapInfo.url || anyMapInfo.googleMapsUri)?.trim();
+                const placeId = anyMapInfo.placeId;
+
+                if (name && placeId) {
+                    // Get enriched data if available
+                    const enriched = enrichedDermatologists.get(placeId);
+
+                    const address = enriched?.address || "";
+                    const phone = enriched?.phone || "";
+                    const website = enriched?.website || "";
 
                     let lat: number | undefined;
                     let lng: number | undefined;
+
                     if (anyMapInfo.geometry?.location) {
                         lat = anyMapInfo.geometry.location.lat;
                         lng = anyMapInfo.geometry.location.lng;
-                    } else if (anyMapInfo.latitude) {
+                    } else if (anyMapInfo.latitude && anyMapInfo.longitude) {
                         lat = anyMapInfo.latitude;
                         lng = anyMapInfo.longitude;
+                    } else if (anyMapInfo.location?.latitude && anyMapInfo.location?.longitude) {
+                        lat = anyMapInfo.location.latitude;
+                        lng = anyMapInfo.location.longitude;
                     }
 
                     let distance: number | undefined = undefined;
@@ -149,16 +179,95 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                         distance = calculateDistance(lastSearchLocation.latitude, lastSearchLocation.longitude, lat, lng);
                     }
 
-                    dermatologists.push({ name, address, phone, website, uri: mapInfo.uri, distance, lat, lng });
+                    dermatologists.push({ name, address, phone, website, uri, distance, lat, lng });
                 }
             }
         });
 
-        if (lastSearchLocation) {
-            return dermatologists.sort((a, b) => (a.distance || 9999) - (b.distance || 9999));
-        }
-        return dermatologists;
-    }, [dermatologistMapResults, lastSearchLocation]);
+        // Secondary filter (Frontend) - VERY PERMISSIVE
+        // The API already does the heavy lifting with Google Maps Grounding
+        // We only filter out obviously wrong results
+        let qCountry = searchQuery.country.trim().toLowerCase();
+        const qCity = searchQuery.city.trim().toLowerCase();
+
+        // Robust address normalization helper
+        const normalize = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+        console.log("Dermatologists before filtering:", dermatologists);
+        console.log("Search query:", { qCountry, qCity });
+
+        const filteredDermatologists = dermatologists.filter(derm => {
+            const addr = normalize(derm.address || "");
+            const name = normalize(derm.name);
+
+            // If no address at all, skip this result
+            if (!addr && !name) return false;
+
+            // VERY PERMISSIVE FILTERING:
+            // If we have a city query, check if it appears ANYWHERE in the address or name
+            // If we don't have a city query, trust the API completely
+            if (qCity) {
+                const normCity = normalize(qCity);
+                // Accept if city is in address OR name
+                if (addr.includes(normCity) || name.includes(normCity)) {
+                    return true;
+                }
+                // Also accept if it's close enough (for typos or variations)
+                // For now, just be strict on city match
+                return false;
+            }
+
+            // If no city specified, trust the API completely
+            return true;
+        });
+
+        console.log("Filtered dermatologists:", filteredDermatologists);
+
+        const finalResults = lastSearchLocation
+            ? filteredDermatologists.sort((a, b) => (a.distance || 9999) - (b.distance || 9999))
+            : filteredDermatologists;
+
+        return finalResults.slice(0, 6);
+    }, [dermatologistMapResults, lastSearchLocation, searchQuery, enrichedDermatologists]);
+
+    // --- Enrich dermatologist data with Places API ---
+    useEffect(() => {
+        const enrichData = async () => {
+            if (!dermatologistMapResults?.candidates?.[0]?.groundingMetadata?.groundingChunks) {
+                return;
+            }
+
+            const chunks = dermatologistMapResults.candidates[0].groundingMetadata.groundingChunks as GroundingChunk[];
+            const newEnrichedData = new Map<string, { address?: string, phone?: string, website?: string }>();
+
+            // Fetch details for each place
+            for (const chunk of chunks) {
+                const mapInfoRaw = chunk.maps || (chunk as any).googleMapsGroundingChunk || (chunk as any).google_maps_grounding_chunk;
+                if (mapInfoRaw) {
+                    const anyMapInfo = mapInfoRaw as any;
+                    const placeId = anyMapInfo.placeId;
+
+                    if (placeId && !enrichedDermatologists.has(placeId)) {
+                        console.log(`Fetching details for placeId: ${placeId}`);
+                        const details = await fetchPlaceDetails(placeId);
+                        if (details.formattedAddress || details.formattedPhoneNumber) {
+                            newEnrichedData.set(placeId, {
+                                address: details.formattedAddress,
+                                phone: details.formattedPhoneNumber,
+                                website: details.website
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (newEnrichedData.size > 0) {
+                setEnrichedDermatologists(prev => new Map([...prev, ...newEnrichedData]));
+            }
+        };
+
+        enrichData();
+    }, [dermatologistMapResults]);
 
     // --- Animation Variants ---
     const container = {
@@ -182,74 +291,81 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                     <div className="hidden lg:block absolute left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-gray-200 to-transparent" />
 
                     {/* Geolocation Block */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-3 mb-1">
-                            <div className="p-2 bg-brand-light text-brand-primary rounded-xl">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <div className="flex flex-col gap-5 p-2">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-brand-primary/10 text-brand-primary rounded-2xl border border-brand-primary/20 shadow-[0_0_15px_rgba(45,212,191,0.1)]">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                             </div>
-                            <h3 className="text-lg font-bold text-brand-secondary">Autour de moi</h3>
+                            <div>
+                                <h3 className="text-xl font-display font-bold text-white tracking-tight">{t('dermatologist.around_me.title')}</h3>
+                                <p className="text-sm text-brand-secondary/50 font-light">{t('dermatologist.around_me.description')}</p>
+                            </div>
                         </div>
-                        <p className="text-sm text-slate-500 font-medium ml-1">Utiliser votre position (Rayon 10km)</p>
 
-                        {geoError && <p className="text-red-500 text-xs bg-red-50 p-2 rounded-lg">{geoError}</p>}
+                        {geoError && <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 p-3 rounded-xl animate-shake">{geoError}</p>}
 
                         <button
                             onClick={handleGeoSearch}
                             disabled={isLoading}
-                            className="mt-auto w-full py-3 px-6 bg-white border-2 border-brand-primary text-brand-primary font-bold rounded-xl hover:bg-brand-primary hover:text-white transition-all shadow-sm active:scale-95"
+                            className="mt-auto group relative w-full py-4 px-6 bg-white/5 border border-brand-primary/30 text-brand-primary font-bold rounded-2xl hover:bg-brand-primary hover:text-brand-deep transition-all shadow-lg active:scale-95 overflow-hidden"
                         >
-                            {isLoading ? "Localisation..." : "📍 Trouver les proches"}
+                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                {isLoading ? t('dermatologist.around_me.loading') : `📍 ${t('dermatologist.around_me.button')}`}
+                            </span>
                         </button>
                     </div>
 
                     {/* Manual Search Block */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-3 mb-1">
-                            <div className="p-2 bg-blue-50 text-brand-secondary rounded-xl">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <div className="flex flex-col gap-5 p-2">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-white/5 text-brand-secondary rounded-2xl border border-white/10 shadow-lg">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                             </div>
-                            <h3 className="text-lg font-bold text-brand-secondary">Par ville</h3>
+                            <div>
+                                <h3 className="text-xl font-display font-bold text-white tracking-tight">{t('dermatologist.by_city.title')}</h3>
+                                <p className="text-sm text-brand-secondary/50 font-light">{t('dermatologist.by_city.description')}</p>
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-4">
                             <select
                                 value={selectedCountry}
                                 onChange={handleCountryChange}
                                 disabled={isLoading}
-                                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+                                className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-brand-primary/40 outline-none transition-all placeholder-white/20 backdrop-blur-md appearance-none cursor-pointer hover:bg-white/10"
                             >
-                                <option value="" disabled>Choisir un pays</option>
-                                {sortedCountries.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
+                                <option value="" disabled className="bg-brand-deep">{t('dermatologist.by_city.country_placeholder')}</option>
+                                {sortedCountries.map((c) => <option key={c.name} value={c.name} className="bg-brand-deep">{c.name}</option>)}
                             </select>
 
-                            <div className="flex gap-2">
-                                <select
-                                    value={selectedCityOption}
-                                    onChange={(e) => setSelectedCityOption(e.target.value)}
-                                    disabled={!selectedCountry || isLoading}
-                                    className="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-700 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
-                                >
-                                    <option value="" disabled>Ville</option>
-                                    {availableCities.map((c) => <option key={c} value={c}>{c}</option>)}
-                                    <option value="other" className="text-brand-primary font-bold">Autre...</option>
-                                </select>
-                            </div>
+                            <select
+                                value={selectedCityOption}
+                                onChange={(e) => setSelectedCityOption(e.target.value)}
+                                disabled={!selectedCountry || isLoading}
+                                className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-brand-primary/40 outline-none transition-all placeholder-white/20 backdrop-blur-md appearance-none cursor-pointer hover:bg-white/10"
+                            >
+                                <option value="" disabled className="bg-brand-deep">{t('dermatologist.by_city.city_placeholder')}</option>
+                                {availableCities.map((c) => <option key={c} value={c} className="bg-brand-deep">{c}</option>)}
+                                <option value="other" className="text-brand-primary font-bold bg-brand-deep">{t('dermatologist.by_city.matches_nothing')}</option>
+                            </select>
 
-                            {(selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)') && (
+                            {(selectedCityOption === 'other' || selectedCityOption === 'Autre (saisir)' || selectedCityOption === 'Capitale / Ville principale') && (
                                 <input
                                     type="text"
                                     value={customCityInput}
                                     onChange={(e) => setCustomCityInput(e.target.value)}
-                                    placeholder="Nom de la ville..."
-                                    className="w-full p-3 bg-white border-2 border-brand-primary/30 rounded-xl focus:border-brand-primary outline-none text-slate-700"
+                                    placeholder={t('dermatologist.by_city.input_placeholder')}
+                                    className="w-full p-4 bg-white/5 border border-brand-primary/30 rounded-2xl focus:border-brand-primary outline-none text-white transition-all shadow-inner"
                                 />
                             )}
 
                             <button
                                 onClick={handleManualSearch}
                                 disabled={isLoading || !selectedCountry}
-                                className="w-full py-3 px-6 bg-brand-primary text-white font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full py-4 px-6 bg-gradient-to-r from-brand-primary to-[#2dd4bf] text-brand-deep font-bold rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed group transition-all"
                             >
-                                🔍 Rechercher
+                                <span className="flex items-center justify-center gap-2">
+                                    🔍 {t('dermatologist.by_city.button')}
+                                </span>
                             </button>
                         </div>
                     </div>
@@ -282,8 +398,8 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                             />
                         </div>
                         <div className="flex flex-col items-center gap-2 relative z-10">
-                            <h3 className="text-xl font-bold text-brand-secondary tracking-widest uppercase">Analyse en cours</h3>
-                            <p className="text-brand-primary font-mono text-sm animate-pulse">Recherche des dermatologues à proximité...</p>
+                            <h3 className="text-xl font-bold text-brand-secondary tracking-widest uppercase">{t('dermatologist.list.loading_title')}</h3>
+                            <p className="text-brand-primary font-mono text-sm animate-pulse">{t('dermatologist.list.loading_desc')}</p>
                         </div>
                     </motion.div>
                 )}
@@ -292,88 +408,184 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-6 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-center"
+                        className="w-full max-w-3xl mx-auto mt-8 p-8 relative z-20"
                     >
-                        <p className="font-bold">Une erreur est survenue</p>
-                        <p className="text-sm opacity-80">{error}</p>
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#1a0505] via-[#1f0a0a] to-[#0a0b0d] rounded-3xl opacity-95 backdrop-blur-xl border border-red-500/20 shadow-[0_0_60px_rgba(220,38,38,0.15)]"></div>
+
+                        <div className="relative z-30 flex flex-col items-center text-center">
+                            <div className="w-16 h-16 bg-gradient-to-br from-red-500/20 to-red-900/5 rounded-full flex items-center justify-center mb-6 ring-1 ring-red-500/40 shadow-[0_0_30px_rgba(220,38,38,0.3)] animate-pulse-slow">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-red-500">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                </svg>
+                            </div>
+
+                            <h3 className="text-xl md:text-2xl font-display font-bold text-white mb-4">
+                                {error.includes("PERMISSION_DENIED") || error.includes("SERVICE_DISABLED") || error.includes("has not been used")
+                                    ? t('dermatologist.list.api_not_enabled_title') || "API Non Activée"
+                                    : t('dermatologist.list.interrupted')}
+                            </h3>
+
+                            {/* API Not Enabled Error */}
+                            {(error.includes("PERMISSION_DENIED") || error.includes("SERVICE_DISABLED") || error.includes("has not been used")) && (
+                                <div className="text-left w-full max-w-xl space-y-4">
+                                    <p className="text-brand-secondary/90 text-sm">
+                                        {t('dermatologist.list.api_not_enabled_desc') || "L'API Google Generative Language n'est pas activée pour ce projet. Veuillez suivre ces étapes :"}
+                                    </p>
+
+                                    <div className="bg-brand-deep/50 border border-brand-primary/20 rounded-xl p-4 space-y-3">
+                                        <div className="flex items-start gap-3">
+                                            <span className="text-brand-primary font-bold text-lg">1.</span>
+                                            <div className="flex-1">
+                                                <p className="text-white text-sm font-medium mb-2">
+                                                    {t('dermatologist.list.api_step_1') || "Cliquez sur le bouton ci-dessous pour activer l'API"}
+                                                </p>
+                                                <a
+                                                    href="https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview?project=38723791540"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary text-brand-deep font-bold rounded-lg hover:bg-brand-primary/90 transition-all text-sm"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                    </svg>
+                                                    {t('dermatologist.list.api_activate_button') || "Activer l'API"}
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-3">
+                                            <span className="text-brand-primary font-bold text-lg">2.</span>
+                                            <p className="text-white text-sm flex-1">
+                                                {t('dermatologist.list.api_step_2') || "Cliquez sur le bouton 'ACTIVER' ou 'ENABLE' sur la page qui s'ouvre"}
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-start gap-3">
+                                            <span className="text-brand-primary font-bold text-lg">3.</span>
+                                            <p className="text-white text-sm flex-1">
+                                                {t('dermatologist.list.api_step_3') || "Attendez 1-2 minutes, puis rafraîchissez cette page"}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
+                                        <p className="text-yellow-200 text-xs">
+                                            💡 {t('dermatologist.list.api_note') || "Note : L'API est gratuite pour un usage normal (jusqu'à 1500 requêtes/jour)"}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Traffic Overload Error */}
+                            {(error.includes("RESOURCE_EXHAUSTED") || error.includes("429")) && (
+                                <>
+                                    <p className="text-brand-secondary/80 text-base mb-6 max-w-md">
+                                        {t('dermatologist.list.traffic_overload')}
+                                    </p>
+                                    <div className="px-4 py-2 bg-red-950/30 border border-red-500/10 rounded-lg">
+                                        <p className="text-xs text-red-400 font-mono">Status: TRAFFIC_OVERLOAD_PROTECTION</p>
+                                    </div>
+                                </>
+                            )}
+
+                            {/* Generic Error */}
+                            {!(error.includes("PERMISSION_DENIED") || error.includes("SERVICE_DISABLED") || error.includes("has not been used") || error.includes("RESOURCE_EXHAUSTED") || error.includes("429")) && (
+                                <p className="text-brand-secondary/80 text-base mb-6 max-w-md">
+                                    {error}
+                                </p>
+                            )}
+                        </div>
                     </motion.div>
                 )}
 
                 {!isLoading && !error && displayableDermatologists.length > 0 && (
                     <motion.div
-                        variants={container}
-                        initial="hidden"
-                        animate="show"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         className="flex flex-col gap-4"
                     >
-                        <div className="flex items-center justify-between px-2 mb-2">
-                            <h3 className="text-xl font-bold text-brand-secondary">
-                                {lastSearchLocation ? `Résultats à proximité (${displayableDermatologists.length})` : `Résultats (${displayableDermatologists.length})`}
+                        <div className="flex items-center justify-between px-2 mb-4">
+                            <h3 className="text-2xl font-display font-bold text-white tracking-tight">
+                                {lastSearchLocation
+                                    ? t('dermatologist.list.results_nearby').replace('{count}', displayableDermatologists.length.toString())
+                                    : t('dermatologist.list.results').replace('{count}', displayableDermatologists.length.toString())
+                                }
                             </h3>
                         </div>
 
                         {displayableDermatologists.map((derm, idx) => (
                             <motion.div
                                 key={idx}
-                                variants={item}
-                                className="glass-card p-6 rounded-2xl flex flex-col md:flex-row gap-6 hover:border-brand-primary/40 relative group bg-white"
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: idx * 0.05 }}
+                                className="glass-card p-6 md:p-8 rounded-3xl flex flex-col md:flex-row gap-8 hover:border-brand-primary/40 relative group bg-white/5 transition-all duration-500 overflow-hidden"
                             >
+                                <div className="absolute top-0 left-0 w-1.5 h-full bg-brand-primary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
+
                                 {/* Left: Info */}
-                                <div className="flex-1 flex flex-col gap-2 text-left">
-                                    <h4 className="text-xl font-bold text-brand-secondary group-hover:text-brand-primary transition-colors">
+                                <div className="flex-1 flex flex-col gap-3 text-left">
+                                    <h4 className="text-2xl md:text-3xl font-display font-bold text-white group-hover:text-brand-primary transition-colors leading-tight mb-2">
                                         {derm.name}
                                     </h4>
 
-                                    {derm.distance !== undefined && (
-                                        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-primary bg-brand-light px-2 py-1 rounded-md w-fit mb-1">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg>
-                                            {derm.distance} km
-                                        </div>
-                                    )}
-
-                                    <div className="flex flex-col gap-1.5 text-sm text-slate-600 mt-1">
+                                    <div className="flex flex-col gap-3">
                                         {derm.address && (
-                                            <div className="flex gap-2 items-start">
-                                                <span className="opacity-50 mt-0.5">📍</span>
-                                                <span>{derm.address}</span>
+                                            <div className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors">
+                                                <span className="text-brand-primary text-xl mt-0.5 flex-shrink-0">📍</span>
+                                                <p className="text-base text-brand-secondary font-medium leading-relaxed">
+                                                    {derm.address}
+                                                </p>
                                             </div>
                                         )}
                                         {derm.phone && (
-                                            <div className="flex gap-2 items-center">
-                                                <span className="opacity-50">📞</span>
-                                                <a href={`tel:${derm.phone.replace(/[^\d+]/g, '')}`} className="font-semibold text-slate-800 hover:text-brand-primary underline decoration-dotted">
+                                            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors">
+                                                <span className="text-brand-primary text-xl flex-shrink-0">📞</span>
+                                                <a
+                                                    href={`tel:${derm.phone.replace(/[^\d+]/g, '')}`}
+                                                    className="text-base text-white font-bold hover:text-brand-primary transition-colors"
+                                                >
                                                     {derm.phone}
                                                 </a>
                                             </div>
                                         )}
-                                        {derm.website && (
-                                            <div className="flex gap-2 items-center">
-                                                <span className="opacity-50">🌐</span>
-                                                <a href={derm.website} target="_blank" rel="noopener" className="text-blue-600 hover:underline truncate max-w-[200px]">
-                                                    Site web
-                                                </a>
-                                            </div>
-                                        )}
                                     </div>
+
+                                    {derm.distance !== undefined && (
+                                        <div className="inline-flex items-center gap-2 text-xs font-bold text-brand-primary bg-brand-primary/10 border border-brand-primary/20 px-3 py-1.5 rounded-full w-fit mt-3 shadow-[0_0_15px_rgba(45,212,191,0.1)]">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg>
+                                            {t('dermatologist.list.distance').replace('{km}', derm.distance.toString())}
+                                        </div>
+                                    )}
+
+                                    {derm.website && (
+                                        <div className="flex gap-3 items-center mt-2">
+                                            <span className="text-brand-primary opacity-80 text-sm">🌐</span>
+                                            <a href={derm.website} target="_blank" rel="noopener" className="text-sm text-brand-primary hover:text-white transition-colors underline underline-offset-4">
+                                                {t('dermatologist.list.visit_website')}
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Right: Action */}
-                                <div className="flex flex-col justify-center items-end border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 gap-3">
+                                <div className="flex flex-col justify-center items-stretch md:items-end border-t md:border-t-0 md:border-l border-white/10 pt-6 md:pt-0 md:pl-8 gap-4">
                                     <a
                                         href={derm.uri}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="w-full md:w-auto py-3 px-6 rounded-xl bg-brand-secondary text-white font-semibold text-sm hover:bg-brand-primary transition-all shadow-md flex items-center justify-center gap-2"
+                                        className="group/btn relative py-4 px-8 rounded-2xl bg-brand-primary text-brand-deep font-bold text-base hover:scale-[1.05] active:scale-95 transition-all shadow-lg flex items-center justify-center gap-3 overflow-hidden"
                                     >
-                                        <span>Itinéraire</span>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
+                                        <span className="relative z-10">{t('dermatologist.list.get_directions')}</span>
+                                        <svg className="relative z-10 w-5 h-5 transition-transform group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
                                     </a>
                                     {derm.phone && (
                                         <a
                                             href={`tel:${derm.phone.replace(/[^\d+]/g, '')}`}
-                                            className="w-full md:w-auto py-2.5 px-6 rounded-xl border border-gray-200 text-slate-700 font-semibold text-sm hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                                            className="py-3 px-8 rounded-2xl border border-white/20 text-white font-bold text-base hover:bg-white/5 hover:border-white/40 active:scale-95 transition-all flex items-center justify-center gap-3 backdrop-blur-sm"
                                         >
-                                            Appeler
+                                            {t('dermatologist.list.call')}
                                         </a>
                                     )}
                                 </div>
@@ -388,8 +600,8 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                         animate={{ opacity: 1 }}
                         className="text-center py-12 text-slate-400"
                     >
-                        <p>Aucun résultat pour le moment.</p>
-                        <p className="text-sm">Essayez une autre ville ou utlisez la géolocalisation.</p>
+                        <p>{t('dermatologist.list.no_results')}</p>
+                        <p className="text-sm">{t('dermatologist.list.no_results_desc')}</p>
                     </motion.div>
                 )}
             </AnimatePresence>

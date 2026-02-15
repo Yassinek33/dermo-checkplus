@@ -6,16 +6,34 @@ interface OptionButtonProps {
     onClick: (text: string) => void;
 }
 
+const formatOptionText = (text: string) => {
+    // Unify casing: Start with uppercase, then rest follows
+    const unified = text.charAt(0).toUpperCase() + text.slice(1);
+
+    // Split on parentheses to style them differently
+    const parts = unified.split(/(\(.*?\))/);
+    return parts.map((part, i) => {
+        if (part.startsWith('(') && part.endsWith(')')) {
+            return (
+                <span key={i} className="block text-xs md:text-sm text-brand-secondary/60 mt-0.5 font-normal">
+                    {part}
+                </span>
+            );
+        }
+        return <span key={i} className="block leading-tight">{part}</span>;
+    });
+};
+
 const OptionButton = forwardRef<HTMLButtonElement, OptionButtonProps>(({ text, onClick }, ref) => {
     return (
         <button
             onClick={() => onClick(text)}
-            className="w-full p-4 md:p-5 bg-white/5 border border-white/10 text-brand-secondary rounded-2xl shadow-lg
-                       hover:bg-white/10 hover:border-brand-primary/50 hover:text-white transition-all duration-200 
-                       ease-in-out transform hover:-translate-y-1 text-base font-medium backdrop-blur-md"
+            className="w-full flex flex-col items-center justify-center text-center p-4 md:p-6 bg-white/5 border border-white/10 text-brand-secondary rounded-2xl shadow-xl
+                       hover:bg-white/10 hover:border-brand-primary/50 hover:text-white transition-all duration-300 
+                       ease-out transform hover:-translate-y-1 text-base md:text-lg font-bold backdrop-blur-md min-h-[80px]"
             ref={ref}
         >
-            {text}
+            {formatOptionText(text)}
         </button>
     );
 });

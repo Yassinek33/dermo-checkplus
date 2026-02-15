@@ -1,17 +1,20 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { Message, GeminiContent, GeminiTextPart, GeminiImagePart, PageConfig } from './types';
 import { generateResponse, fileToGenerativePart } from './services/geminiService'; // Removed analyzeVideo
 import ChatMessage from './components/ChatMessage';
 import OptionButton from './components/OptionButton';
 import FileUpload from './components/FileUpload';
 import { BackArrowIcon, RedoIcon } from './components/icons';
+import { Tooltip } from './components/Tooltip';
 import TextInput from './components/TextInput';
 import MultiChoiceOptions from './components/MultiChoiceOptions';
 import AgeDropdown from './components/AgeDropdown'; // Import AgeDropdown
 import CountryDropdown from './components/CountryDropdown'; // Import CountryDropdown
 import AgeMonthYearDropdown from './components/AgeMonthYearDropdown'; // New: Import AgeMonthYearDropdown
 import { getSystemInstruction } from './constants'; // To extract notice/warning
+import { useLanguage } from './context/LanguageContext';
 
 interface QuestionnaireProps {
     config: PageConfig;
@@ -37,7 +40,22 @@ const MIN_VALID_AGE = 18;
 const MAX_VALID_AGE = 120;
 
 const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
-    const [currentAiMessage, setCurrentAiMessage] = useState<Message | null>(null);
+    const { t, language } = useLanguage();
+    const [currentAssistantMessage, setCurrentAssistantMessage] = useState<Message | null>(null);
+
+    // ... (rest of state)
+
+    // Helper to extract warnings from system instruction
+    const extractSystemNotices = useCallback(() => {
+        const fullInstruction = getSystemInstruction(language);
+        // The prompt no longer contains a distinct "NOTICE AVANT QUESTIONNAIRE" section,
+        // so we only extract the persistent medical warning.
+        const medicalWarningMatch = fullInstruction.match(language === 'fr' ? /⚠️ AVERTISSEMENT MÉDICAL \(.+\)\n"([^"]+)"/ : /⚠️ MEDICAL WARNING \(.+\)\n"([^"]+)"/);
+
+        const warning = medicalWarningMatch ? medicalWarningMatch[1].replace(/\\n/g, '\n') : '';
+
+        return { notice: '', warning }; // Return empty notice as it's not present
+    }, [language]); // Depend on language
     const [apiHistory, setApiHistory] = useState<GeminiContent[]>([]
     );
     const [isLoading, setIsLoading] = useState(true);
@@ -49,6 +67,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const [awaitingNumberInputForOption, setAwaitingNumberInputForOption] = useState<string | null>(null);
     const [showResetConfirmation, setShowResetConfirmation] = useState(false); // New state for reset confirmation
     const [showInitialWarningPopup, setShowInitialWarningPopup] = useState(true); // State for the initial warning popup
+    const [validationError, setValidationError] = useState<string | null>(null); // State for user-level validation errors
 
     // Removed uploadedVideoFile and awaitingVideoQuestion states
 
@@ -94,26 +113,26 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         }
     }, []);
 
-    // Effect for managing focus after AI message updates
+    // Effect for managing focus after incoming message updates
     useEffect(() => {
-        if (!isLoading && currentAiMessage && !showInitialWarningPopup) { // Only focus if warning is dismissed
+        if (!isLoading && currentAssistantMessage && !showInitialWarningPopup) { // Only focus if warning is dismissed
             // Find the first interactive element and focus it
             let elementToFocus: HTMLElement | null = null;
 
-            if (currentAiMessage.isPhotoRequest && fileUploadRef.current) {
+            if (currentAssistantMessage.isPhotoRequest && fileUploadRef.current) {
                 // Focus the 'Choisir média(s)' button within FileUpload
                 elementToFocus = fileUploadRef.current.querySelector('button[aria-label^="Ajouter une image"]') as HTMLElement; // Changed text to match FileUpload
-            } else if (currentAiMessage.isTextInputRequest) {
+            } else if (currentAssistantMessage.isTextInputRequest) {
                 elementToFocus = textInputRef.current;
-            } else if (currentAiMessage.isComboInputRequest) {
+            } else if (currentAssistantMessage.isComboInputRequest) {
                 elementToFocus = ageMonthYearDropdownMonthsRef.current || ageMonthYearDropdownYearsRef.current;
-            } else if (currentAiMessage.isAgeDropdownRequest) { // New: Focus age dropdown
+            } else if (currentAssistantMessage.isAgeDropdownRequest) { // New: Focus age dropdown
                 elementToFocus = ageDropdownRef.current;
-            } else if (currentAiMessage.options && currentAiMessage.isMultiChoice) {
+            } else if (currentAssistantMessage.options && currentAssistantMessage.isMultiChoice) {
                 elementToFocus = optionButtonsRef.current[0];
-            } else if (currentAiMessage.options && !currentAiMessage.isMultiChoice) {
+            } else if (currentAssistantMessage.options && !currentAssistantMessage.isMultiChoice) {
                 elementToFocus = optionButtonsRef.current[0];
-            } else if (currentAiMessage.text.includes("Dans quel pays résidez-vous ?")) {
+            } else if (currentAssistantMessage.text.includes("Dans quel pays résidez-vous ?")) {
                 elementToFocus = countryDropdownRef.current;
             }
 
@@ -124,7 +143,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                 containerRef.current.focus();
             }
         }
-    }, [isLoading, currentAiMessage, awaitingNumberInputForOption, consultationType, showInitialWarningPopup]); // Removed awaitingVideoQuestion from dependencies
+    }, [isLoading, currentAssistantMessage, awaitingNumberInputForOption, consultationType, showInitialWarningPopup]); // Removed awaitingVideoQuestion from dependencies
 
     const parseAiResponse = useCallback((text: string, id: string): Message => {
         const photoRequestMatch = text.includes('[PHOTO_REQUEST]');
@@ -247,17 +266,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     }, [setIsGameOver]);
 
 
-    const extractSystemNotices = useCallback(() => {
-        const fullInstruction = getSystemInstruction();
-        // The prompt no longer contains a distinct "NOTICE AVANT QUESTIONNAIRE" section,
-        // so we only extract the persistent medical warning.
-        const medicalWarningMatch = fullInstruction.match(/⚠️ AVERTISSEMENT MÉDICAL \(.+\)\n"([^"]+)"/);
-
-        const warning = medicalWarningMatch ? medicalWarningMatch[1].replace(/\\n/g, '\n') : '';
-
-        return { notice: '', warning }; // Return empty notice as it's not present
-    }, [getSystemInstruction]); // Added getSystemInstruction to dependencies
-
     const { notice: initialNotice, warning: medicalWarning } = useMemo(() => extractSystemNotices(), [extractSystemNotices]);
 
     // Fix: Removed `initializeApp` from its own useCallback dependency array.
@@ -278,24 +286,26 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             // OPTIMIZATION: We no longer fetch the first question from the AI to ensure instant loading.
             // We hardcode the initial state that corresponds to "Démarrer la consultation."
 
-            const initialUserPrompt = "Démarrer la consultation.";
+            const initialUserPrompt = language === 'fr' ? "Démarrer la consultation." : "Start consultation.";
             // This MUST match the expected output for the "Welcome" UI logic
-            const staticAiResponseText = "Cette auto-analyse concerne : [CHOIX]Moi-même[CHOIX]Une autre personne";
+            const staticAiResponseText = language === 'fr'
+                ? `Cette auto-analyse concerne : [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`
+                : `This self-analysis concerns: [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
 
             const initialAiMessage = parseAiResponse(staticAiResponseText, `ai-initial-${Date.now()}`);
 
-            setCurrentAiMessage(initialAiMessage);
+            setCurrentAssistantMessage(initialAiMessage);
             setApiHistory([
                 { role: 'user', parts: [{ text: initialUserPrompt }] },
                 { role: 'model', parts: [{ text: staticAiResponseText }] }
             ]);
         } catch (err) {
             console.error("Failed to initialize app locally:", err);
-            setError("Erreur inattendue au démarrage.");
+            setError(t('analysis.start_error'));
         } finally {
             setIsLoading(false);
         }
-    }, [parseAiResponse, setConsultationType]); // Removed generateResponse dependency
+    }, [parseAiResponse, setConsultationType, t, language]); // Added language dependency
 
     // Effect for initial app setup, now dependent on the warning popup state
     useEffect(() => {
@@ -369,27 +379,27 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // Removed videoAnalysisResult and associated logic
 
         // --- Client-side interception for age-related questions ---
-        if (currentAiMessage?.text.includes("Cette auto-analyse concerne :")) {
-            if (userText === "Moi-même") {
+        if (currentAssistantMessage?.text.includes("Cette auto-analyse concerne :") || currentAssistantMessage?.text.includes("This self-analysis concerns:")) {
+            if (userText === "Moi-même" || userText === t('analysis.myself')) {
                 setConsultationType('self');
-            } else if (userText === "Une autre personne") {
+            } else if (userText === "Une autre personne" || userText === t('analysis.other')) {
                 setConsultationType('other');
             }
-        } else if (consultationType === 'self' && currentAiMessage?.isAgeDropdownRequest) { // Use isAgeDropdownRequest for adult age
+        } else if (consultationType === 'self' && currentAssistantMessage?.isAgeDropdownRequest) { // Use isAgeDropdownRequest for adult age
             const age = parseInt(userText, 10);
             // AgeDropdown ensures 18-120, but this is a safeguard for unexpected flow
             if (isNaN(age) || age < MIN_VALID_AGE || age > MAX_VALID_AGE) {
-                setError(`Veuillez indiquer un âge valide (nombre entier entre ${MIN_VALID_AGE} et ${MAX_VALID_AGE}).`);
+                setError(t('analysis.age_error'));
                 setIsLoading(false);
                 return; // Do not send to AI
             }
             // If age is valid and >= 18, continue as normal, sending age to AI
             actualUserTextToSend = userText;
-        } else if (consultationType === 'other' && currentAiMessage?.text.includes("Quel est son âge ?")) {
+        } else if (consultationType === 'other' && (currentAssistantMessage?.text.includes("Quel est son âge ?") || currentAssistantMessage?.text.includes("What is their age?"))) {
             // AgeMonthYearDropdown sends a formatted string like "7 ans et 6 mois"
             // The AI is expected to parse this string, so client-side validation here is minimal
-            if (!userText.includes("ans") && !userText.includes("mois") && userText !== "Moins de 1 mois") { // Also allow "Moins de 1 mois"
-                setError("Veuillez indiquer un âge valide en années et/ou mois.");
+            if (!userText.includes("ans") && !userText.includes("mois") && !userText.includes("years") && !userText.includes("months") && userText !== "Moins de 1 mois" && userText !== "Less than 1 month") { // Also allow "Moins de 1 mois"
+                setError(t('analysis.age_error_child'));
                 setIsLoading(false);
                 return; // Do not send to AI
             }
@@ -400,7 +410,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // --- End client-side interception ---
 
         // Clear current AI message options/inputs to prevent re-submitting
-        setCurrentAiMessage(prev => prev ? {
+        setCurrentAssistantMessage(prev => prev ? {
             ...prev,
             options: undefined,
             isPhotoRequest: false,
@@ -422,12 +432,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             userParts.push(...imageParts);
         }
 
-        const newApiHistory: GeminiContent[] = [
+        const currentApiHistoryWithUser = [
             ...apiHistory,
             { role: 'user', parts: userParts }
         ];
-
-        const aiResponseText = await generateResponse(newApiHistory, actualUserTextToSend, imageFiles); // Removed videoFile
+        const aiResponseText = await generateResponse(currentApiHistoryWithUser, actualUserTextToSend, imageFiles, getSystemInstruction(language)); // Pass system instruction
 
         if (aiResponseText.startsWith("API_ERROR:")) {
             setError(aiResponseText.replace("API_ERROR:", "").trim());
@@ -441,7 +450,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // If this is the final report, collect all user-uploaded images from history
         if (newAiMessage.isFinalReport) {
             const allUploadedImageUrls: string[] = [];
-            for (const entry of newApiHistory) {
+            for (const entry of currentApiHistoryWithUser) {
                 if (entry.role === 'user') {
                     for (const part of entry.parts) {
                         if ('inlineData' in part && part.inlineData.mimeType.startsWith('image/')) {
@@ -453,13 +462,15 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             newAiMessage.userUploadedImageUrls = allUploadedImageUrls;
         }
 
-        setApiHistory([
-            ...newApiHistory,
+        const finalHistory = [
+            ...currentApiHistoryWithUser,
             { role: 'model', parts: [{ text: aiResponseText }] }
-        ]);
-        setCurrentAiMessage(newAiMessage);
+        ];
+
+        setApiHistory(finalHistory);
+        setCurrentAssistantMessage(newAiMessage);
         setIsLoading(false);
-    }, [apiHistory, parseAiResponse, currentAiMessage, consultationType, setConsultationType, generateResponse]); // Removed uploadedVideoFile, analyzeVideo
+    }, [apiHistory, parseAiResponse, currentAssistantMessage, consultationType, setConsultationType, generateResponse]); // Removed uploadedVideoFile, analyzeVideo
 
     const retryLastAction = useCallback(() => {
         if (lastFailedAction) {
@@ -477,9 +488,12 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // If "Moins de deux jours" is selected, it implicitly means "1" or "0-1" days, but the instruction does not ask for explicit number.
         // It asks for an explicit number only for "Quelques jours", "Quelques semaines", "Quelques mois", "Plus d'un an".
         // Let's refine the condition to only trigger number input for "Quelques jours", "Quelques semaines", "Quelques mois", "Plus d'un an".
-        const optionsRequiringNumberInput = ["Quelques jours", "Quelques semaines", "Quelques mois", "Plus d'un an"];
+        const optionsRequiringNumberInput = [
+            "Quelques jours", "Quelques semaines", "Quelques mois", "Plus d'un an",
+            "A few days", "A few weeks", "A few months", "More than a year"
+        ];
 
-        if (currentAiMessage?.text.includes("Depuis combien de temps la lésion est apparue ?") && optionsRequiringNumberInput.includes(option)) {
+        if ((currentAssistantMessage?.text.includes("Depuis combien de temps la lésion est apparue ?") || currentAssistantMessage?.text.includes("How long has the lesion appeared?")) && optionsRequiringNumberInput.includes(option)) {
             setAwaitingNumberInputForOption(option);
             // Do not send to AI yet, wait for number input
             setIsLoading(false); // Stop loading since we're waiting for local input
@@ -498,8 +512,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         if (awaitingNumberInputForOption) {
             const number = parseInt(text, 10);
             if (isNaN(number) || number <= 0) {
-                setError("Veuillez entrer un nombre valide (supérieur à 0).");
-                setIsLoading(false);
+                setValidationError("Veuillez entrer un chiffre valide (ex: 3) sans texte.");
                 return;
             }
             const fullAnswer = `${awaitingNumberInputForOption}: ${number}`;
@@ -550,7 +563,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             if (mediaRequestContent && mediaRequestContent.role === 'model' && mediaRequestContent.parts.length > 0) {
                 const firstPart = mediaRequestContent.parts[0];
                 if ('text' in firstPart) { // Type guard to ensure firstPart is GeminiTextPart
-                    setCurrentAiMessage(parseAiResponse(firstPart.text, `ai-back-media-request-${Date.now()}`));
+                    setCurrentAssistantMessage(parseAiResponse(firstPart.text, `ai-back-media-request-${Date.now()}`));
                 } else {
                     // This case means the original "PHOTO_REQUEST" message was not a text part, which shouldn't happen based on constants.ts
                     console.warn("Expected text part for media request message, but found a non-text part.");
@@ -579,10 +592,10 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             const lastModelResponsePart = lastModelContent.parts[0];
             if ('text' in lastModelResponsePart) {
                 const previousAiMessage = parseAiResponse((lastModelResponsePart as GeminiTextPart).text, `ai-back-${Date.now()}`);
-                setCurrentAiMessage(previousAiMessage);
+                setCurrentAssistantMessage(previousAiMessage);
 
                 // Re-evaluate consultationType if going back to the first question
-                if (previousAiMessage.text.includes("Cette auto-analyse concerne :")) {
+                if (previousAiMessage.text.includes("Cette auto-analyse concerne :") || previousAiMessage.text.includes("This self-analysis concerns:")) {
                     setConsultationType(null);
                 }
             } else {
@@ -672,29 +685,50 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     // Fix: Wrap the main JSX content of the `Questionnaire` component in a `return` statement.
     return (
         <>
-            {/* Error display - NOW VISIBLE even if currentAiMessage is null */}
+            {/* Error display - NOW VISIBLE even if currentAssistantMessage is null */}
+            {/* Error display - Premium Style */}
             {error && (
-                <div className="w-full max-w-2xl mx-auto border border-red-200 bg-red-50 rounded-3xl p-6 md:p-8 shadow-xl flex flex-col items-center text-center animate-fade-in mb-8" role="alert">
-                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                        </svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-red-900 mb-2">Impossible de démarrer l'analyse</h3>
-                    <p className="text-red-800 mb-6">{error}</p>
-                    <button onClick={retryLastAction || initializeApp} className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors font-medium">
-                        Réessayer
-                    </button>
-                    {(error.includes("API_KEY") || error.includes("VITE_API_KEY")) && (
-                        <p className="mt-4 text-xs text-red-600/80 bg-red-100/50 p-2 rounded">
-                            Note au propriétaire : La clé API n'est pas configurée.
+                <div className="w-full max-w-xl mx-auto mt-10 p-8 md:p-12 relative z-20 animate-fade-in-scale">
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#1a0505] via-[#1f0a0a] to-[#0a0b0d] rounded-3xl opacity-95 backdrop-blur-xl border border-red-500/20 shadow-[0_0_60px_rgba(220,38,38,0.15)]"></div>
+
+                    <div className="relative z-30 flex flex-col items-center text-center">
+                        {/* Glowing Icon */}
+                        <div className="w-24 h-24 bg-gradient-to-br from-red-500/20 to-red-900/5 rounded-full flex items-center justify-center mb-8 ring-1 ring-red-500/40 shadow-[0_0_40px_rgba(220,38,38,0.3)] animate-pulse-slow">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-red-500 drop-shadow-[0_0_10px_rgba(220,38,38,0.8)]">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            </svg>
+                        </div>
+
+                        <h3 className="text-3xl md:text-3xl font-display font-bold text-white mb-6 tracking-tight">
+                            {t('analysis.error_title')}
+                        </h3>
+
+                        <p className="text-brand-secondary/90 text-lg mb-10 leading-relaxed font-light">
+                            {error}
                         </p>
-                    )}
+
+                        <button
+                            onClick={retryLastAction || initializeApp}
+                            className="group relative px-10 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full font-bold text-lg shadow-[0_0_25px_rgba(220,38,38,0.4)] hover:shadow-[0_0_40px_rgba(220,38,38,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden"
+                        >
+                            <span className="relative z-10 flex items-center gap-2">
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                {t('analysis.retry')}
+                            </span>
+                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                        </button>
+
+                        {(error.includes("API_KEY") || error.includes("VITE_API_KEY")) && (
+                            <p className="mt-8 text-xs text-red-500/60 bg-red-950/30 px-4 py-2 rounded-lg border border-red-500/10 uppercase tracking-widest font-mono">
+                                {t('analysis.config_required')}
+                            </p>
+                        )}
+                    </div>
                 </div>
             )}
 
             {/* The main questionnaire UI, hidden until initial warning is dismissed AND we have a message */}
-            {currentAiMessage && !currentAiMessage.isFinalReport && !showInitialWarningPopup && !error ? (
+            {currentAssistantMessage && !currentAssistantMessage.isFinalReport && !showInitialWarningPopup && !error ? (
                 <div ref={containerRef} tabIndex={-1} role="region" aria-live="polite" aria-atomic="true" className="w-full max-w-2xl mx-auto glass-panel rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col animate-fade-in relative z-10 transition-all duration-300">
                     {(currentStep > 0 && !isGameOver) && ( // Start conditional rendering for the entire progress bar container
                         <div className="flex items-center justify-between mb-8 px-4 py-3 bg-white/5 border border-white/5 rounded-xl backdrop-blur-md">
@@ -705,49 +739,52 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                                 <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                                     <div
                                         className="bg-gradient-to-r from-brand-primary to-blue-500 h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(45,212,191,0.5)]"
-                                        style={{ width: `${(currentStep / TOTAL_QUESTIONNAIRE_STAGES) * 100}%` }}
+                                        style={{ width: `${Math.min(90, (currentStep / TOTAL_QUESTIONNAIRE_STAGES) * 100)}%` }}
                                     ></div>
                                 </div>
                             </div>
-                            {/* Reset Button */}
-                            <button
-                                onClick={handleReset}
-                                className="group p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors rounded-full"
-                                aria-label="Recommencer la consultation"
-                            >
-                                <RedoIcon className="transition-transform group-hover:rotate-180 group-active:rotate-180" />
-                            </button>
+                            {/* Reset Button with Tooltip */}
+                            <Tooltip text={t('analysis.restart_tooltip')}>
+                                <button
+                                    onClick={handleReset}
+                                    className="group p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors rounded-full"
+                                    aria-label={t('analysis.restart_tooltip')}
+                                >
+                                    <RedoIcon className="transition-transform group-hover:rotate-180 group-active:rotate-180" />
+                                </button>
+                            </Tooltip>
                         </div>
                     )} {/* End conditional rendering for the entire progress bar container */}
 
-                    {currentAiMessage.text.includes("Cette auto-analyse concerne :") ? (
-                        <div className="text-center mb-10 animate-fade-in">
-                            <div className="inline-block p-4 rounded-full bg-brand-primary/10 mb-6 ring-1 ring-brand-primary/20">
-                                <svg className="w-8 h-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                    {currentAssistantMessage.text.includes("Cette auto-analyse concerne :") || currentAssistantMessage.text.includes("This self-analysis concerns:") ? (
+                        <div className="text-center mb-12 md:mb-16 animate-fade-in">
+                            <div className="inline-block p-4 rounded-full bg-brand-primary/10 mb-8 ring-1 ring-brand-primary/20">
+                                <svg className="w-10 h-10 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
                             </div>
-                            <h1 className="text-3xl md:text-4xl font-display font-medium leading-tight mb-6 text-white tracking-tight">
-                                Analyse Dermatologique <span className="text-brand-primary">IA</span>
+                            <h1 className="text-3xl md:text-5xl font-display font-medium leading-tight mb-6 text-white tracking-tight">
+                                {t('analysis.title')}
                             </h1>
-                            <p className="text-base md:text-lg font-light leading-relaxed mb-8 text-brand-secondary/80">
-                                Répondez à quelques questions visuelles. <br />
-                                <span className="text-brand-primary font-medium">Précision clinique, simplicité absolue.</span>
+                            <p className="text-lg md:text-xl font-light leading-relaxed mb-10 text-brand-secondary/80">
+                                {t('analysis.subtitle')} <br />
+                                <span className="text-brand-primary font-medium">{t('analysis.highlight')}</span>
                             </p>
-                            <p className="text-sm font-medium uppercase tracking-widest text-brand-secondary/40 mb-4">
-                                Pour qui est cette analyse ?
+                            <div className="w-12 h-1 bg-brand-primary/20 mx-auto mb-10 rounded-full"></div>
+                            <p className="text-sm font-medium uppercase tracking-[0.2em] text-brand-secondary/40 mb-6">
+                                {t('analysis.target')}
                             </p>
                         </div>
                     ) : (
-                        <div key={currentAiMessage.id} className="text-center mb-8 animate-fade-in">
+                        <div key={currentAssistantMessage.id} className="text-center mb-8 animate-fade-in">
                             <h2 className="text-2xl md:text-3xl font-display font-bold text-white leading-tight">
                                 {(() => {
-                                    const text = currentAiMessage.text;
+                                    const text = currentAssistantMessage.text;
                                     const qIndex = text.indexOf('?');
                                     if (qIndex !== -1) return text.substring(0, qIndex + 1);
                                     return text;
                                 })()}
                             </h2>
                             {(() => {
-                                const text = currentAiMessage.text;
+                                const text = currentAssistantMessage.text;
                                 const qIndex = text.indexOf('?');
                                 if (qIndex !== -1) {
                                     const remainder = text.substring(qIndex + 1).trim();
@@ -760,175 +797,215 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                         </div>
                     )}
 
-                    {isLoading && !awaitingNumberInputForOption ? ( // Removed awaitingVideoQuestion
+                    {isLoading && !awaitingNumberInputForOption ? (
                         <div className="flex flex-col items-center justify-center h-48" aria-live="polite" aria-atomic="true" role="status">
-                            <div className="flex items-center gap-2">
-                                <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: '100ms' }}></span>
-                                <span className="w-5 h-5 bg-emerald-500 rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></span>
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="flex gap-2">
+                                    <span className="w-4 h-4 bg-brand-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                    <span className="w-4 h-4 bg-brand-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                    <span className="w-4 h-4 bg-brand-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                </div>
+                                <p className="text-brand-secondary/60 text-base animate-pulse font-light tracking-wide">{t('analysis.loading')}</p>
                             </div>
-                            <p className="mt-4 text-slate-600 text-base animate-fade-in">DERMO-CHECK analyse...</p>
                         </div>
                     ) : (
-                        <div className="w-full flex flex-col items-center gap-4"> {/* Added gap-4 for spacing between components */}
-                            {currentAiMessage.isPhotoRequest ? (
+                        <div className="w-full flex flex-col items-center gap-6">
+                            {currentAssistantMessage.isPhotoRequest ? (
                                 <FileUpload onFileSelect={handleFileSelect} onSkip={handleSkipMedia} ref={fileUploadRef} />
-                            ) : currentAiMessage.isAgeDropdownRequest ? ( // New: Conditional rendering for AgeDropdown
+                            ) : currentAssistantMessage.isAgeDropdownRequest ? ( // New: Conditional rendering for AgeDropdown
                                 <AgeDropdown
                                     onSubmit={handleTextSubmit}
                                     ref={ageDropdownRef}
-                                    minAge={currentAiMessage.ageDropdownMin}
-                                    maxAge={currentAiMessage.ageDropdownMax}
+                                    minAge={currentAssistantMessage.ageDropdownMin}
+                                    maxAge={currentAssistantMessage.ageDropdownMax}
+                                    language={language}
                                 />
-                            ) : consultationType === 'other' && currentAiMessage.text.includes("Quel est son âge ?") && currentAiMessage.isComboInputRequest ? ( // New: Conditional rendering for age dropdown (Autre personne)
-                                <AgeMonthYearDropdown onSubmit={handleTextSubmit} monthsRef={ageMonthYearDropdownMonthsRef} yearsRef={ageMonthYearDropdownYearsRef} />
-                            ) : currentAiMessage.text.includes("Dans quel pays résidez-vous ?") ? ( // Conditional rendering for country dropdown
+                            ) : currentAssistantMessage.isComboInputRequest ? ( // Simplified check, rely on tag parsing
+                                <AgeMonthYearDropdown
+                                    onSubmit={handleTextSubmit}
+                                    monthsRef={ageMonthYearDropdownMonthsRef}
+                                    yearsRef={ageMonthYearDropdownYearsRef}
+                                    language={language}
+                                />
+                            ) : currentAssistantMessage.text.includes("Dans quel pays résidez-vous ?") ? ( // Conditional rendering for country dropdown
                                 <CountryDropdown onSubmit={handleTextSubmit} ref={countryDropdownRef} />
-                            ) : currentAiMessage.isTextInputRequest || awaitingNumberInputForOption ? ( // Removed currentAiMessage.isQuestionForVideoAnalysis
+                            ) : currentAssistantMessage.isTextInputRequest || awaitingNumberInputForOption ? ( // Removed currentAssistantMessage.isQuestionForVideoAnalysis
                                 <TextInput
                                     onSubmit={handleTextSubmit}
-                                    placeholder={currentAiMessage.textInputPlaceholder || "Ex: Apparu il y a 3 jours comme un point rouge..."}
-                                    showNoneButton={currentAiMessage.hasNoneButton} // Pass this prop to TextInput
+                                    placeholder={currentAssistantMessage.textInputPlaceholder || "Ex: Apparu il y a 3 jours comme un point rouge..."}
+                                    showNoneButton={currentAssistantMessage.hasNoneButton} // Pass this prop to TextInput
                                     onNoneClick={handleNoneSubmit} // Pass generic 'aucun' for text input none
-                                    noneButtonText={currentAiMessage.noneButtonText} // Pass the specific none button text
+                                    noneButtonText={currentAssistantMessage.noneButtonText} // Pass the specific none button text
                                     ref={textInputRef}
                                 />
                             ) : null}
-                            {currentAiMessage.options && currentAiMessage.isMultiChoice && (
+                            {currentAssistantMessage.options && currentAssistantMessage.isMultiChoice && (
                                 <MultiChoiceOptions
-                                    options={currentAiMessage.options}
+                                    options={currentAssistantMessage.options}
                                     onSubmit={handleMultiChoiceSubmit}
-                                    hasNoneButton={currentAiMessage.hasNoneButton} // Pass the dedicated none button flag
-                                    noneButtonText={currentAiMessage.noneButtonText} // Pass the dedicated none button text
+                                    hasNoneButton={currentAssistantMessage.hasNoneButton}
+                                    noneButtonText={currentAssistantMessage.noneButtonText}
                                     onNoneClick={handleNoneSubmit}
-                                    optionButtonRefs={optionButtonsRef} // Pass ref for focus
+                                    optionButtonRefs={optionButtonsRef}
+                                    onError={(msg) => setValidationError(msg)}
                                 />
                             )}
-                            {currentAiMessage.options && !currentAiMessage.isMultiChoice && (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md animate-fade-in">
-                                    {currentAiMessage.options.map((opt, index) => (
-                                        // Fix: Changed ref assignment to explicitly return void.
-                                        <OptionButton key={opt} text={opt} onClick={handleOptionSelect} ref={(el: HTMLButtonElement | null) => {
-                                            if (optionButtonsRef.current) {
-                                                optionButtonsRef.current[index] = el;
-                                            }
-                                        }} />
+                            {currentAssistantMessage.options && !currentAssistantMessage.isMultiChoice && (
+                                <div className={`w-full flex flex-wrap justify-center gap-4 animate-fade-in ${currentAssistantMessage.options.length > 3 ? 'grid grid-cols-2 md:grid-cols-3' : 'flex'}`}>
+                                    {currentAssistantMessage.options.map((opt, index) => (
+                                        <div key={opt} className={currentAssistantMessage.options.length <= 3 ? "flex-1 min-w-[160px] max-w-[300px]" : "w-full"}>
+                                            <OptionButton text={opt} onClick={handleOptionSelect} ref={(el: HTMLButtonElement | null) => {
+                                                if (optionButtonsRef.current) {
+                                                    optionButtonsRef.current[index] = el;
+                                                }
+                                            }} />
+                                        </div>
                                     ))}
                                 </div>
                             )}
                             {/* Render dedicated "None" button for single choice questions that have one */}
-                            {currentAiMessage.hasNoneButton && currentAiMessage.noneButtonText &&
-                                !currentAiMessage.isMultiChoice && !currentAiMessage.isTextInputRequest &&
-                                !currentAiMessage.isPhotoRequest && !currentAiMessage.isAgeDropdownRequest && // New: exclude age dropdown
-                                !(consultationType === 'other' && currentAiMessage.text.includes("Quel est son âge ?") && currentAiMessage.isComboInputRequest) && !currentAiMessage.text.includes("Dans quel pays résidez-vous ?") && (
+                            {currentAssistantMessage.hasNoneButton && currentAssistantMessage.noneButtonText &&
+                                !currentAssistantMessage.isMultiChoice && !currentAssistantMessage.isTextInputRequest &&
+                                !currentAssistantMessage.isPhotoRequest && !currentAssistantMessage.isAgeDropdownRequest &&
+                                !(consultationType === 'other' && currentAssistantMessage.text.includes("Quel est son âge ?") && currentAssistantMessage.isComboInputRequest) && !currentAssistantMessage.text.includes("Dans quel pays résidez-vous ?") && (
                                     <button
                                         type="button"
-                                        onClick={() => handleNoneSubmit(currentAiMessage.noneButtonText!)}
-                                        className="w-full max-w-md p-4 md:p-5 bg-white border border-gray-200 text-slate-700 rounded-2xl shadow-sm
-                                            hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200
-                                            ease-in-out transform hover:-translate-y-1 capitalize font-medium text-base md:text-lg mt-2"
+                                        onClick={() => handleNoneSubmit(currentAssistantMessage.noneButtonText!)}
+                                        className="w-full max-w-lg px-7 py-4 bg-white border-2 border-emerald-500 text-emerald-600 text-lg rounded-full hover:bg-emerald-50 transition-all duration-300 font-bold shadow-xl active:scale-95 mt-4"
                                     >
-                                        {currentAiMessage.noneButtonText}
+                                        {currentAssistantMessage.noneButtonText}
                                     </button>
                                 )}
                         </div>
                     )}
                 </div>
             ) : (
-                currentAiMessage && currentAiMessage.isFinalReport && (
-                    <ChatMessage message={currentAiMessage} />
+                currentAssistantMessage && currentAssistantMessage.isFinalReport && (
+                    <ChatMessage message={currentAssistantMessage} />
                 )
             )}
 
             {/* Reset Confirmation Modal */}
-            {showResetConfirmation && (
+            {/* Reset Confirmation Modal */}
+            {showResetConfirmation && ReactDOM.createPortal(
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/70 animate-fade-in p-4"
+                    className="fixed inset-0 z-[9999] flex items-center justify-center animate-fade-in p-4"
                     role="dialog" aria-modal="true" aria-labelledby="reset-confirmation-title"
                 >
+                    {/* Dark backdrop with blur */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#030305]/95 via-[#0a0b0d]/95 to-[#030305]/95 backdrop-blur-sm" aria-hidden="true"></div>
+
                     <div
                         ref={resetModalRef}
-                        className="bg-white rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl minor-check-popup-scale-in"
+                        className="relative bg-gradient-to-b from-[#0a0b0d] via-[#111214] to-[#0a0b0d] rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl border border-white/10 backdrop-blur-xl animate-fade-in-scale"
+                        style={{
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 0 40px rgba(239, 68, 68, 0.1)'
+                        }}
                     >
-                        <div className="mb-6 flex justify-center text-5xl text-red-500">
+                        <div className="mb-6 flex justify-center text-5xl drop-shadow-[0_0_30px_rgba(239,68,68,0.8)]">
                             <span role="img" aria-label="Warning">⚠️</span>
                         </div>
-                        <h2 id="reset-confirmation-title" className="text-2xl font-bold text-red-700 mb-4">Confirmer le redémarrage</h2>
-                        <p className="text-slate-700 text-base mb-6">
-                            Êtes-vous sûr de vouloir recommencer la consultation ? Toutes les réponses actuelles seront perdues.
+                        <h2 id="reset-confirmation-title" className="text-2xl md:text-3xl font-bold text-white mb-4 font-display">{t('analysis.reset_popup.title')}</h2>
+                        <p className="text-brand-secondary/80 text-base md:text-lg mb-6 font-light leading-relaxed">
+                            {t('analysis.reset_popup.text')}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <button
                                 onClick={confirmReset}
-                                className="px-6 py-3 text-white text-base rounded-full hover:opacity-90 transition-colors font-semibold shadow-lg bg-red-600 hover:bg-red-700"
+                                className="px-6 py-3 text-white text-base rounded-full font-semibold shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] bg-red-600 hover:bg-red-700 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 focus:ring-offset-[#0a0b0d]"
                             >
-                                Oui, recommencer
+                                {t('analysis.reset_popup.confirm')}
                             </button>
                             <button
                                 onClick={cancelReset}
-                                className="px-6 py-3 border rounded-full transition-colors font-semibold text-slate-700 hover:bg-gray-100 border-gray-300 text-base"
+                                className="px-6 py-3 border-2 border-white/20 rounded-full transition-all duration-200 font-semibold text-brand-secondary hover:bg-white/10 hover:border-white/40 hover:text-white text-base hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-[#0a0b0d]"
                                 aria-label="Annuler et reprendre la consultation"
                             >
-                                Non, annuler
+                                {t('analysis.reset_popup.cancel')}
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Validation Error Modal - Quick & Premium */}
+            {validationError && ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setValidationError(null)}></div>
+                    <div className="relative bg-gradient-to-b from-[#1a0505] to-[#0a0b0d] border border-red-500/30 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-fade-in-scale">
+                        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6 ring-1 ring-red-500/40">
+                            <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        </div>
+                        <h3 className="text-xl font-display font-bold text-white mb-2">{t('analysis.validation_popup.title')}</h3>
+                        <p className="text-brand-secondary/80 text-base font-light mb-8 leading-relaxed">
+                            {validationError}
+                        </p>
+                        <button
+                            onClick={() => setValidationError(null)}
+                            className="w-full py-3 bg-white text-brand-deep rounded-full font-bold hover:bg-gray-100 transition-colors shadow-lg active:scale-95"
+                        >
+                            {t('analysis.validation_popup.close')}
+                        </button>
+                    </div>
+                </div>,
+                document.body
             )}
 
             {/* Initial Warning Popup - Full Screen Overlay */}
-            {showInitialWarningPopup && (
+            {showInitialWarningPopup && ReactDOM.createPortal(
                 <div
-                    className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
+                    className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="initial-warning-title"
                 >
-                    {/* Opaque Backdrop to hide header/footer completely */}
-                    <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity duration-300 animate-fade-in" aria-hidden="true"></div>
+                    {/* Dark Backdrop with blur */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#030305]/95 via-[#0a0b0d]/95 to-[#030305]/95 backdrop-blur-sm transition-opacity duration-300 animate-fade-in" aria-hidden="true"></div>
 
                     {/* Popup Card */}
                     <div
                         ref={initialWarningModalRef}
-                        className="relative w-full max-w-lg bg-gradient-to-b from-[#D1FAE6] to-[#A8E6CF] rounded-[16px] shadow-2xl p-8 flex flex-col items-center text-center transform transition-all duration-500 ease-out animate-fade-in"
+                        className="relative w-full max-w-lg bg-gradient-to-b from-[#0a0b0d] via-[#111214] to-[#0a0b0d] rounded-3xl shadow-2xl p-8 flex flex-col items-center text-center transform transition-all duration-500 ease-out animate-fade-in border border-white/10 backdrop-blur-xl"
                         style={{
-                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1) inset'
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 0 40px rgba(45, 212, 191, 0.1)'
                         }}
                         tabIndex={-1}
                     >
                         {/* Icon */}
-                        <div className="mb-6 text-5xl animate-bounce">
+                        <div className="mb-6 text-5xl animate-bounce drop-shadow-[0_0_30px_rgba(255,200,0,0.8)]">
                             ⚠️
                         </div>
 
                         {/* Title */}
-                        <h2 id="initial-warning-title" className="text-2xl font-bold text-[#063E2E] mb-6 font-['Poppins'] tracking-tight">
-                            Avertissement médical
+                        <h2 id="initial-warning-title" className="text-2xl md:text-3xl font-bold text-white mb-6 font-display tracking-tight">
+                            {t('analysis.warning_popup.title')}
                         </h2>
 
                         {/* Text Content - Centered, readable, spaced */}
-                        <div className="space-y-6 text-[#063E2E] text-base md:text-lg font-medium leading-relaxed font-['Poppins']">
+                        <div className="space-y-6 text-brand-secondary/80 text-base md:text-lg font-light leading-relaxed">
                             <p>
-                                Les informations fournies par DermoCheck sont données à titre indicatif et ne remplacent pas une consultation médicale.
+                                {t('analysis.warning_popup.text1')}
                             </p>
-                            <p className="font-bold">
-                                Aucune donnée n’est sauvegardée.
+                            <p className="font-bold text-white">
+                                {t('analysis.warning_popup.text2')}
                             </p>
                             <p>
-                                En cas de douleur, fièvre ou aggravation rapide d’une lésion, consultez immédiatement un dermatologue ou un service d’urgence.
+                                {t('analysis.warning_popup.text3')}
                             </p>
                         </div>
 
                         {/* Close Button */}
                         <button
-                            className="mt-8 bg-white text-[#063E2E] text-base font-bold py-3 px-12 rounded-[12px] shadow-md hover:shadow-lg hover:bg-gray-50 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#063E2E]/50"
+                            className="mt-8 bg-brand-primary text-[#030305] text-base font-bold py-3 px-12 rounded-full shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_30px_rgba(45,212,191,0.5)] hover:bg-brand-primary/90 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:ring-offset-2 focus:ring-offset-[#0a0b0d]"
                             onClick={() => setShowInitialWarningPopup(false)}
                             aria-label="Fermer l'avertissement et commencer"
                         >
-                            Fermer
+                            {t('analysis.warning_popup.close')}
                         </button>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

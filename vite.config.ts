@@ -4,4 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/', // Correction pour Netlify : chemin absolu
+  server: {
+    port: 3004
+  }
 })

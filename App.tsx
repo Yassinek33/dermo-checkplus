@@ -11,10 +11,16 @@ import { PageConfig } from './types';
 import MinorCheckPopup from './components/MinorCheckPopup';
 import DermatologistFinder from './components/DermatologistFinder';
 import DermatologistListPage from './components/DermatologistListPage';
-import { DermoCheckLogo } from './components/icons';
 import { searchDermatologistsWithMaps } from './services/geminiService';
+import { reverseGeocode } from './services/geocodingService';
 import { GenerateContentResponse, LatLng } from '@google/genai';
 import AppLayout from './components/AppLayout';
+import { countries } from './components/CountryDropdown';
+import LanguagePopup from './components/LanguagePopup';
+import { useLanguage } from './context/LanguageContext';
+import { FAQPage } from './components/FAQPage';
+import { BlogListPage } from './components/BlogListPage';
+import { BlogArticlePageComponent } from './components/BlogArticlePage';
 
 // --- Icons for Menu ---
 const MenuIcon = () => (
@@ -31,6 +37,7 @@ const XIcon = () => (
 
 type PageId = string;
 type UserProfile = 'adult' | 'minor' | null;
+type ArticleSlug = string | undefined;
 
 const NavItem: React.FC<{ label: string; active: boolean; onClick: () => void; mobile?: boolean }> = ({ label, active, onClick, mobile }) => {
     // Desktop styles (Dark text on Light Green header)
@@ -59,7 +66,9 @@ const NavItem: React.FC<{ label: string; active: boolean; onClick: () => void; m
 };
 
 const App: React.FC = () => {
+    const { t } = useLanguage();
     const [currentPageId, setCurrentPageId] = useState<PageId>('home');
+    const [currentArticleSlug, setCurrentArticleSlug] = useState<ArticleSlug>(undefined);
     const [userProfile, setUserProfile] = useState<UserProfile>(() => {
         return (localStorage.getItem('dermo_user_profile') as UserProfile) || null;
     });
@@ -78,8 +87,9 @@ const App: React.FC = () => {
         }
     }, [userProfile]);
 
-    const navigateTo = useCallback((pageId: PageId) => {
+    const navigateTo = useCallback((pageId: PageId, articleSlug?: ArticleSlug) => {
         setCurrentPageId(pageId);
+        setCurrentArticleSlug(articleSlug);
         setIsMobileMenuOpen(false); // Close menu on navigation
         // Reset state for new page if it's the dermatologist finder
         if (pageId === 'find-dermatologist') {
@@ -111,7 +121,40 @@ const App: React.FC = () => {
         setLastSearchLocation(userLatLng || null); // Store the location used for this search
 
         try {
-            const results = await searchDermatologistsWithMaps(country, city, userLatLng);
+            let searchCountry = country;
+            let searchCity = city;
+
+            // WORKAROUND: Google Maps Grounding API has a bug with latLng
+            // Convert coordinates to country/city using reverse geocoding
+            if (userLatLng && userLatLng.latitude && userLatLng.longitude) {
+                console.log("🔄 Using reverse geocoding workaround for coordinates:", userLatLng);
+                const geocoded = await reverseGeocode(userLatLng.latitude, userLatLng.longitude);
+
+                if (geocoded.error) {
+                    console.error("Reverse geocoding failed:", geocoded.error);
+                    setDermSearchError(`Impossible de déterminer votre emplacement: ${geocoded.error}`);
+                    setIsDermSearchLoading(false);
+                    return;
+                }
+
+                if (geocoded.country) {
+                    searchCountry = geocoded.country;
+                    searchCity = geocoded.city || "";
+                    console.log(`✅ Geocoded location: ${searchCity}, ${searchCountry}`);
+                    setCurrentSearchQuery({ country: searchCountry, city: searchCity });
+                } else {
+                    console.error("No country found in geocoding result");
+                    setDermSearchError("Impossible de déterminer votre pays à partir de votre position.");
+                    setIsDermSearchLoading(false);
+                    return;
+                }
+            }
+
+            const countryData = countries.find(c => c.name === searchCountry);
+            const searchLang = countryData?.lang || 'fr';
+
+            // Search by country/city instead of coordinates (workaround for API bug)
+            const results = await searchDermatologistsWithMaps(searchCountry, searchCity, null, searchLang);
             setDermatologistMapResults(results);
         } catch (error: any) {
             console.error("Error searching for dermatologists:", error);
@@ -152,6 +195,11 @@ const App: React.FC = () => {
 
     // --- Render Logic with AppLayout ---
     const renderContent = () => {
+        // Handle blog-article route first (doesn't need config)
+        if (currentPageId === 'blog-article') {
+            return <BlogArticlePageComponent slug={currentArticleSlug || ''} onNavigate={navigateTo} />;
+        }
+
         if (!currentPageConfig) return <div className="text-center text-red-600">Page non trouvée.</div>;
 
         // STRICT Security check for Minors accessing Questionnaire
@@ -166,23 +214,24 @@ const App: React.FC = () => {
                 return <HomePage
                     config={currentPageConfig}
                     onStart={() => navigateTo(userProfile === 'minor' ? 'find-dermatologist' : 'questionnaire')}
+                    onNavigate={navigateTo}
                 />;
             case 'questionnaire':
                 return <Questionnaire config={currentPageConfig} />;
             case 'about':
                 return <AboutPage config={currentPageConfig} />;
             case 'blog':
-                return <BlogPage config={currentPageConfig} />;
+                return <BlogListPage onNavigate={navigateTo} />;
             case 'dictionary':
                 return <DictionaryPage config={currentPageConfig} />;
             case 'contact':
                 return <ContactPage config={currentPageConfig} />;
             case 'find-dermatologist':
                 return (
-                    <div className="glass-panel rounded-3xl p-6 md:p-8 text-center animate-fade-in shadow-xl relative backdrop-blur-xl bg-white/70">
+                    <div className="glass-panel rounded-3xl p-8 md:p-12 text-center animate-fade-in shadow-2xl relative z-10">
                         {/* Using the glass-panel class from styles.css */}
-                        <h2 className="text-2xl md:text-3xl font-bold text-brand-secondary mb-6">{currentPageConfig.title}</h2>
-                        {currentPageConfig.description && <p className="text-base md:text-lg text-slate-600 mb-8 max-w-2xl mx-auto">{currentPageConfig.description}</p>}
+                        <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-6 tracking-tight">{t('dermatologist.title')}</h2>
+                        <p className="text-lg text-brand-secondary/80 mb-10 max-w-2xl mx-auto font-light leading-relaxed">{t('dermatologist.description')}</p>
 
                         {dermatologistMapResults || isDermSearchLoading || dermSearchError ? (
                             <DermatologistListPage
@@ -204,8 +253,10 @@ const App: React.FC = () => {
                     </div>
                 );
             case 'faq':
+                return <FAQPage />;
             case 'privacy-policy':
             case 'terms-of-use':
+            case 'legal':
                 return <InfoPage config={currentPageConfig} />;
             default:
                 return <div className="text-center text-red-600">Page non gérée.</div>;
@@ -227,6 +278,7 @@ const App: React.FC = () => {
                 navigateTo('home');
             }}
         >
+            <LanguagePopup />
             {renderContent()}
         </AppLayout>
     );

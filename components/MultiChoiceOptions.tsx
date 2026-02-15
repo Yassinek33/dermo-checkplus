@@ -7,7 +7,8 @@ interface MultiChoiceOptionsProps {
     hasNoneButton?: boolean;
     noneButtonText?: string;
     onNoneClick?: (text: string) => void;
-    optionButtonRefs?: React.MutableRefObject<(HTMLButtonElement | null)[]>; // New prop for refs
+    optionButtonRefs?: React.MutableRefObject<(HTMLButtonElement | null)[]>;
+    onError?: (message: string) => void;
 }
 
 // Define mutually exclusive options (these will be removed from options array in Questionnaire.tsx now)
@@ -19,32 +20,47 @@ const MUTUALLY_EXCLUSIVE_OPTIONS = [
     "Aucun de ces facteurs" // Added for consistency
 ];
 
-const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubmit, hasNoneButton, noneButtonText, onNoneClick, optionButtonRefs }) => {
+const formatOptionText = (text: string) => {
+    const unified = text.charAt(0).toUpperCase() + text.slice(1);
+    const parts = unified.split(/(\(.*?\))/);
+    return parts.map((part, i) => {
+        if (part.startsWith('(') && part.endsWith(')')) {
+            return (
+                <span key={i} className="block text-[10px] md:text-xs text-brand-secondary/60 mt-0.5 font-normal leading-tight">
+                    {part}
+                </span>
+            );
+        }
+        return <span key={i} className="block leading-tight">{part}</span>;
+    });
+};
+
+const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubmit, hasNoneButton, noneButtonText, onNoneClick, optionButtonRefs, onError }) => {
     const [selected, setSelected] = useState<string[]>([]);
 
     const toggleOption = (option: string) => {
-        setSelected(prev => {
-            const isMutuallyExclusive = MUTUALLY_EXCLUSIVE_OPTIONS.includes(option);
-            const isCurrentlySelected = prev.includes(option);
+        const isMutuallyExclusive = MUTUALLY_EXCLUSIVE_OPTIONS.includes(option);
+        const isCurrentlySelected = selected.includes(option);
 
-            if (isMutuallyExclusive) {
-                if (isCurrentlySelected) {
-                    // If it's a mutually exclusive option and it's currently selected, deselect it.
-                    return prev.filter(item => item !== option);
-                } else {
-                    // If it's a mutually exclusive option and not selected, select ONLY it.
-                    return [option];
-                }
-            } else {
-                if (isCurrentlySelected) {
-                    // If it's a regular option and currently selected, deselect it.
-                    return prev.filter(item => item !== option);
-                } else {
-                    // If it's a regular option and not selected, add it and deselect any mutually exclusive options.
-                    return [...prev.filter(item => !MUTUALLY_EXCLUSIVE_OPTIONS.includes(item)), option];
-                }
+        if (isCurrentlySelected) {
+            setSelected(prev => prev.filter(item => item !== option));
+            return;
+        }
+
+        if (isMutuallyExclusive) {
+            if (selected.length > 0) {
+                onError?.(`Le choix "${option}" est incompatible avec vos sélections actuelles.`);
+                return;
             }
-        });
+            setSelected([option]);
+        } else {
+            const hasExclusive = selected.find(item => MUTUALLY_EXCLUSIVE_OPTIONS.includes(item));
+            if (hasExclusive) {
+                onError?.(`Désélectionnez d'abord "${hasExclusive}" pour ajouter d'autres symptômes.`);
+                return;
+            }
+            setSelected(prev => [...prev, option]);
+        }
     };
 
     const handleSubmit = () => {
@@ -54,43 +70,49 @@ const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubm
     };
 
     return (
-        <div className="flex flex-col items-center gap-4 w-full">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-lg">
+        <div className="flex flex-col items-center gap-6 w-full animate-fade-in">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full">
                 {options.map((opt, index) => (
                     <button
                         key={opt}
                         onClick={() => toggleOption(opt)}
-                        className={`p-3 md:p-4 text-center rounded-2xl border transition-all duration-200 ease-in-out transform hover:-translate-y-1 text-sm md:text-base font-medium backdrop-blur-md shadow-lg ${selected.includes(opt)
-                                ? 'bg-brand-primary border-brand-primary text-brand-deep shadow-[0_0_15px_rgba(45,212,191,0.4)]'
-                                : 'bg-white/5 border-white/10 text-brand-secondary hover:bg-white/10 hover:border-brand-primary/40 hover:text-white'
+                        className={`flex flex-col items-center justify-center p-4 md:p-6 text-center rounded-2xl border transition-all duration-300 ease-out transform hover:-translate-y-1 text-sm md:text-base font-bold backdrop-blur-md shadow-xl min-h-[90px] ${selected.includes(opt)
+                            ? 'bg-brand-primary border-brand-primary text-brand-deep shadow-[0_0_25px_rgba(45,212,191,0.5)] scale-[1.03] z-10'
+                            : 'bg-white/5 border-white/10 text-brand-secondary hover:bg-white/10 hover:border-brand-primary/40 hover:text-white'
                             }`}
                         aria-pressed={selected.includes(opt)}
-                        // Fix: Explicitly type `el` as HTMLButtonElement | null to match RefCallback signature
-                        ref={(el: HTMLButtonElement | null) => { if (optionButtonRefs && optionButtonRefs.current) optionButtonRefs.current[index] = el; }} // Assign ref
+                        ref={(el: HTMLButtonElement | null) => { if (optionButtonRefs && optionButtonRefs.current) optionButtonRefs.current[index] = el; }}
                     >
-                        {opt}
+                        {formatOptionText(opt)}
                     </button>
                 ))}
             </div>
-            <button
-                onClick={handleSubmit}
-                disabled={selected.length === 0}
-                className="mt-2 w-full max-w-lg px-7 py-3 md:py-4 bg-brand-primary text-brand-deep text-base md:text-lg rounded-full hover:bg-brand-primary/90 disabled:bg-white/10 disabled:text-white/20 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_30px_rgba(45,212,191,0.4)]"
-            >
-                Valider
-            </button>
 
-            {hasNoneButton && noneButtonText && onNoneClick && (
+            <div className="flex flex-col gap-4 w-full max-w-lg mt-4">
                 <button
-                    type="button"
-                    onClick={() => onNoneClick(noneButtonText)}
-                    className="w-full max-w-lg p-4 md:p-5 bg-white/5 border border-white/10 text-brand-secondary rounded-2xl shadow-lg
-                               hover:bg-white/10 hover:border-brand-primary/30 hover:text-white transition-all duration-200
-                               ease-in-out transform hover:-translate-y-1 capitalize font-medium text-base md:text-lg mt-2 backdrop-blur-md"
+                    onClick={handleSubmit}
+                    disabled={selected.length === 0}
+                    className="w-full px-7 py-4 bg-brand-primary text-brand-deep text-lg rounded-full hover:bg-brand-primary/90 disabled:bg-white/5 disabled:text-white/10 disabled:border-white/5 disabled:cursor-not-allowed transition-all duration-300 font-bold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_40px_rgba(45,212,191,0.4)] active:scale-95"
                 >
-                    {noneButtonText}
+                    Valider la sélection
                 </button>
-            )}
+
+                {hasNoneButton && noneButtonText && onNoneClick && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            if (selected.length > 0) {
+                                onError?.(`Veuillez vider vos sélections avant de cliquer sur "${noneButtonText}".`);
+                            } else {
+                                onNoneClick(noneButtonText);
+                            }
+                        }}
+                        className="w-full px-7 py-4 bg-white border-2 border-emerald-500 text-emerald-600 text-lg rounded-full hover:bg-emerald-50 transition-all duration-300 font-bold shadow-xl active:scale-95"
+                    >
+                        {noneButtonText}
+                    </button>
+                )}
+            </div>
         </div>
     );
 };

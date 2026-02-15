@@ -6,31 +6,53 @@ interface AgeMonthYearDropdownProps {
     onSubmit: (ageString: string) => void;
     monthsRef?: Ref<HTMLSelectElement>; // New ref prop for months dropdown
     yearsRef?: Ref<HTMLSelectElement>; // New ref prop for years dropdown
+    language: string; // Add language prop
 }
 
-const AgeMonthYearDropdown: React.FC<AgeMonthYearDropdownProps> = ({ onSubmit, monthsRef, yearsRef }) => {
+const AgeMonthYearDropdown: React.FC<AgeMonthYearDropdownProps> = ({ onSubmit, monthsRef, yearsRef, language }) => {
     const themeConfig = appConfig.app.theme;
     const [selectedMonths, setSelectedMonths] = useState<string>('');
     const [selectedYears, setSelectedYears] = useState<string>('');
 
+    const t = (key: string) => {
+        const translations: Record<string, Record<string, string>> = {
+            fr: {
+                months: "Mois",
+                years: "Années",
+                validate: "Valider l'âge",
+                less_than_1: "Moins de 1 mois",
+                month_suffix: "mois",
+                year_suffix: "ans"
+            },
+            en: {
+                months: "Months",
+                years: "Years",
+                validate: "Validate Age",
+                less_than_1: "Less than 1 month",
+                month_suffix: "months",
+                year_suffix: "years"
+            }
+        };
+        return translations[language as 'fr' | 'en']?.[key] || translations['fr'][key];
+    };
+
     const months: { label: string; value: string }[] = useMemo(() => {
-        const list = [{ label: "Moins de 1 mois", value: "0" }];
+        const list = [{ label: t('less_than_1'), value: "0" }];
         for (let i = 1; i <= 11; i++) {
-            list.push({ label: `${i} mois`, value: i.toString() });
+            list.push({ label: `${i} ${t('month_suffix')}`, value: i.toString() });
         }
         return list;
-    }, []);
+    }, [language]); // Re-memoize on language change
 
     const years: { label: string; value: string }[] = useMemo(() => {
         const list = [];
         // Start from 0 years to allow for cases like "3 mois" without any years, but still valid.
-        // The prompt asked for "2 to 120" years, so adapting it.
-        list.push({ label: "0 ans", value: "0" }); 
+        list.push({ label: `0 ${t('year_suffix')}`, value: "0" });
         for (let i = 1; i <= 120; i++) {
-            list.push({ label: `${i} ans`, value: i.toString() });
+            list.push({ label: `${i} ${t('year_suffix')}`, value: i.toString() });
         }
         return list;
-    }, []);
+    }, [language]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,15 +61,18 @@ const AgeMonthYearDropdown: React.FC<AgeMonthYearDropdownProps> = ({ onSubmit, m
         const monthsValue = parseInt(selectedMonths, 10);
 
         if (yearsValue > 0) {
-            ageString += `${yearsValue} ans`;
+            ageString += `${yearsValue} ${t('year_suffix')}`; // Use standard suffix "ans" or "years"
         }
         if (monthsValue > 0) {
-            if (ageString) ageString += ' et ';
-            ageString += `${months.find(m => m.value === selectedMonths)?.label}`;
+            if (ageString) ageString += language === 'en' ? ' and ' : ' et ';
+            ageString += `${monthsValue} ${t('month_suffix')}`;
         } else if (monthsValue === 0 && yearsValue === 0) {
-             ageString = months.find(m => m.value === selectedMonths)?.label || ''; // For "Moins de 1 mois"
+            // For "Moins de 1 mois", verify selectedMonths is indeed "0"
+            if (selectedMonths === "0") {
+                ageString = t('less_than_1');
+            }
         }
-        
+
         if (ageString) {
             onSubmit(ageString);
             setSelectedMonths('');
@@ -60,44 +85,54 @@ const AgeMonthYearDropdown: React.FC<AgeMonthYearDropdownProps> = ({ onSubmit, m
     const isActuallyDisabled = isSubmitDisabled && !(selectedMonths === "0" && !selectedYears);
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 w-full max-w-xl mx-auto">
-            <div className="flex flex-col sm:flex-row gap-3 w-full">
-                <select
-                    value={selectedMonths}
-                    onChange={(e) => setSelectedMonths(e.target.value)}
-                    className="flex-1 px-4 py-3 md:px-5 md:py-4 border border-gray-300 bg-white text-slate-900 text-base md:text-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors shadow-sm"
-                    aria-label="Sélectionnez les mois"
-                    ref={monthsRef} // Assign ref
-                >
-                    <option value="" disabled>Sélectionnez les mois</option>
-                    {months.map(month => (
-                        <option key={month.value} value={month.value}>
-                            {month.label}
-                        </option>
-                    ))}
-                </select>
-                <select
-                    value={selectedYears}
-                    onChange={(e) => setSelectedYears(e.target.value)}
-                    className="flex-1 px-4 py-3 md:px-5 md:py-4 border border-gray-300 bg-white text-slate-900 text-base md:text-lg rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors shadow-sm"
-                    aria-label="Sélectionnez les années"
-                    ref={yearsRef} // Assign ref
-                >
-                    <option value="" disabled>Sélectionnez les années</option>
-                    {years.map(year => (
-                        <option key={year.value} value={year.value}>
-                            {year.label}
-                        </option>
-                    ))}
-                </select>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-6 w-full max-w-lg mx-auto animate-fade-in">
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="relative flex-1">
+                    <select
+                        value={selectedMonths}
+                        onChange={(e) => setSelectedMonths(e.target.value)}
+                        className="w-full px-5 py-4 bg-white/10 border border-white/20 text-white text-lg rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-all shadow-inner backdrop-blur-md appearance-none cursor-pointer hover:bg-white/15"
+                        aria-label={t('months')}
+                        ref={monthsRef}
+                    >
+                        <option value="" disabled className="bg-slate-900 text-white/50">{t('months')}</option>
+                        {months.map(month => (
+                            <option key={month.value} value={month.value} className="bg-slate-900 text-white">
+                                {month.label}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-brand-primary">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                </div>
+
+                <div className="relative flex-1">
+                    <select
+                        value={selectedYears}
+                        onChange={(e) => setSelectedYears(e.target.value)}
+                        className="w-full px-5 py-4 bg-white/10 border border-white/20 text-white text-lg rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-all shadow-inner backdrop-blur-md appearance-none cursor-pointer hover:bg-white/15"
+                        aria-label={t('years')}
+                        ref={yearsRef}
+                    >
+                        <option value="" disabled className="bg-slate-900 text-white/50">{t('years')}</option>
+                        {years.map(year => (
+                            <option key={year.value} value={year.value} className="bg-slate-900 text-white">
+                                {year.label}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-brand-primary">
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                </div>
             </div>
             <button
                 type="submit"
-                className="w-full max-w-lg px-7 py-3 md:py-4 text-white text-base md:text-lg rounded-full hover:bg-emerald-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/40"
+                className="w-full px-7 py-4 bg-brand-primary text-brand-deep text-lg rounded-full hover:bg-brand-primary/90 disabled:bg-white/5 disabled:text-white/10 disabled:cursor-not-allowed transition-all duration-300 font-bold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_40px_rgba(45,212,191,0.4)] active:scale-95"
                 disabled={isActuallyDisabled}
-                style={{ backgroundColor: themeConfig.primaryColor }}
             >
-                Valider
+                {t('validate')}
             </button>
         </form>
     );

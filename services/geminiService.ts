@@ -7,7 +7,7 @@ import { GeminiContent, GeminiImagePart, GeminiTextPart } from '../types'; // Re
 //     throw new Error("VITE_API_KEY environment variable not set");
 // }
 
-let ai: GoogleGenAI | null = null; // Initialize lazily
+let assistant: GoogleGenAI | null = null; // Initialize lazily
 
 // Function to get or create the GoogleGenAI client
 const getGeminiClient = () => {
@@ -18,8 +18,8 @@ const getGeminiClient = () => {
         // We can throw here, or let the specific call fail. Throwing here is safer for the call.
         throw new Error("VITE_API_KEY environment variable not set. Please configure it in Netlify.");
     }
-    ai = new GoogleGenAI({ apiKey });
-    return ai;
+    assistant = new GoogleGenAI({ apiKey });
+    return assistant;
 };
 
 
@@ -45,7 +45,8 @@ export const fileToGenerativePart = async (file: File): Promise<GeminiImagePart>
 export const generateResponse = async (
     history: GeminiContent[],
     newUserText: string,
-    imageFiles?: File[] | null
+    imageFiles?: File[] | null,
+    systemInstruction?: string
 ): Promise<string> => {
 
     const aiClient = getGeminiClient(); // Get the client
@@ -65,10 +66,10 @@ export const generateResponse = async (
     for (let i = 0; i < MAX_RETRIES; i++) {
         try {
             const response = await aiClient.models.generateContent({
-                model: "gemini-2.5-flash",
+                model: "gemini-2.0-flash",
                 contents: contents,
                 config: {
-                    systemInstruction: getSystemInstruction() // Call the function here
+                    systemInstruction: systemInstruction || getSystemInstruction() // Use passed instruction or default
                 }
             });
             return response.text; // Success
@@ -92,16 +93,16 @@ export const generateResponse = async (
             }
 
             // For other errors or max retries reached, handle and return error message
-            console.error("Error generating response from Gemini:", error);
+            console.error("Error generating response:", error);
             if (isRetriableError) { // If it was a retriable error but retries failed
-                return "API_ERROR: Le service est actuellement surchargé ou temporairement indisponible. Veuillez patienter quelques instants avant de réessayer.";
+                return "SERVICE_ERROR: Le service est actuellement surchargé ou temporairement indisponible. Veuillez patienter quelques instants avant de réessayer.";
             }
-            return "API_ERROR: Désolé, une erreur de communication inattendue s'est produite. Veuillez réessayer.";
+            return "SERVICE_ERROR: Désolé, une erreur de communication inattendue s'est produite. Veuillez réessayer.";
         }
     }
 
     // This should not be reached, but as a fallback.
-    return "API_ERROR: Échec de la communication après plusieurs tentatives.";
+    return "SERVICE_ERROR: Échec de la communication après plusieurs tentatives.";
 };
 
 /**
@@ -160,9 +161,10 @@ export const analyzeVideo = async (videoFile: File, question: string): Promise<s
 export const searchDermatologistsWithMaps = async (
     country: string,
     city: string,
-    userLatLng?: LatLng | null
+    userLatLng?: LatLng | null,
+    searchLanguage: string = "fr"
 ): Promise<GenerateContentResponse> => {
-    const aiClient = getGeminiClient();
+    const assistantClient = getGeminiClient();
 
     const tools: Tool[] = [{ googleMaps: {} }];
     const toolConfig: ToolConfig = {};
@@ -175,19 +177,71 @@ export const searchDermatologistsWithMaps = async (
 
     // Dynamic prompt generation - Natural language is best for Grounding Tools
     let prompt = "";
-    const detailsRequest = "Pour chacun, fournis l'adresse précise, le numéro de téléphone, et le site web si possible. Priorise les résultats les plus proches et les mieux notés.";
+    // Adapted details request in the target language if possible, but keeping logic clear
+    const detailsRequest = "Fournis pour chaque résultat : nom complet, adresse exacte, téléphone et site web. Priorise la proximité et la qualité.";
 
     if (city && country) {
-        prompt = `Trouve les meilleurs dermatologues à ${city}, ${country}. ${detailsRequest}`;
+        prompt = `### REQUÊTE CRITIQUE : RECHERCHE STRICTE (${searchLanguage})
+Recherche en langue "${searchLanguage}" les dermatologues situés **EXCLUSIVEMENT** dans la ville de **${city}** en **${country}**. 
+- **INTERDICTION ABSOLUE** : Ne montre AUCUN résultat situé dans une autre ville, même voisine.
+- **VÉRIFICATION REQUISE** : Pour chaque résultat, vérifie que l'adresse mentionne explicitement "${city}" et "${country}". 
+- Si aucun dermatologue n'est trouvé exactement dans "${city}", réponds qu'aucun résultat n'est disponible.
+${detailsRequest}`;
+    } else if (country) {
+        prompt = `### REQUÊTE CRITIQUE : RECHERCHE NATIONALE STRICTE (${searchLanguage})
+Recherche en langue "${searchLanguage}" les dermatologues situés **UNIQUEMENT** à l'intérieur des frontières du pays : **${country}**. 
+- **CONSIGNE** : Filtre rigoureusement pour ne garder **QUE** les établissements situés en **${country}**. 
+${detailsRequest}`;
     } else if (userLatLng) {
-        prompt = `Trouve les dermatologues STRICTEMENT les plus proches de ma position exacte (Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}). Rayon MAX 10km. Trie les résultats par distance croissante. ${detailsRequest}`;
+        console.log(`Building geolocation prompt with Lat: ${userLatLng.latitude}, Lng: ${userLatLng.longitude}`);
+
+        // Determine approximate location from coordinates for better prompt
+        const lat = userLatLng.latitude;
+        const lng = userLatLng.longitude;
+
+        // Rough continent/region detection to help the AI
+        let regionHint = "";
+        if (lat >= 35 && lat <= 72 && lng >= -10 && lng <= 40) {
+            regionHint = "Europe";
+        } else if (lat >= 24 && lat <= 50 && lng >= -125 && lng <= -66) {
+            regionHint = "North America";
+        } else if (lat >= -56 && lat <= 13 && lng >= -82 && lng <= -34) {
+            regionHint = "South America";
+        } else if (lat >= -35 && lat <= 37 && lng >= -18 && lng <= 52) {
+            regionHint = "Africa";
+        } else if (lat >= -47 && lat <= 55 && lng >= 25 && lng <= 180) {
+            regionHint = "Asia/Oceania";
+        }
+
+        prompt = `### REQUÊTE CRITIQUE : GÉOLOCALISATION PRÉCISE (${searchLanguage})
+
+**COORDONNÉES EXACTES** : Latitude ${lat}, Longitude ${lng}
+${regionHint ? `**RÉGION DÉTECTÉE** : ${regionHint}` : ''}
+
+**INSTRUCTIONS IMPÉRATIVES** :
+1. Utilise UNIQUEMENT ces coordonnées GPS exactes pour la recherche
+2. Identifie le PAYS et la VILLE correspondant à ces coordonnées
+3. Ne cherche QUE dans ce pays, JAMAIS dans un autre pays
+4. Rayon maximum : 15 kilomètres autour de ces coordonnées
+5. Trie les résultats par distance croissante (les plus proches en premier)
+6. Si aucun dermatologue n'existe dans ce rayon, réponds qu'aucun résultat n'est disponible
+
+**INTERDICTIONS ABSOLUES** :
+- ❌ Ne propose JAMAIS de résultats dans un autre pays
+- ❌ Ne propose JAMAIS de résultats au-delà de 15km
+- ❌ Ne propose JAMAIS de résultats par défaut si les coordonnées ne correspondent à aucun lieu
+
+${detailsRequest}`;
     } else {
-        prompt = `Trouve des dermatologues compétents. ${detailsRequest}`;
+        prompt = `Trouve des dermatologues certifiés. ${detailsRequest}`;
     }
 
+    console.log("Final prompt:", prompt);
+    console.log("Final toolConfig:", JSON.stringify(toolConfig, null, 2));
+
     try {
-        const response = await aiClient.models.generateContent({
-            model: "gemini-2.0-flash-exp",
+        const response = await assistantClient.models.generateContent({
+            model: "gemini-2.0-flash",
             contents: [{ parts: [{ text: prompt }] }],
             config: {
                 tools: tools,

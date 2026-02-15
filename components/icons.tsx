@@ -34,25 +34,28 @@ export const BackArrowIcon = () => (
 );
 
 export const RedoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-     <svg {...props} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h5M20 12A8 8 0 1013 5.23" />
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
     </svg>
 );
 
 export const DermoCheckLogo: React.FC<{ size?: number; className?: string }> = ({ size, className }) => {
-  // Responsive behavior rules (Increased by ~20%):
-  // Mobile (< 768 px): max 144px (was 120px)
-  // Tablet (768-1024 px): max 192px (was 160px)
-  // Desktop (> 1024 px): max 264px (was 220px)
-  // These classes apply when no specific size is passed (e.g. in Header)
-  const responsiveClasses = !size ? "max-w-[144px] md:max-w-[192px] lg:max-w-[264px]" : "";
+    // Use the exact image provided by the user without any CSS modifications
+    const defaultSize = 500; // Double the previous size for maximum visibility
+    const logoSize = size || defaultSize;
 
-  return (
-    <img
-      src="https://protect-nuisible.com/wp-content/uploads/2025/11/logoderma.jpeg"
-      alt="DermoCheck"
-      className={`h-auto object-contain cursor-pointer ${responsiveClasses} ${className || ''}`}
-      style={size ? { width: `${size}px`, maxWidth: '100%' } : undefined}
-    />
-  );
+    return (
+        <img
+            src="/nouveau-logo.png"
+            alt="DermoCheck"
+            className={`cursor-pointer transition-all duration-700 hover:scale-110 ${className || ''}`}
+            style={{
+                width: `${logoSize}px`,
+                height: 'auto',
+                maxWidth: '100%',
+                objectFit: 'contain',
+                opacity: 0.7 // More subtle to blend with dark theme
+            }}
+        />
+    );
 };
