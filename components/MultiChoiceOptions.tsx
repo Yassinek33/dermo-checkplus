@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface MultiChoiceOptionsProps {
     options: string[];
@@ -36,6 +37,7 @@ const formatOptionText = (text: string) => {
 };
 
 const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubmit, hasNoneButton, noneButtonText, onNoneClick, optionButtonRefs, onError }) => {
+    const { t } = useLanguage();
     const [selected, setSelected] = useState<string[]>([]);
 
     const toggleOption = (option: string) => {
@@ -49,14 +51,14 @@ const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubm
 
         if (isMutuallyExclusive) {
             if (selected.length > 0) {
-                onError?.(`Le choix "${option}" est incompatible avec vos sélections actuelles.`);
+                onError?.(t('questionnaire_ui.error_exclusive'));
                 return;
             }
             setSelected([option]);
         } else {
             const hasExclusive = selected.find(item => MUTUALLY_EXCLUSIVE_OPTIONS.includes(item));
             if (hasExclusive) {
-                onError?.(`Désélectionnez d'abord "${hasExclusive}" pour ajouter d'autres symptômes.`);
+                onError?.(t('questionnaire_ui.error_deselect'));
                 return;
             }
             setSelected(prev => [...prev, option]);
@@ -94,7 +96,7 @@ const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubm
                     disabled={selected.length === 0}
                     className="w-full px-7 py-4 bg-brand-primary text-brand-deep text-lg rounded-full hover:bg-brand-primary/90 disabled:bg-white/5 disabled:text-white/10 disabled:border-white/5 disabled:cursor-not-allowed transition-all duration-300 font-bold shadow-[0_0_20px_rgba(45,212,191,0.2)] hover:shadow-[0_0_40px_rgba(45,212,191,0.4)] active:scale-95"
                 >
-                    Valider la sélection
+                    {t('questionnaire_ui.validate_selection')}
                 </button>
 
                 {hasNoneButton && noneButtonText && onNoneClick && (
@@ -102,7 +104,7 @@ const MultiChoiceOptions: React.FC<MultiChoiceOptionsProps> = ({ options, onSubm
                         type="button"
                         onClick={() => {
                             if (selected.length > 0) {
-                                onError?.(`Veuillez vider vos sélections avant de cliquer sur "${noneButtonText}".`);
+                                onError?.(t('questionnaire_ui.error_clear'));
                             } else {
                                 onNoneClick(noneButtonText);
                             }

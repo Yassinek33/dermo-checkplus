@@ -16,6 +16,27 @@ export const translations: Record<string, any> = {
                 clinics: "Cliniques"
             }
         },
+        questionnaire_ui: {
+            validate: "Valider",
+            validate_selection: "Valider la sélection",
+            skip_step: "Ignorer cette étape",
+            analyze_photo: "Analyser la photo",
+            select_photos: "Sélectionner des photos",
+            images_selected: "image(s) sélectionnée(s)",
+            choose_images: "Choisir image(s)",
+            add_photo: "Ajoutez une photo nette pour une analyse précise.",
+            photo_tips_title: "Conseils pour une photo nette :",
+            photo_tip_1: "Nettoyez la lentille de votre appareil.",
+            photo_tip_2: "Utilisez une lumière naturelle si possible.",
+            photo_tip_3: "Prenez la photo de très près (gros plan).",
+            photo_tip_4: "Restez stable pour éviter le flou.",
+            preview: "Prévisualisation",
+            thumbnail: "Miniature",
+            error_exclusive: "Le choix est incompatible avec vos sélections actuelles.",
+            error_deselect: "Désélectionnez d'abord pour ajouter d'autres symptômes.",
+            error_clear: "Veuillez vider vos sélections avant de continuer.",
+            placeholder_text: "Décrivez vos symptômes ici..."
+        },
         languagePopup: {
             title: "Choisissez votre langue",
             subtitle: "Veuillez sélectionner la langue de votre choix pour continuer.",
@@ -373,6 +394,27 @@ export const translations: Record<string, any> = {
                 contact: "Contact",
                 clinics: "Clinics"
             }
+        },
+        questionnaire_ui: {
+            validate: "Validate",
+            validate_selection: "Validate Selection",
+            skip_step: "Skip this step",
+            analyze_photo: "Analyze Photo",
+            select_photos: "Select photos",
+            images_selected: "image(s) selected",
+            choose_images: "Choose image(s)",
+            add_photo: "Add a clear photo for an accurate analysis.",
+            photo_tips_title: "Tips for a clear photo:",
+            photo_tip_1: "Clean your device lens.",
+            photo_tip_2: "Use natural light if possible.",
+            photo_tip_3: "Take the photo very close up.",
+            photo_tip_4: "Stay still to avoid blur.",
+            preview: "Preview",
+            thumbnail: "Thumbnail",
+            error_exclusive: "This choice is incompatible with your current selections.",
+            error_deselect: "Deselect first to add more symptoms.",
+            error_clear: "Please clear your selections before continuing.",
+            placeholder_text: "Describe your symptoms here..."
         },
         languagePopup: {
             title: "Choose your language",
