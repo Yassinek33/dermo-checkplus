@@ -152,13 +152,14 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                 const uri = (mapInfo.uri || mapInfo.websiteUri || anyMapInfo.google_maps_uri || anyMapInfo.url || anyMapInfo.googleMapsUri)?.trim();
                 const placeId = anyMapInfo.placeId;
 
-                if (name && placeId) {
-                    // Get enriched data if available
-                    const enriched = enrichedDermatologists.get(placeId);
+                if (name) {
+                    // Get enriched data if available (placeId may not always exist)
+                    const enriched = placeId ? enrichedDermatologists.get(placeId) : undefined;
 
-                    const address = enriched?.address || "";
-                    const phone = enriched?.phone || "";
-                    const website = enriched?.website || "";
+                    // Also try to get address from the raw chunk data
+                    const address = enriched?.address || anyMapInfo.formattedAddress || anyMapInfo.formatted_address || "";
+                    const phone = enriched?.phone || anyMapInfo.formattedPhoneNumber || anyMapInfo.formatted_phone_number || anyMapInfo.internationalPhoneNumber || anyMapInfo.international_phone_number || "";
+                    const website = enriched?.website || anyMapInfo.websiteUri || anyMapInfo.website_uri || anyMapInfo.website || "";
 
                     let lat: number | undefined;
                     let lng: number | undefined;
@@ -179,7 +180,7 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                         distance = calculateDistance(lastSearchLocation.latitude, lastSearchLocation.longitude, lat, lng);
                     }
 
-                    dermatologists.push({ name, address, phone, website, uri, distance, lat, lng });
+                    dermatologists.push({ name, address, phone, website, uri: uri || `#result-${index}`, distance, lat, lng });
                 }
             }
         });
@@ -200,24 +201,24 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
             const addr = normalize(derm.address || "");
             const name = normalize(derm.name);
 
-            // If no address at all, skip this result
-            if (!addr && !name) return false;
+            // Must have at least a name
+            if (!name) return false;
 
             // VERY PERMISSIVE FILTERING:
-            // If we have a city query, check if it appears ANYWHERE in the address or name
-            // If we don't have a city query, trust the API completely
-            if (qCity) {
+            // Trust the Gemini + Google Maps grounding — it already does the heavy lifting.
+            // Only filter by city if we have BOTH a city query AND actual address data.
+            if (qCity && addr) {
                 const normCity = normalize(qCity);
                 // Accept if city is in address OR name
                 if (addr.includes(normCity) || name.includes(normCity)) {
                     return true;
                 }
-                // Also accept if it's close enough (for typos or variations)
-                // For now, just be strict on city match
-                return false;
+                // If address exists but doesn't match city, still accept
+                // because the API grounding already filtered geographically
+                return true;
             }
 
-            // If no city specified, trust the API completely
+            // If no city, no address, or geolocation search — trust the API completely
             return true;
         });
 
