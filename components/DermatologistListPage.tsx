@@ -136,58 +136,88 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
             return [];
         }
 
-        // --- Step 1: Parse the Gemini text response for details ---
-        // The AI text typically lists: name, address, phone, website for each result
+        // --- Step 1: Parse data from Gemini text response ---
+        // The AI returns structured text with name, address, phone, website for each result.
+        // We extract this by finding each name in the text and parsing surrounding context.
         const responseText = dermatologistMapResults.candidates?.[0]?.content?.parts?.[0]?.text || "";
         console.log("Gemini response text:", responseText);
+        const responseLines = responseText.split('\n');
 
-        // Parse text into blocks for each dermatologist
-        // Split by numbered items or double newlines to find individual entries
-        const textBlocks: { name: string, address: string, phone: string, website: string }[] = [];
+        // Helper: given a name, find it in the response text and extract address/phone/website from nearby lines
+        const extractDetailsFromText = (searchName: string): { address: string, phone: string, website: string } => {
+            const result = { address: "", phone: "", website: "" };
+            if (!responseText || !searchName) return result;
 
-        // Strategy: split by numbered items (1., 2., etc.) or by "**" bold markers
-        const sections = responseText.split(/(?:^|\n)(?:\d+[\.\)]\s*|\*\*\d+[\.\)]\s*)/);
+            const cleanStr = (s: string) => s.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+            const normSearch = searchName.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-        for (const section of sections) {
-            if (!section.trim()) continue;
+            // Find the line index where this name appears
+            let nameLineIdx = -1;
+            for (let i = 0; i < responseLines.length; i++) {
+                const normLine = responseLines[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                if (normLine.includes(normSearch) ||
+                    // Try matching just the first 15 chars of the name for partial matches
+                    (normSearch.length > 8 && normLine.includes(normSearch.substring(0, 15)))) {
+                    nameLineIdx = i;
+                    break;
+                }
+            }
 
-            // Extract name - usually the first bold text or first line
-            const nameMatch = section.match(/\*\*([^*]+)\*\*/);
-            const name = nameMatch ? nameMatch[1].trim() : section.split('\n')[0].replace(/[*#]/g, '').trim();
+            if (nameLineIdx === -1) return result;
 
-            if (!name || name.length < 3) continue;
+            // Look at the next 12 lines after the name for details
+            const contextLines = responseLines.slice(nameLineIdx, Math.min(nameLineIdx + 12, responseLines.length));
+            const contextBlock = contextLines.join('\n');
 
-            // Extract address - look for patterns like "Adresse:", "📍", or lines with street info
-            let address = "";
-            const addrMatch = section.match(/(?:adresse|address|📍)\s*[:：]\s*(.+?)(?:\n|$)/i) ||
-                section.match(/(?:📍)\s*(.+?)(?:\n|$)/i) ||
-                section.match(/\b(\d+[\s,].+?(?:rue|av\.|avenue|boulevard|blvd|street|st\.|road|rd\.|place|allée|impasse|chemin).+?)(?:\n|$)/i);
-            if (addrMatch) address = addrMatch[1].replace(/\*\*/g, '').replace(/\*/g, '').trim();
+            // Extract address
+            const addrPatterns = [
+                /(?:adresse|address|📍)\s*[:：]\s*(.+?)(?:\n|$)/i,
+                /(?:\*\*adresse\*\*|📍)\s*[:：]?\s*(.+?)(?:\n|$)/i,
+                /(?:^|\n)\s*[-•*]\s*(?:adresse|address)\s*[:：]\s*(.+?)(?:\n|$)/i,
+                /(\d+[\s,]+(?:rue|av\.|avenue|boulevard|blvd|street|st\.|road|rd\.|place|allée|impasse|chemin|ul\.|prospekt|проспект|улица|ул\.).+?)(?:\n|$)/i,
+            ];
+            for (const pat of addrPatterns) {
+                const m = contextBlock.match(pat);
+                if (m) { result.address = cleanStr(m[1]); break; }
+            }
 
-            // Extract phone - look for phone patterns
-            let phone = "";
-            const phoneMatch = section.match(/(?:téléphone|telephone|tel|phone|📞)\s*[:：]\s*(.+?)(?:\n|$)/i) ||
-                section.match(/(?:📞)\s*(.+?)(?:\n|$)/i) ||
-                section.match(/((?:\+\d{1,3}[\s.-]?)?\(?\d{1,4}\)?[\s.-]?\d{2,4}[\s.-]?\d{2,4}[\s.-]?\d{0,4})/);
-            if (phoneMatch) phone = phoneMatch[1].replace(/\*\*/g, '').replace(/\*/g, '').trim();
+            // Extract phone
+            const phonePatterns = [
+                /(?:téléphone|telephone|tel|phone|📞)\s*[:：]\s*(.+?)(?:\n|$)/i,
+                /(?:\*\*téléphone\*\*|\*\*tel\*\*|📞)\s*[:：]?\s*(.+?)(?:\n|$)/i,
+                /(?:^|\n)\s*[-•*]\s*(?:téléphone|telephone|tel|phone)\s*[:：]\s*(.+?)(?:\n|$)/i,
+            ];
+            for (const pat of phonePatterns) {
+                const m = contextBlock.match(pat);
+                if (m) { result.phone = cleanStr(m[1]); break; }
+            }
+            // Fallback: look for phone number pattern in context
+            if (!result.phone) {
+                const phoneNumMatch = contextBlock.match(/(?:^|\n|:\s*)((?:\+\d{1,3}[\s.-]?)?\(?\d{2,4}\)?[\s.-]?\d{2,4}[\s.-]?\d{2,4}[\s.-]?\d{0,4})(?:\s*$|\n)/m);
+                if (phoneNumMatch) result.phone = cleanStr(phoneNumMatch[1]);
+            }
 
             // Extract website
-            let website = "";
-            const webMatch = section.match(/(?:site\s*web|website|🌐)\s*[:：]\s*(.+?)(?:\n|$)/i) ||
-                section.match(/(https?:\/\/(?!www\.google\.com\/maps)[^\s\)]+)/i);
-            if (webMatch) website = webMatch[1].replace(/\*\*/g, '').replace(/\*/g, '').trim();
+            const webPatterns = [
+                /(?:site\s*web|website|🌐)\s*[:：]\s*(.+?)(?:\n|$)/i,
+                /(?:\*\*site\s*web\*\*|🌐)\s*[:：]?\s*(.+?)(?:\n|$)/i,
+            ];
+            for (const pat of webPatterns) {
+                const m = contextBlock.match(pat);
+                if (m) { result.website = cleanStr(m[1]); break; }
+            }
+            if (!result.website) {
+                const urlMatch = contextBlock.match(/(https?:\/\/(?!www\.google\.com\/maps)[^\s\)>\]]+)/i);
+                if (urlMatch) result.website = cleanStr(urlMatch[1]);
+            }
 
-            textBlocks.push({ name, address, phone, website });
-        }
-
-        console.log("Parsed text blocks:", textBlocks);
+            console.log(`Parsed from text for "${searchName}":`, result);
+            return result;
+        };
 
         // --- Step 2: Extract from grounding chunks and combine with text data ---
         const chunks = dermatologistMapResults.candidates[0].groundingMetadata.groundingChunks as GroundingChunk[];
         const dermatologists: DisplayableDermatologist[] = [];
-
-        // Helper to normalize for comparison
-        const normForMatch = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
 
         chunks.forEach((chunk, index) => {
             const mapInfoRaw = chunk.maps || (chunk as any).googleMapsGroundingChunk || (chunk as any).google_maps_grounding_chunk;
@@ -204,23 +234,13 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                     // Get enriched data from Places API if available
                     const enriched = placeId ? enrichedDermatologists.get(placeId) : undefined;
 
-                    // Match with text block data by name similarity
-                    const normName = normForMatch(name);
-                    const textMatch = textBlocks.find(tb => {
-                        const normTbName = normForMatch(tb.name);
-                        return normTbName.includes(normName) || normName.includes(normTbName) ||
-                            // Also try partial match (first significant word)
-                            (normName.length > 5 && normTbName.length > 5 &&
-                                (normTbName.includes(normName.substring(0, Math.min(normName.length, 10))) ||
-                                    normName.includes(normTbName.substring(0, Math.min(normTbName.length, 10)))));
-                    });
-                    // If no match by name, try by index (text blocks often correspond to chunks in order)
-                    const textData = textMatch || textBlocks[index];
+                    // Extract data from the Gemini text response
+                    const textData = extractDetailsFromText(name);
 
                     // Combine: Places API > raw chunk data > text parsed data
-                    const address = enriched?.address || anyMapInfo.formattedAddress || anyMapInfo.formatted_address || textData?.address || "";
-                    const phone = enriched?.phone || anyMapInfo.formattedPhoneNumber || anyMapInfo.formatted_phone_number || textData?.phone || "";
-                    const website = enriched?.website || anyMapInfo.websiteUri || anyMapInfo.website_uri || anyMapInfo.website || textData?.website || "";
+                    const address = enriched?.address || anyMapInfo.formattedAddress || anyMapInfo.formatted_address || textData.address;
+                    const phone = enriched?.phone || anyMapInfo.formattedPhoneNumber || anyMapInfo.formatted_phone_number || textData.phone;
+                    const website = enriched?.website || anyMapInfo.websiteUri || anyMapInfo.website_uri || anyMapInfo.website || textData.website;
 
                     let lat: number | undefined;
                     let lng: number | undefined;
