@@ -9,7 +9,7 @@ export const translations: Record<string, any> = {
             nav: {
                 home: "Accueil",
                 analysis: "Analyse",
-                find_derm: "Trouver un D",
+                find_derm: "Trouver un Dr",
                 about: "À propos",
                 legal: "Légal",
                 contact: "Contact",
@@ -338,7 +338,7 @@ export const translations: Record<string, any> = {
             nav: {
                 home: "Home",
                 analysis: "Analysis",
-                find_derm: "Find a D",
+                find_derm: "Find a Dr",
                 about: "About",
                 legal: "Legal",
                 contact: "Contact",
