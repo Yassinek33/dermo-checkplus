@@ -136,30 +136,91 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
             return [];
         }
 
+        // --- Step 1: Parse the Gemini text response for details ---
+        // The AI text typically lists: name, address, phone, website for each result
+        const responseText = dermatologistMapResults.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        console.log("Gemini response text:", responseText);
+
+        // Parse text into blocks for each dermatologist
+        // Split by numbered items or double newlines to find individual entries
+        const textBlocks: { name: string, address: string, phone: string, website: string }[] = [];
+
+        // Strategy: split by numbered items (1., 2., etc.) or by "**" bold markers
+        const sections = responseText.split(/(?:^|\n)(?:\d+[\.\)]\s*|\*\*\d+[\.\)]\s*)/);
+
+        for (const section of sections) {
+            if (!section.trim()) continue;
+
+            // Extract name - usually the first bold text or first line
+            const nameMatch = section.match(/\*\*([^*]+)\*\*/);
+            const name = nameMatch ? nameMatch[1].trim() : section.split('\n')[0].replace(/[*#]/g, '').trim();
+
+            if (!name || name.length < 3) continue;
+
+            // Extract address - look for patterns like "Adresse:", "📍", or lines with street info
+            let address = "";
+            const addrMatch = section.match(/(?:adresse|address|📍)\s*[:：]\s*(.+?)(?:\n|$)/i) ||
+                section.match(/(?:📍)\s*(.+?)(?:\n|$)/i) ||
+                section.match(/\b(\d+[\s,].+?(?:rue|av\.|avenue|boulevard|blvd|street|st\.|road|rd\.|place|allée|impasse|chemin).+?)(?:\n|$)/i);
+            if (addrMatch) address = addrMatch[1].replace(/\*\*/g, '').replace(/\*/g, '').trim();
+
+            // Extract phone - look for phone patterns
+            let phone = "";
+            const phoneMatch = section.match(/(?:téléphone|telephone|tel|phone|📞)\s*[:：]\s*(.+?)(?:\n|$)/i) ||
+                section.match(/(?:📞)\s*(.+?)(?:\n|$)/i) ||
+                section.match(/((?:\+\d{1,3}[\s.-]?)?\(?\d{1,4}\)?[\s.-]?\d{2,4}[\s.-]?\d{2,4}[\s.-]?\d{0,4})/);
+            if (phoneMatch) phone = phoneMatch[1].replace(/\*\*/g, '').replace(/\*/g, '').trim();
+
+            // Extract website
+            let website = "";
+            const webMatch = section.match(/(?:site\s*web|website|🌐)\s*[:：]\s*(.+?)(?:\n|$)/i) ||
+                section.match(/(https?:\/\/(?!www\.google\.com\/maps)[^\s\)]+)/i);
+            if (webMatch) website = webMatch[1].replace(/\*\*/g, '').replace(/\*/g, '').trim();
+
+            textBlocks.push({ name, address, phone, website });
+        }
+
+        console.log("Parsed text blocks:", textBlocks);
+
+        // --- Step 2: Extract from grounding chunks and combine with text data ---
         const chunks = dermatologistMapResults.candidates[0].groundingMetadata.groundingChunks as GroundingChunk[];
         const dermatologists: DisplayableDermatologist[] = [];
 
+        // Helper to normalize for comparison
+        const normForMatch = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, '');
+
         chunks.forEach((chunk, index) => {
-            // Check for googleMapsGroundingChunk which might be the property name in newer versions
             const mapInfoRaw = chunk.maps || (chunk as any).googleMapsGroundingChunk || (chunk as any).google_maps_grounding_chunk;
 
             if (mapInfoRaw) {
                 const mapInfo = mapInfoRaw as unknown as MapsPlaceInfo;
                 const anyMapInfo = mapInfo as any;
 
-                // Robust title/name extraction
                 const name = (mapInfo.title || anyMapInfo.name || anyMapInfo.place_name || anyMapInfo.displayName?.text)?.trim();
                 const uri = (mapInfo.uri || mapInfo.websiteUri || anyMapInfo.google_maps_uri || anyMapInfo.url || anyMapInfo.googleMapsUri)?.trim();
                 const placeId = anyMapInfo.placeId;
 
                 if (name) {
-                    // Get enriched data if available (placeId may not always exist)
+                    // Get enriched data from Places API if available
                     const enriched = placeId ? enrichedDermatologists.get(placeId) : undefined;
 
-                    // Also try to get address from the raw chunk data
-                    const address = enriched?.address || anyMapInfo.formattedAddress || anyMapInfo.formatted_address || "";
-                    const phone = enriched?.phone || anyMapInfo.formattedPhoneNumber || anyMapInfo.formatted_phone_number || anyMapInfo.internationalPhoneNumber || anyMapInfo.international_phone_number || "";
-                    const website = enriched?.website || anyMapInfo.websiteUri || anyMapInfo.website_uri || anyMapInfo.website || "";
+                    // Match with text block data by name similarity
+                    const normName = normForMatch(name);
+                    const textMatch = textBlocks.find(tb => {
+                        const normTbName = normForMatch(tb.name);
+                        return normTbName.includes(normName) || normName.includes(normTbName) ||
+                            // Also try partial match (first significant word)
+                            (normName.length > 5 && normTbName.length > 5 &&
+                                (normTbName.includes(normName.substring(0, Math.min(normName.length, 10))) ||
+                                    normName.includes(normTbName.substring(0, Math.min(normTbName.length, 10)))));
+                    });
+                    // If no match by name, try by index (text blocks often correspond to chunks in order)
+                    const textData = textMatch || textBlocks[index];
+
+                    // Combine: Places API > raw chunk data > text parsed data
+                    const address = enriched?.address || anyMapInfo.formattedAddress || anyMapInfo.formatted_address || textData?.address || "";
+                    const phone = enriched?.phone || anyMapInfo.formattedPhoneNumber || anyMapInfo.formatted_phone_number || textData?.phone || "";
+                    const website = enriched?.website || anyMapInfo.websiteUri || anyMapInfo.website_uri || anyMapInfo.website || textData?.website || "";
 
                     let lat: number | undefined;
                     let lng: number | undefined;
