@@ -539,31 +539,31 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                                 initial={{ opacity: 0, scale: 0.98 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: idx * 0.05 }}
-                                className="glass-card p-6 md:p-8 rounded-3xl flex flex-col md:flex-row gap-8 hover:border-brand-primary/40 relative group bg-white/5 transition-all duration-500 overflow-hidden"
+                                className="glass-card p-5 sm:p-6 md:p-8 rounded-3xl flex flex-col gap-4 sm:gap-5 md:gap-8 md:flex-row hover:border-brand-primary/40 relative group bg-white/5 transition-all duration-500"
                             >
                                 <div className="absolute top-0 left-0 w-1.5 h-full bg-brand-primary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
 
-                                {/* Left: Info */}
-                                <div className="flex-1 flex flex-col gap-3 text-left">
-                                    <h4 className="text-2xl md:text-3xl font-display font-bold text-white group-hover:text-brand-primary transition-colors leading-tight mb-2">
+                                {/* Info Section */}
+                                <div className="flex-1 flex flex-col gap-2 sm:gap-3 text-left min-w-0">
+                                    <h4 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-white group-hover:text-brand-primary transition-colors leading-tight">
                                         {derm.name}
                                     </h4>
 
-                                    <div className="flex flex-col gap-3">
+                                    <div className="flex flex-col gap-2 sm:gap-3">
                                         {derm.address && (
-                                            <div className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors">
-                                                <span className="text-brand-primary text-xl mt-0.5 flex-shrink-0">📍</span>
-                                                <p className="text-base text-brand-secondary font-medium leading-relaxed">
+                                            <div className="flex items-start gap-2 sm:gap-3 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 backdrop-blur-sm">
+                                                <span className="text-brand-primary text-lg sm:text-xl mt-0.5 flex-shrink-0">📍</span>
+                                                <p className="text-sm sm:text-base text-brand-secondary font-medium leading-relaxed break-words">
                                                     {derm.address}
                                                 </p>
                                             </div>
                                         )}
                                         {derm.phone && (
-                                            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-sm hover:bg-white/10 transition-colors">
-                                                <span className="text-brand-primary text-xl flex-shrink-0">📞</span>
+                                            <div className="flex items-center gap-2 sm:gap-3 bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4 backdrop-blur-sm">
+                                                <span className="text-brand-primary text-lg sm:text-xl flex-shrink-0">📞</span>
                                                 <a
                                                     href={`tel:${derm.phone.replace(/[^\d+]/g, '')}`}
-                                                    className="text-base text-white font-bold hover:text-brand-primary transition-colors"
+                                                    className="text-sm sm:text-base text-white font-bold hover:text-brand-primary transition-colors"
                                                 >
                                                     {derm.phone}
                                                 </a>
@@ -572,14 +572,14 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                                     </div>
 
                                     {derm.distance !== undefined && (
-                                        <div className="inline-flex items-center gap-2 text-xs font-bold text-brand-primary bg-brand-primary/10 border border-brand-primary/20 px-3 py-1.5 rounded-full w-fit mt-3 shadow-[0_0_15px_rgba(45,212,191,0.1)]">
+                                        <div className="inline-flex items-center gap-2 text-xs font-bold text-brand-primary bg-brand-primary/10 border border-brand-primary/20 px-3 py-1.5 rounded-full w-fit mt-1 sm:mt-3 shadow-[0_0_15px_rgba(45,212,191,0.1)]">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg>
                                             {t('dermatologist.list.distance').replace('{km}', derm.distance.toString())}
                                         </div>
                                     )}
 
                                     {derm.website && (
-                                        <div className="flex gap-3 items-center mt-2">
+                                        <div className="flex gap-2 sm:gap-3 items-center mt-1 sm:mt-2">
                                             <span className="text-brand-primary opacity-80 text-sm">🌐</span>
                                             <a href={derm.website} target="_blank" rel="noopener" className="text-sm text-brand-primary hover:text-white transition-colors underline underline-offset-4">
                                                 {t('dermatologist.list.visit_website')}
@@ -588,24 +588,23 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                                     )}
                                 </div>
 
-                                {/* Right: Action */}
-                                <div className="flex flex-col justify-center items-stretch md:items-end border-t md:border-t-0 md:border-l border-white/10 pt-6 md:pt-0 md:pl-8 gap-4">
+                                {/* Action Buttons */}
+                                <div className="flex flex-col justify-center items-stretch md:items-end border-t md:border-t-0 md:border-l border-white/10 pt-4 sm:pt-6 md:pt-0 md:pl-8 gap-3 sm:gap-4">
                                     <a
                                         href={derm.uri}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="group/btn relative py-4 px-8 rounded-2xl bg-brand-primary text-brand-deep font-bold text-base hover:scale-[1.05] active:scale-95 transition-all shadow-lg flex items-center justify-center gap-3 overflow-hidden"
+                                        className="group/btn relative py-3 sm:py-4 px-6 sm:px-8 rounded-2xl bg-brand-primary text-brand-deep font-bold text-sm sm:text-base hover:scale-[1.05] active:scale-95 transition-all shadow-lg flex items-center justify-center gap-3"
                                     >
                                         <span className="relative z-10">{t('dermatologist.list.get_directions')}</span>
                                         <svg className="relative z-10 w-5 h-5 transition-transform group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-                                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
                                     </a>
                                     {derm.phone && (
                                         <a
                                             href={`tel:${derm.phone.replace(/[^\d+]/g, '')}`}
-                                            className="py-3 px-8 rounded-2xl border border-white/20 text-white font-bold text-base hover:bg-white/5 hover:border-white/40 active:scale-95 transition-all flex items-center justify-center gap-3 backdrop-blur-sm"
+                                            className="py-3 px-6 sm:px-8 rounded-2xl border border-white/20 text-white font-bold text-sm sm:text-base hover:bg-white/5 hover:border-white/40 active:scale-95 transition-all flex items-center justify-center gap-3 backdrop-blur-sm"
                                         >
-                                            {t('dermatologist.list.call')}
+                                            📞 {t('dermatologist.list.call')}
                                         </a>
                                     )}
                                 </div>
