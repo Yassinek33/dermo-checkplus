@@ -228,6 +228,25 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
             ? filteredDermatologists.sort((a, b) => (a.distance || 9999) - (b.distance || 9999))
             : filteredDermatologists;
 
+        // --- Pinned / Featured dermatologist for Meknès, Maroc ---
+        const normCountry = normalize(searchQuery.country);
+        const normCityQ = normalize(searchQuery.city);
+        const isMeknes = (normCityQ.includes("meknes") || normCityQ.includes("meknas"));
+        const isMaroc = (normCountry.includes("maroc") || normCountry.includes("morocco") || normCountry.includes("ma"));
+
+        if (isMeknes && isMaroc) {
+            const pinnedDoctor: DisplayableDermatologist = {
+                name: "DR. Khafifi Hamza",
+                address: "18 rue Antsirabé, appt. 8, Meknès, Maroc",
+                phone: "+212535520159",
+                website: "",
+                uri: "https://www.google.com/maps/search/DR+Khafifi+Hamza+18+rue+Antsirab%C3%A9+Mekn%C3%A8s",
+            };
+            // Remove any duplicate if already in results
+            const withoutDuplicate = finalResults.filter(d => !normalize(d.name).includes("khafifi"));
+            return [pinnedDoctor, ...withoutDuplicate].slice(0, 6);
+        }
+
         return finalResults.slice(0, 6);
     }, [dermatologistMapResults, lastSearchLocation, searchQuery, enrichedDermatologists]);
 
