@@ -35,7 +35,8 @@ export const translations: Record<string, any> = {
             error_exclusive: "Le choix est incompatible avec vos sélections actuelles.",
             error_deselect: "Désélectionnez d'abord pour ajouter d'autres symptômes.",
             error_clear: "Veuillez vider vos sélections avant de continuer.",
-            placeholder_text: "Décrivez vos symptômes ici..."
+            placeholder_text: "Décrivez vos symptômes ici...",
+            number_error: "Veuillez entrer un chiffre valide (ex: 3) sans texte."
         },
         languagePopup: {
             title: "Choisissez votre langue",
@@ -414,7 +415,8 @@ export const translations: Record<string, any> = {
             error_exclusive: "This choice is incompatible with your current selections.",
             error_deselect: "Deselect first to add more symptoms.",
             error_clear: "Please clear your selections before continuing.",
-            placeholder_text: "Describe your symptoms here..."
+            placeholder_text: "Describe your symptoms here...",
+            number_error: "Please enter a valid number (e.g. 3) without text."
         },
         languagePopup: {
             title: "Choose your language",

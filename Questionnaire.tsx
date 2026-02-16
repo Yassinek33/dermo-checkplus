@@ -512,7 +512,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         if (awaitingNumberInputForOption) {
             const number = parseInt(text, 10);
             if (isNaN(number) || number <= 0) {
-                setValidationError("Veuillez entrer un chiffre valide (ex: 3) sans texte.");
+                setValidationError(t('questionnaire_ui.number_error'));
                 return;
             }
             const fullAnswer = `${awaitingNumberInputForOption}: ${number}`;
@@ -832,7 +832,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                             ) : currentAssistantMessage.isTextInputRequest || awaitingNumberInputForOption ? ( // Removed currentAssistantMessage.isQuestionForVideoAnalysis
                                 <TextInput
                                     onSubmit={handleTextSubmit}
-                                    placeholder={currentAssistantMessage.textInputPlaceholder || "Ex: Apparu il y a 3 jours comme un point rouge..."}
+                                    placeholder={currentAssistantMessage.textInputPlaceholder || (awaitingNumberInputForOption ? "2, 3, 4..." : t('questionnaire_ui.placeholder_text'))}
                                     showNoneButton={currentAssistantMessage.hasNoneButton} // Pass this prop to TextInput
                                     onNoneClick={handleNoneSubmit} // Pass generic 'aucun' for text input none
                                     noneButtonText={currentAssistantMessage.noneButtonText} // Pass the specific none button text
