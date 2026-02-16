@@ -1,4 +1,4 @@
-export const translations: Record<string, any> = {
+const translations = {
     fr: {
         common: {
             start: "Commencer",
@@ -9,7 +9,6 @@ export const translations: Record<string, any> = {
             nav: {
                 home: "Accueil",
                 analysis: "Analyse",
-                find_derm: "Trouver un Dermato",
                 about: "À propos",
                 legal: "Légal",
                 contact: "Contact",
@@ -326,35 +325,6 @@ export const translations: Record<string, any> = {
                 allow: "Oui, utiliser ma position",
                 deny: "Non, je saisis ma ville"
             }
-        },
-        auth: {
-            login_title: "Connexion",
-            login_subtitle: "Accédez à votre espace personnel",
-            signup_title: "Créer un compte",
-            signup_subtitle: "Rejoignez DermoCheck dès maintenant",
-            tab_login: "Connexion",
-            tab_signup: "Inscription",
-            name: "Nom complet",
-            name_placeholder: "Votre nom...",
-            email: "Adresse email",
-            email_placeholder: "votre@email.com",
-            password: "Mot de passe",
-            password_placeholder: "••••••••",
-            confirm_password: "Confirmer le mot de passe",
-            confirm_password_placeholder: "••••••••",
-            forgot_password: "Mot de passe oublié ?",
-            login_button: "Se connecter",
-            signup_button: "Créer mon compte",
-            or: "ou",
-            google: "Continuer avec Google",
-            have_account: "Déjà un compte ?",
-            no_account: "Pas encore de compte ?",
-            login_success: "Connexion réussie !",
-            signup_success: "Compte créé avec succès !",
-            switch_to_minor: "Passer en mode Mineur",
-            switch_to_adult: "Passer en mode Majeur",
-            profile_adult: "Mode Majeur",
-            profile_minor: "Mode Mineur"
         }
     },
     en: {
@@ -367,7 +337,6 @@ export const translations: Record<string, any> = {
             nav: {
                 home: "Home",
                 analysis: "Analysis",
-                find_derm: "Find a Dermato",
                 about: "About",
                 legal: "Legal",
                 contact: "Contact",
@@ -687,35 +656,7 @@ export const translations: Record<string, any> = {
                 allow: "Yes, use my location",
                 deny: "No, I'll type my city"
             }
-        },
-        auth: {
-            login_title: "Sign In",
-            login_subtitle: "Access your personal space",
-            signup_title: "Create Account",
-            signup_subtitle: "Join DermoCheck today",
-            tab_login: "Sign In",
-            tab_signup: "Sign Up",
-            name: "Full Name",
-            name_placeholder: "Your name...",
-            email: "Email Address",
-            email_placeholder: "your@email.com",
-            password: "Password",
-            password_placeholder: "••••••••",
-            confirm_password: "Confirm Password",
-            confirm_password_placeholder: "••••••••",
-            forgot_password: "Forgot password?",
-            login_button: "Sign In",
-            signup_button: "Create Account",
-            or: "or",
-            google: "Continue with Google",
-            have_account: "Already have an account?",
-            no_account: "Don't have an account?",
-            login_success: "Login successful!",
-            signup_success: "Account created successfully!",
-            switch_to_minor: "Switch to Minor mode",
-            switch_to_adult: "Switch to Adult mode",
-            profile_adult: "Adult Mode",
-            profile_minor: "Minor Mode"
         }
     }
 };
+console.log('Valid syntax');

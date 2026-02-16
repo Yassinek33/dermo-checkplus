@@ -23,6 +23,7 @@ import ConsentPopup from './components/ConsentPopup';
 import { FAQPage } from './components/FAQPage';
 import { BlogListPage } from './components/BlogListPage';
 import { BlogArticlePageComponent } from './components/BlogArticlePage';
+import AuthPage from './components/AuthPage';
 
 // --- Icons for Menu ---
 const MenuIcon = () => (
@@ -219,6 +220,12 @@ const App: React.FC = () => {
             return null; // Don't render anything while redirecting
         }
 
+        // Auth page is only for adults
+        if (userProfile === 'minor' && currentPageId === 'auth') {
+            setTimeout(() => navigateTo('home'), 0);
+            return null;
+        }
+
         switch (currentPageConfig.id) {
             case 'home':
                 return <HomePage
@@ -264,6 +271,8 @@ const App: React.FC = () => {
                 );
             case 'faq':
                 return <FAQPage />;
+            case 'auth':
+                return <AuthPage onNavigate={navigateTo} />;
             case 'privacy-policy':
             case 'terms-of-use':
             case 'legal':

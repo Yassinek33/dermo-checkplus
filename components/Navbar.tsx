@@ -88,20 +88,38 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                         ))}
                     </div>
 
-                    {/* User Profile / Logout */}
-                    <div className="ml-2 pl-2 border-l border-white/10 flex items-center gap-2 pr-2">
-                        {userProfile ? (
-                            <>
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-primary to-cyan-500 border border-white/20 flex items-center justify-center text-xs font-bold text-white shadow-lg">
-                                    {userProfile === 'adult' ? 'A' : userProfile === 'minor' ? 'M' : 'U'}
-                                </div>
-                                <button onClick={onLogout} className="p-2 text-brand-secondary hover:text-red-400 transition-colors">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                                </button>
-                            </>
-                        ) : (
-                            <button onClick={() => onNavigate('profile')} className="px-4 py-2 text-sm text-brand-primary font-medium hover:bg-brand-primary/10 rounded-full transition-colors">
-                                {t('common.login')}
+                    {/* Profile Switch + Sign In Icons */}
+                    <div className="ml-2 pl-2 border-l border-white/10 flex items-center gap-1 pr-2">
+                        {/* Profile Switch (mineur/majeur) */}
+                        <button
+                            onClick={onLogout}
+                            className="p-2 rounded-full text-brand-secondary hover:text-white hover:bg-white/10 transition-all duration-300 relative group"
+                            title={userProfile === 'adult' ? t('auth.switch_to_minor') : t('auth.switch_to_adult')}
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                            {/* Small badge showing current mode */}
+                            <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-brand-deep border border-white/20 flex items-center justify-center text-[8px] font-bold text-brand-primary">
+                                {userProfile === 'adult' ? '18+' : '<18'}
+                            </span>
+                        </button>
+                        {/* Sign In (adults only) */}
+                        {userProfile === 'adult' && (
+                            <button
+                                onClick={() => onNavigate('auth')}
+                                className={clsx(
+                                    "p-2 rounded-full transition-all duration-300",
+                                    activePage === 'auth'
+                                        ? "bg-brand-primary text-brand-deep"
+                                        : "text-brand-secondary hover:text-white hover:bg-white/10"
+                                )}
+                                title={t('auth.tab_login')}
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
                             </button>
                         )}
                     </div>
@@ -200,36 +218,37 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                     ))}
                                 </div>
 
-                                {/* User Profile / Logout */}
-                                <div className="pt-6 border-t border-white/10">
-                                    {userProfile ? (
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-primary to-cyan-500 border border-white/20 flex items-center justify-center text-sm font-bold text-white shadow-lg">
-                                                    {userProfile === 'adult' ? 'A' : userProfile === 'minor' ? 'M' : 'U'}
-                                                </div>
-                                                <span className="text-white font-medium">{userProfile.firstName}</span>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    onLogout();
-                                                    setIsMobileMenuOpen(false);
-                                                }}
-                                                className="p-2 text-brand-secondary hover:text-red-400 transition-colors"
-                                            >
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                                    <polyline points="16 17 21 12 16 7"></polyline>
-                                                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    ) : (
+                                {/* Profile Switch + Sign In */}
+                                <div className="pt-6 border-t border-white/10 space-y-3">
+                                    {/* Profile switch (mineur/majeur) */}
+                                    <button
+                                        onClick={() => {
+                                            onLogout();
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium text-white/70 bg-white/5 hover:bg-white/10 transition-all duration-300"
+                                    >
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        </svg>
+                                        {userProfile === 'adult' ? t('auth.switch_to_minor') : t('auth.switch_to_adult')}
+                                    </button>
+                                    {/* Sign In (adults only) */}
+                                    {userProfile === 'adult' && (
                                         <button
-                                            onClick={() => handleNavigate('profile')}
-                                            className="w-full px-4 py-3 text-center text-brand-primary font-medium bg-brand-primary/10 hover:bg-brand-primary/20 rounded-xl transition-colors"
+                                            onClick={() => handleNavigate('auth')}
+                                            className={clsx(
+                                                "w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300",
+                                                activePage === 'auth'
+                                                    ? "bg-brand-primary text-brand-deep"
+                                                    : "text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20"
+                                            )}
                                         >
-                                            {t('common.login')}
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                                <circle cx="12" cy="7" r="4" />
+                                            </svg>
+                                            {t('auth.tab_login')} / {t('auth.tab_signup')}
                                         </button>
                                     )}
                                 </div>
@@ -237,7 +256,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                         </motion.div>
                     </motion.div>
                 )}
-            </AnimatePresence>
+            </AnimatePresence >
         </>
     );
 };

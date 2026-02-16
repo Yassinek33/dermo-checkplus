@@ -331,6 +331,11 @@ export const appConfig: AppConfig = {
                 title: "TROUVER UN DERMATOLOGUE",
                 description: "Utilisez notre outil pour localiser des dermatologues près de chez vous grâce à Google Maps. Un professionnel de santé est indispensable pour un diagnostic.",
             },
+            {
+                id: "auth",
+                title: "Connexion / Inscription",
+                description: "Connectez-vous ou créez un compte DermoCheck.",
+            },
         ],
         uiGuidelines: {
             cardsRounded: true,
