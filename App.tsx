@@ -21,6 +21,7 @@ import LanguagePopup from './components/LanguagePopup';
 import { useLanguage } from './context/LanguageContext';
 import ConsentPopup from './components/ConsentPopup';
 import { FAQPage } from './components/FAQPage';
+import { DermoCheckLogo } from './components/icons';
 import { BlogListPage } from './components/BlogListPage';
 import { BlogArticlePageComponent } from './components/BlogArticlePage';
 import AuthPage from './components/AuthPage';
@@ -246,6 +247,16 @@ const App: React.FC = () => {
             case 'find-dermatologist':
                 return (
                     <div className="glass-panel rounded-3xl p-8 md:p-12 text-center animate-fade-in shadow-2xl relative z-10">
+                        {/* Logo - Click to go home */}
+                        <div className="flex justify-center mb-8">
+                            <button
+                                onClick={() => navigateTo('home')}
+                                className="group transition-transform duration-300 hover:scale-105 active:scale-95 focus:outline-none"
+                                aria-label="Retour à l'accueil"
+                            >
+                                <DermoCheckLogo size={56} className="h-auto drop-shadow-[0_0_25px_rgba(45,212,191,0.5)] group-hover:drop-shadow-[0_0_40px_rgba(45,212,191,0.7)] transition-all duration-300" />
+                            </button>
+                        </div>
                         {/* Using the glass-panel class from styles.css */}
                         <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-6 tracking-tight">{t('dermatologist.title')}</h2>
                         <p className="text-lg text-brand-secondary/80 mb-10 max-w-2xl mx-auto font-light leading-relaxed">{t('dermatologist.description')}</p>
