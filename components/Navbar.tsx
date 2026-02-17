@@ -10,9 +10,10 @@ interface NavbarProps {
     onNavigate: (page: string) => void;
     userProfile: any;
     onLogout: () => void;
+    user?: any; // Add user prop
 }
 
-const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, onLogout, user }) => {
     const { language, setLanguage, t } = useLanguage();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -90,36 +91,59 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
 
                     {/* Profile Switch + Sign In Icons */}
                     <div className="ml-2 pl-2 border-l border-white/10 flex items-center gap-1 pr-2">
-                        {/* Profile Switch (mineur/majeur) */}
-                        <button
-                            onClick={onLogout}
-                            className="p-2 rounded-full text-brand-secondary hover:text-white hover:bg-white/10 transition-all duration-300 relative group"
-                            title={userProfile === 'adult' ? t('auth.switch_to_minor') : t('auth.switch_to_adult')}
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                            </svg>
-                            {/* Small badge showing current mode */}
-                            <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-brand-deep border border-white/20 flex items-center justify-center text-[8px] font-bold text-brand-primary">
-                                {userProfile === 'adult' ? '18+' : '<18'}
-                            </span>
-                        </button>
+                        {/* Profile switch (mineur/majeur) - Only show if NOT logged in */}
+                        {!user && (
+                            <button
+                                onClick={onLogout}
+                                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-all duration-300"
+                                title={userProfile === 'adult' ? t('auth.switch_to_minor') : t('auth.switch_to_adult')}
+                            >
+                                {userProfile === 'adult' ? (
+                                    <>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        </svg>
+                                        <span className="text-[10px] font-bold bg-brand-primary text-brand-deep px-1 rounded-sm">18+</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                            <path d="M8 11h.01" />
+                                            <path d="M16 11h.01" />
+                                            <path d="M12 16a4 4 0 0 0 0-3" />
+                                        </svg>
+                                        <span className="text-[10px] font-bold bg-rose-400 text-brand-deep px-1 rounded-sm">-18</span>
+                                    </>
+                                )}
+                            </button>
+                        )}
                         {/* Sign In (adults only) */}
+                        {/* Sign In / Profile (adults only) */}
                         {userProfile === 'adult' && (
                             <button
-                                onClick={() => onNavigate('auth')}
+                                onClick={() => user ? onNavigate('profile') : onNavigate('auth')}
                                 className={clsx(
-                                    "p-2 rounded-full transition-all duration-300",
-                                    activePage === 'auth'
+                                    "rounded-full transition-all duration-300 flex items-center justify-center",
+                                    activePage === 'auth' || activePage === 'profile'
                                         ? "bg-brand-primary text-brand-deep"
-                                        : "text-brand-secondary hover:text-white hover:bg-white/10"
+                                        : "text-brand-secondary hover:text-white hover:bg-white/10",
+                                    user ? "w-9 h-9 border border-brand-primary/50 bg-brand-primary/10 text-brand-primary" : "p-2"
                                 )}
-                                title={t('auth.tab_login')}
+                                title={user ? "Mon Profil" : t('auth.tab_login')}
                             >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                    <circle cx="12" cy="7" r="4" />
-                                </svg>
+                                {user ? (
+                                    <span className="text-xs font-bold">
+                                        {user.user_metadata?.full_name
+                                            ? user.user_metadata.full_name.split(' ').map((n: any) => n[0]).join('').substring(0, 2).toUpperCase()
+                                            : user.email?.substring(0, 2).toUpperCase()}
+                                    </span>
+                                ) : (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                )}
                             </button>
                         )}
                     </div>
@@ -220,35 +244,53 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
 
                                 {/* Profile Switch + Sign In */}
                                 <div className="pt-6 border-t border-white/10 space-y-3">
-                                    {/* Profile switch (mineur/majeur) */}
-                                    <button
-                                        onClick={() => {
-                                            onLogout();
-                                            setIsMobileMenuOpen(false);
-                                        }}
-                                        className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium text-white/70 bg-white/5 hover:bg-white/10 transition-all duration-300"
-                                    >
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                                        </svg>
-                                        {userProfile === 'adult' ? t('auth.switch_to_minor') : t('auth.switch_to_adult')}
-                                    </button>
+                                    {/* Profile switch (mineur/majeur) - Only show if NOT logged in */}
+                                    {!user && (
+                                        <button
+                                            onClick={() => {
+                                                onLogout();
+                                                setIsMobileMenuOpen(false);
+                                            }}
+                                            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium text-white/70 bg-white/5 hover:bg-white/10 transition-all duration-300"
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                            </svg>
+                                            {userProfile === 'adult' ? t('auth.switch_to_minor') : t('auth.switch_to_adult')}
+                                        </button>
+                                    )}
                                     {/* Sign In (adults only) */}
                                     {userProfile === 'adult' && (
                                         <button
-                                            onClick={() => handleNavigate('auth')}
+                                            onClick={() => {
+                                                if (user) handleNavigate('profile');
+                                                else handleNavigate('auth');
+                                            }}
                                             className={clsx(
                                                 "w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300",
-                                                activePage === 'auth'
+                                                activePage === 'auth' || activePage === 'profile'
                                                     ? "bg-brand-primary text-brand-deep"
                                                     : "text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20"
                                             )}
                                         >
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                                <circle cx="12" cy="7" r="4" />
-                                            </svg>
-                                            {t('auth.tab_login')} / {t('auth.tab_signup')}
+                                            {user ? (
+                                                <>
+                                                    <span className="w-6 h-6 rounded-full bg-brand-primary text-brand-deep flex items-center justify-center text-xs font-bold border border-white/20">
+                                                        {user.user_metadata?.full_name
+                                                            ? user.user_metadata.full_name.split(' ').map((n: any) => n[0]).join('').substring(0, 2).toUpperCase()
+                                                            : user.email?.substring(0, 2).toUpperCase()}
+                                                    </span>
+                                                    Mon Profil
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                                        <circle cx="12" cy="7" r="4" />
+                                                    </svg>
+                                                    {t('auth.tab_login')} / {t('auth.tab_signup')}
+                                                </>
+                                            )}
                                         </button>
                                     )}
                                 </div>

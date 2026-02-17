@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../services/supabaseClient';
 
 interface AuthPageProps {
     onNavigate: (page: string) => void;
@@ -9,6 +11,10 @@ interface AuthPageProps {
 const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
     const { t } = useLanguage();
     const [isSignUp, setIsSignUp] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -19,12 +25,66 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        setError(null); // Clear error on change
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // For now, just show a message — real auth would go here
-        alert(isSignUp ? t('auth.signup_success') : t('auth.login_success'));
+        setLoading(true);
+        setError(null);
+        setMessage(null);
+
+        try {
+            if (isSignUp) {
+                if (formData.password !== formData.confirmPassword) {
+                    throw new Error("Les mots de passe ne correspondent pas.");
+                }
+
+                const { data, error } = await supabase.auth.signUp({
+                    email: formData.email,
+                    password: formData.password,
+                    options: {
+                        emailRedirectTo: window.location.origin, // Ensure redirect works correctly
+                        data: {
+                            full_name: formData.name,
+                        },
+                    },
+                });
+
+                if (error) throw error;
+
+                if (data.user && !data.session) {
+                    setMessage("Un email de confirmation vous a été envoyé. Vérifiez votre boîte de réception.");
+                } else {
+                    onNavigate('home');
+                }
+            } else {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: formData.email,
+                    password: formData.password,
+                });
+
+                if (error) throw error;
+                onNavigate('home');
+            }
+        } catch (err: any) {
+            console.error("Auth error:", err);
+            setError(err.message || "Une erreur est survenue lors de l'authentification.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+            });
+            if (error) throw error;
+        } catch (err: any) {
+            console.error("Google login error:", err);
+            setError(err.message);
+        }
     };
 
     return (
@@ -59,22 +119,34 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                             {isSignUp ? t('auth.signup_subtitle') : t('auth.login_subtitle')}
                         </p>
 
+                        {/* Error / Success Messages */}
+                        {error && (
+                            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
+                                {error}
+                            </div>
+                        )}
+                        {message && (
+                            <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm text-center">
+                                {message}
+                            </div>
+                        )}
+
                         {/* Tab Switcher */}
                         <div className="flex mb-8 bg-white/5 rounded-full p-1 border border-white/10">
                             <button
-                                onClick={() => setIsSignUp(false)}
+                                onClick={() => { setIsSignUp(false); setError(null); setMessage(null); }}
                                 className={`flex-1 py-2.5 text-sm font-semibold rounded-full transition-all duration-300 ${!isSignUp
-                                        ? 'bg-brand-primary text-brand-deep shadow-lg'
-                                        : 'text-white/50 hover:text-white'
+                                    ? 'bg-brand-primary text-brand-deep shadow-lg'
+                                    : 'text-white/50 hover:text-white'
                                     }`}
                             >
                                 {t('auth.tab_login')}
                             </button>
                             <button
-                                onClick={() => setIsSignUp(true)}
+                                onClick={() => { setIsSignUp(true); setError(null); setMessage(null); }}
                                 className={`flex-1 py-2.5 text-sm font-semibold rounded-full transition-all duration-300 ${isSignUp
-                                        ? 'bg-brand-primary text-brand-deep shadow-lg'
-                                        : 'text-white/50 hover:text-white'
+                                    ? 'bg-brand-primary text-brand-deep shadow-lg'
+                                    : 'text-white/50 hover:text-white'
                                     }`}
                             >
                                 {t('auth.tab_signup')}
@@ -109,7 +181,6 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                             onChange={handleChange}
                                             placeholder={t('auth.name_placeholder')}
                                             className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/30 transition-all text-sm"
-                                            required
                                         />
                                     </motion.div>
                                 )}
@@ -199,9 +270,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                 {/* Submit Button */}
                                 <button
                                     type="submit"
-                                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-primary to-cyan-400 text-brand-deep font-bold text-sm uppercase tracking-wider shadow-lg shadow-brand-primary/25 hover:shadow-brand-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                                    disabled={loading}
+                                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-primary to-cyan-400 text-brand-deep font-bold text-sm uppercase tracking-wider shadow-lg shadow-brand-primary/25 hover:shadow-brand-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {isSignUp ? t('auth.signup_button') : t('auth.login_button')}
+                                    {loading ? '...' : (isSignUp ? t('auth.signup_button') : t('auth.login_button'))}
                                 </button>
 
                                 {/* Divider */}
@@ -215,6 +287,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                 <div className="space-y-3">
                                     <button
                                         type="button"
+                                        onClick={handleGoogleLogin}
                                         className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white transition-all text-sm font-medium"
                                     >
                                         <svg width="18" height="18" viewBox="0 0 24 24">
@@ -233,7 +306,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                         <p className="text-center text-sm text-white/40 mt-8">
                             {isSignUp ? t('auth.have_account') : t('auth.no_account')}{' '}
                             <button
-                                onClick={() => setIsSignUp(!isSignUp)}
+                                onClick={() => { setIsSignUp(!isSignUp); setError(null); setMessage(null); }}
                                 className="text-brand-primary font-semibold hover:underline"
                             >
                                 {isSignUp ? t('auth.tab_login') : t('auth.tab_signup')}
@@ -247,3 +320,4 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
 };
 
 export default AuthPage;
+

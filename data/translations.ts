@@ -378,6 +378,18 @@ export const translations: Record<string, any> = {
             switch_to_adult: "Passer en mode Majeur",
             profile_adult: "Mode Majeur",
             profile_minor: "Mode Mineur"
+        },
+        profile: {
+            title: "Mon Profil",
+            logout: "Se déconnecter",
+            history_title: "Historique des analyses",
+            analyzed_on: "Analysé le",
+            result: "Résultat de l'analyse",
+            no_notes: "Aucune note ajoutée.",
+            empty_title: "Aucune analyse",
+            empty_desc: "Vos futures analyses apparaîtront ici. Commencez par effectuer votre première analyse.",
+            start: "Démarrer une analyse",
+            loading: "Chargement..."
         }
     },
     en: {
@@ -762,6 +774,18 @@ export const translations: Record<string, any> = {
             switch_to_adult: "Switch to Adult mode",
             profile_adult: "Adult Mode",
             profile_minor: "Minor Mode"
+        },
+        profile: {
+            title: "My Profile",
+            logout: "Sign Out",
+            history_title: "Analysis History",
+            analyzed_on: "Analyzed on",
+            result: "Analysis Result",
+            no_notes: "No notes added.",
+            empty_title: "No analysis",
+            empty_desc: "Your future analyses will appear here. Start by performing your first analysis.",
+            start: "Start Analysis",
+            loading: "Loading..."
         }
     }
 };

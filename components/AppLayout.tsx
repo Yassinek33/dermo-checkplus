@@ -12,6 +12,7 @@ interface AppLayoutProps {
     currentPage: string;
     onNavigate: (pageId: string) => void;
     showLogo?: boolean;
+    user?: any;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({
@@ -20,7 +21,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     onLogout,
     currentPage,
     onNavigate,
-    showLogo = true
+    showLogo = true,
+    user
 }) => {
     // Scroll detection for logo transparency
     const [scrollY, setScrollY] = React.useState(0);
@@ -74,6 +76,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                 onNavigate={onNavigate}
                 userProfile={userProfile}
                 onLogout={onLogout}
+                user={user}
             />
 
             {/* Main Content Area */}

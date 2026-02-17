@@ -25,6 +25,8 @@ import { DermoCheckLogo } from './components/icons';
 import { BlogListPage } from './components/BlogListPage';
 import { BlogArticlePageComponent } from './components/BlogArticlePage';
 import AuthPage from './components/AuthPage';
+import ProfilePage from './components/ProfilePage';
+import { supabase } from './services/supabaseClient';
 
 // --- Icons for Menu ---
 const MenuIcon = () => (
@@ -92,6 +94,30 @@ const App: React.FC = () => {
     const [dermSearchError, setDermSearchError] = useState<string | null>(null);
     const [currentSearchQuery, setCurrentSearchQuery] = useState<{ country: string; city: string }>({ country: '', city: '' });
     const [lastSearchLocation, setLastSearchLocation] = useState<LatLng | null>(null);
+
+    // Supabase Auth State
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        // Check active session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user ?? null);
+            if (session?.user && !userProfile) {
+                // If logged in, must be adult
+                setUserProfile('adult');
+            }
+        });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+            if (session?.user) {
+                // If logged in, must be adult
+                setUserProfile('adult');
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, [userProfile]);
 
     useEffect(() => {
         if (userProfile) {
@@ -212,6 +238,16 @@ const App: React.FC = () => {
             return <BlogArticlePageComponent slug={currentArticleSlug || ''} onNavigate={navigateTo} />;
         }
 
+        if (currentPageId === 'profile') {
+            return <ProfilePage user={user} onNavigate={navigateTo} onLogout={async () => {
+                await supabase.auth.signOut();
+                localStorage.removeItem('dermo_user_profile');
+                setUserProfile(null);
+                setUser(null);
+                navigateTo('home');
+            }} />;
+        }
+
         if (!currentPageConfig) return <div className="text-center text-red-600">Page non trouvée.</div>;
 
         // STRICT Security check for Minors accessing Questionnaire
@@ -319,9 +355,12 @@ const App: React.FC = () => {
             currentPage={currentPageId}
             onNavigate={navigateTo}
             userProfile={userProfile}
-            onLogout={() => {
+            user={user}
+            onLogout={async () => {
+                await supabase.auth.signOut();
                 localStorage.removeItem('dermo_user_profile');
                 setUserProfile(null);
+                setUser(null);
                 navigateTo('home');
             }}
             showLogo={isConsentGiven && isLanguageSelected}

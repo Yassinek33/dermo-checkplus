@@ -82,13 +82,16 @@ If the response is "Someone else", then you ask the question: "What is their age
 
 🧾 FINAL OUTPUT (FORMAT)
 Start with: [FINAL_REPORT]
-1. **Medical Warning** (mandatory)
-2. **Detailed Clinical Synthesis** (Summarize ALL collected information: Who is concerned, age, gender, country, precise location, duration, evolution, described morphology, symptoms felt, history of lesion onset, treatments already applied, medical and family history, and environmental/lifestyle factors).
-3. **Visual Analysis** (only if a photo is provided, describe observed visual markers).
-4. **Clinical Conclusion and Hypotheses**: Formulate 2 to 3 differential hypotheses in the conditional. **IMPORTANT**: These hypotheses must result from the CORRELATION between symptoms (ex: itching, pain), history (ex: sudden onset), patient background (age, history) and visual aspect. Textual analysis of the questionnaire is as crucial as the photo.
-5. **Alert Signs** (severity criteria requiring urgent consultation).
-6. **Non-drug Care Advice** (hygiene, protection, what to avoid).
-7. **Final Recommendation**: Necessity to consult a dermatologist for confirmation and definitive diagnosis.
+**CLINICAL SYNTHESIS**
+(Summarize key points: Patient profile, symptoms, history)
+
+**VISUAL ANALYSIS**
+(Only if a photo is provided: Describe observed visual markers)
+
+**CLINICAL CONCLUSION & HYPOTHESES**
+Formulate 2 to 3 differential hypotheses based on correlation of all factors. Be precise but use conditional language. Include relevant care advice and recommendation to consult if needed within the conclusion.
+
+IMPORTANT: Do NOT use numbered lists (1. 2. 3.). Use clean formatting with bold headers.
 
 GENERAL RULES
 - Always put a response field after each question.
@@ -173,15 +176,19 @@ If the response is "Une autre personne", then you ask the question: "Quel est so
 🔟 MÉDIA (Photo)
 "Ajoutez une photo nette de la lésion (bonne lumière, de près)." [PHOTO_REQUEST]
 
-🧾 SORTIE FINALE (FORMAT)
+🧾 SORTIE FINALE (FORMAT ÉPURÉ)
 Commencer par : [FINAL_REPORT]
-1. **Avertissement médical** (obligatoire)
-2. **Synthèse clinique détaillée** (Reprendre l'INTÉGRALITÉ des informations recueillies : Qui est concerné, âge, sexe, pays, localisation précise, ancienneté, évolution, morphologie décrite, symptômes ressentis, historique du début de la lésion, traitements déjà appliqués, antécédents médicaux et familiaux, et facteurs environnementaux/hygiène de vie).
-3. **Analyse visuelle** (uniquement si une photo est fournie, décrire les marqueurs visuels observés).
-4. **Conclusion Clinique et Hypothèses** : Formule 2 à 3 hypothèses différentielles au conditionnel. **IMPORTANT** : Ces hypothèses doivent résulter de la CORRÉLATION entre les symptômes (ex: démangeaisons, douleur), l'historique (ex: apparition brutale), le terrain du patient (âge, antécédents) et l'aspect visuel. L'analyse textuelle du questionnaire est aussi cruciale que la photo.
-5. **Signes d’alerte** (critères de gravité nécessitant une consultation urgente).
-6. **Conseils de soins non médicamenteux** (hygiène, protection, ce qu'il faut éviter).
-7. **Recommandation finale** : Nécessité de consulter un dermatologue pour confirmation et diagnostic définitif.
+
+**SYNTHÈSE CLINIQUE**
+(Résumer tous les points clés : Profil du patient, symptômes, historique de la lésion)
+
+**ANALYSE VISUELLE**
+(Seulement si photo fournie : Décrire les marqueurs visuels observés)
+
+**CONCLUSION CLINIQUE ET HYPOTHÈSES**
+Formuler 2 à 3 hypothèses différentielles basées sur la corrélation de tous les facteurs. Être précis mais utiliser le conditionnel. Inclure les conseils de soins et recommandations médicales si nécessaire DANS la conclusion.
+
+IMPORTANT: Ne PAS utiliser de listes numérotées (1. 2. 3.). Utiliser une mise en page aérée avec titres en gras.
 
 RÈGLES GÉNÉRALES
 - Toujours mettre un champ de réponse après chaque question.

@@ -15,6 +15,7 @@ import CountryDropdown from './components/CountryDropdown'; // Import CountryDro
 import AgeMonthYearDropdown from './components/AgeMonthYearDropdown'; // New: Import AgeMonthYearDropdown
 import { getSystemInstruction } from './constants'; // To extract notice/warning
 import { useLanguage } from './context/LanguageContext';
+import { supabase } from './services/supabaseClient';
 
 interface QuestionnaireProps {
     config: PageConfig;
@@ -460,6 +461,32 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                 }
             }
             newAiMessage.userUploadedImageUrls = allUploadedImageUrls;
+
+            // Save to Supabase History if user is logged in
+            supabase.auth.getSession().then(async ({ data: { session } }) => {
+                if (session?.user) {
+                    try {
+                        // Create a cleaner summary for notes by removing the warning
+                        const cleanSummary = aiResponseText
+                            .replace(/\[FINAL_REPORT\]/g, '')
+                            .replace(/1\.\s*\*\*⚠️\s*IMPORTANT WARNING:\*\*.*?(?=\n\n|\n2)/s, '')
+                            .replace(/1\.\s*\*\*⚠️\s*AVERTISSEMENT MÉDICAL\s*\(.*?\):\*\*.*?(?=\n\n|\n2)/s, '')
+                            .replace(/^\s*[\r\n]/gm, '') // Remove empty lines at start
+                            .trim()
+                            .substring(0, 300);
+
+                        const { error } = await supabase.from('analyses').insert({
+                            user_id: session.user.id,
+                            notes: cleanSummary + (cleanSummary.length >= 300 ? '...' : ''),
+                            prediction: { full_text: aiResponseText }, // Store full report
+                            // image_url: allUploadedImageUrls.length > 0 ? allUploadedImageUrls[0] : null
+                        });
+                        if (error) console.error("Error saving analysis:", error);
+                    } catch (err) {
+                        console.error("Failed to save analysis:", err);
+                    }
+                }
+            });
         }
 
         const finalHistory = [
