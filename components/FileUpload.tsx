@@ -13,6 +13,7 @@ const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(({ onFileSelect, 
     const { t } = useLanguage();
     const [selectedFilePreviews, setSelectedFilePreviews] = useState<SelectedFilePreview[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const cameraInputRef = useRef<HTMLInputElement>(null);
     const fileObjectUrlsRef = useRef<string[]>([]);
 
     useEffect(() => {
@@ -41,6 +42,9 @@ const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(({ onFileSelect, 
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
+            if (cameraInputRef.current) {
+                cameraInputRef.current.value = '';
+            }
         }
     };
 
@@ -56,6 +60,9 @@ const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(({ onFileSelect, 
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
+        if (cameraInputRef.current) {
+            cameraInputRef.current.value = '';
+        }
     };
 
     const handleUploadClick = () => {
@@ -67,11 +74,18 @@ const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(({ onFileSelect, 
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
+            if (cameraInputRef.current) {
+                cameraInputRef.current.value = '';
+            }
         }
     };
 
     const handleButtonClick = () => {
         fileInputRef.current?.click();
+    };
+
+    const handleCameraClick = () => {
+        cameraInputRef.current?.click();
     };
 
     const hasFiles = selectedFilePreviews.length > 0;
@@ -119,16 +133,34 @@ const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(({ onFileSelect, 
                     multiple
                     className="hidden"
                 />
-                <button
-                    onClick={handleButtonClick}
-                    className="w-full flex items-center justify-center gap-3 px-7 py-4 bg-white/5 border-2 border-brand-primary/40 text-brand-primary rounded-full hover:bg-brand-primary/10 transition-all duration-300 font-bold shadow-lg"
-                    aria-label={hasFiles ? `${selectedFilePreviews.length} ${t('questionnaire_ui.images_selected')}` : t('questionnaire_ui.choose_images')}
-                >
-                    <PaperclipIcon />
-                    <span className="truncate">
-                        {hasFiles ? `${selectedFilePreviews.length} ${t('questionnaire_ui.images_selected')}` : t('questionnaire_ui.select_photos')}
-                    </span>
-                </button>
+                <input
+                    type="file"
+                    ref={cameraInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                />
+                <div className="flex gap-3 w-full">
+                    <button
+                        onClick={handleCameraClick}
+                        className="flex-1 flex items-center justify-center gap-2 px-5 py-4 bg-brand-primary/10 border-2 border-brand-primary/40 text-brand-primary rounded-full hover:bg-brand-primary/20 transition-all duration-300 font-bold shadow-lg"
+                        aria-label={t('questionnaire_ui.take_photo')}
+                    >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        <span className="truncate text-sm md:text-base">{t('questionnaire_ui.take_photo')}</span>
+                    </button>
+                    <button
+                        onClick={handleButtonClick}
+                        className="flex-1 flex items-center justify-center gap-2 px-5 py-4 bg-white/5 border-2 border-white/20 text-brand-secondary rounded-full hover:bg-white/10 transition-all duration-300 font-bold shadow-lg"
+                        aria-label={hasFiles ? `${selectedFilePreviews.length} ${t('questionnaire_ui.images_selected')}` : t('questionnaire_ui.choose_images')}
+                    >
+                        <PaperclipIcon />
+                        <span className="truncate text-sm md:text-base">
+                            {hasFiles ? `${selectedFilePreviews.length} ${t('questionnaire_ui.images_selected')}` : t('questionnaire_ui.select_photos')}
+                        </span>
+                    </button>
+                </div>
 
                 {hasFiles ? (
                     <button
