@@ -5,6 +5,7 @@ import { sortedCountries } from './CountryDropdown';
 import { GenerateContentResponse, GroundingChunk, LatLng } from '@google/genai';
 import { CITY_DATA, DEFAULT_CITIES } from '../data/cities';
 import { fetchPlaceDetails } from '../services/placesService';
+import { DermoCheckLogo } from './icons';
 
 // --- Types & Interfaces ---
 interface MapsPlaceInfo {
@@ -384,6 +385,16 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
     // --- Render ---
     return (
         <div className="flex flex-col gap-8 w-full relative pt-2">
+            {/* Centered Logo - Click to go home */}
+            <div className="flex justify-center mb-2">
+                <button
+                    onClick={onBack}
+                    className="group transition-transform duration-300 hover:scale-105 active:scale-95 focus:outline-none"
+                    aria-label="Retour à l'accueil"
+                >
+                    <DermoCheckLogo size={32} className="h-auto drop-shadow-[0_0_20px_rgba(45,212,191,0.4)] group-hover:drop-shadow-[0_0_30px_rgba(45,212,191,0.6)] transition-all duration-300" />
+                </button>
+            </div>
 
             {/* Search Controls (Glass Box) */}
             <div className="glass-card rounded-3xl p-6 md:p-8 flex flex-col gap-6">
