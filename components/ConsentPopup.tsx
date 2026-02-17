@@ -23,7 +23,7 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-4 bg-black/90 backdrop-blur-xl">
+            <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-4 pb-8 bg-black/90 backdrop-blur-xl overflow-y-auto">
                 {/* Ambient Background Glows - Matching Dark/Luxury Theme */}
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-primary/10 rounded-full blur-[120px] animate-pulse" />
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] animate-pulse" />
@@ -32,7 +32,7 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative w-full max-w-lg glass-panel p-6 md:p-10 space-y-6 border border-white/10 shadow-3xl bg-brand-deep/50 overflow-hidden rounded-3xl"
+                    className="relative w-full max-w-lg glass-panel p-6 md:p-10 space-y-6 border border-white/10 shadow-3xl bg-brand-deep/50 overflow-hidden rounded-3xl flex-shrink-0 my-auto"
                 >
                     {/* Top Accent Line */}
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-primary/50 to-transparent" />
