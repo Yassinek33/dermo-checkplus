@@ -5,7 +5,7 @@ export const fetchPlaceDetails = async (placeId: string): Promise<{
     website?: string;
 }> => {
     try {
-        const apiKey = "AIzaSyCOP7ZJCZ7DiuWCsKPv4vKp-ba3rlnDDnc";
+        const apiKey = import.meta.env.VITE_API_KEY || "AIzaSyCOP7ZJCZ7DiuWCsKPv4vKp-ba3rlnDDnc";
         if (!apiKey) {
             console.warn("API key not available for Places API");
             return {};
