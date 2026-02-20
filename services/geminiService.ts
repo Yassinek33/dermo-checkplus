@@ -12,10 +12,10 @@ let assistant: GoogleGenAI | null = null; // Initialize lazily
 // Function to get or create the GoogleGenAI client
 const getGeminiClient = () => {
     // Recreate the client each time to ensure it uses the most up-to-date API key
-    const apiKey = import.meta.env.VITE_API_KEY;
+    const apiKey = "AIzaSyCOP7ZJCZ7DiuWCsKPv4vKp-ba3rlnDDnc";
     if (!apiKey) {
         console.warn("VITE_API_KEY is not set. AI features will not work.");
-        // We can throw here, or let the specific call fail. Throwing here is safer for the call.
+        // Pour Vercel, il faut lancer une erreur pour que l'interface affiche correctement qu'il manque l'API key
         throw new Error("VITE_API_KEY environment variable not set. Please configure it in Vercel.");
     }
     assistant = new GoogleGenAI({ apiKey });
