@@ -16,7 +16,7 @@ const getGeminiClient = () => {
     if (!apiKey) {
         console.warn("VITE_API_KEY is not set. AI features will not work.");
         // We can throw here, or let the specific call fail. Throwing here is safer for the call.
-        throw new Error("VITE_API_KEY environment variable not set. Please configure it in Netlify.");
+        throw new Error("VITE_API_KEY environment variable not set. Please configure it in Vercel.");
     }
     assistant = new GoogleGenAI({ apiKey });
     return assistant;
