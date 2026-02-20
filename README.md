@@ -1,4 +1,4 @@
-# Dermo-Check
+# Dermato-Check
 
 Application d'aide au pré-diagnostic dermatologique alimentée par l'IA.
 

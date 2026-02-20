@@ -37,7 +37,7 @@ const MinorCheckPopup: React.FC<MinorCheckPopupProps> = ({ onConfirmAdult, onCon
                     <span role="img" aria-label="Doctor">⚕️</span>
                 </div>
                 <h2 id="profile-selection-title" className="text-3xl md:text-4xl font-display font-bold text-white mb-5 tracking-tight">
-                    {t('minors.title')} <span className="text-brand-primary drop-shadow-[0_0_10px_rgba(45,212,191,0.5)]">DERMO-CHECK</span>
+                    {t('minors.title')} <span className="text-brand-primary drop-shadow-[0_0_10px_rgba(45,212,191,0.5)]">DERMATO-CHECK</span>
                 </h2>
                 <p className="text-brand-secondary/80 text-base md:text-lg mb-8 font-light leading-relaxed">
                     {t('minors.subtitle')}

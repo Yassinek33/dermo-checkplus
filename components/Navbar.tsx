@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx } from 'clsx';
-import { DermoCheckLogo } from './icons';
+import { DermatoCheckLogo } from './icons';
 
 import { useLanguage } from '../context/LanguageContext';
 

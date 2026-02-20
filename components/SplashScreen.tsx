@@ -122,7 +122,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
                     >
                         <img
                             src="/nouveau-logo.png"
-                            alt="DermoCheck"
+                            alt="DermatoCheck"
                             style={{
                                 width: 'min(60vw, 60vh)',
                                 maxWidth: 600,

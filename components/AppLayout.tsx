@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
 import AuroraBackground from './AuroraBackground';
-import { DermoCheckLogo } from './icons';
+import { DermatoCheckLogo } from './icons';
 import { Footer } from './Footer';
 
 interface AppLayoutProps {
@@ -64,7 +64,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                     onClick={() => onNavigate('home')}
                 >
                     <div className="relative w-16 sm:w-20 md:w-24 lg:w-28">
-                        <DermoCheckLogo className="drop-shadow-[0_0_25px_rgba(45,212,191,0.6)] group-hover:scale-105 transition-transform duration-300 w-full h-auto" />
+                        <DermatoCheckLogo className="drop-shadow-[0_0_25px_rgba(45,212,191,0.6)] group-hover:scale-105 transition-transform duration-300 w-full h-auto" />
                         <div className="absolute inset-0 bg-brand-primary/20 blur-3xl -z-10 rounded-full group-hover:bg-brand-primary/30 transition-colors duration-300 opacity-60" />
                     </div>
                 </motion.div>

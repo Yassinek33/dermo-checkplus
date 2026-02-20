@@ -10,7 +10,7 @@ export const reverseGeocode = async (latitude: number, longitude: number): Promi
 
         const response = await fetch(url, {
             headers: {
-                'User-Agent': 'DermoCheck/1.0',
+                'User-Agent': 'DermatoCheck/1.0',
             },
         });
 

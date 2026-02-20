@@ -39,7 +39,7 @@ export const RedoIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
     </svg>
 );
 
-export const DermoCheckLogo: React.FC<{ size?: number; className?: string }> = ({ size, className }) => {
+export const DermatoCheckLogo: React.FC<{ size?: number; className?: string }> = ({ size, className }) => {
     // Use the exact image provided by the user without any CSS modifications
     const defaultSize = 500; // Double the previous size for maximum visibility
     const logoSize = size || defaultSize;
@@ -47,7 +47,7 @@ export const DermoCheckLogo: React.FC<{ size?: number; className?: string }> = (
     return (
         <img
             src="/nouveau-logo.png"
-            alt="DermoCheck"
+            alt="DermatoCheck"
             className={`cursor-pointer transition-all duration-700 hover:scale-110 ${className || ''}`}
             style={{
                 width: `${logoSize}px`,

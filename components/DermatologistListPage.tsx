@@ -5,7 +5,7 @@ import { sortedCountries } from './CountryDropdown';
 import { GenerateContentResponse, GroundingChunk, LatLng } from '@google/genai';
 import { CITY_DATA, DEFAULT_CITIES } from '../data/cities';
 import { fetchPlaceDetails } from '../services/placesService';
-import { DermoCheckLogo } from './icons';
+import { DermatoCheckLogo } from './icons';
 
 // --- Types & Interfaces ---
 interface MapsPlaceInfo {

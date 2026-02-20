@@ -48,7 +48,7 @@ export const translations: Record<string, any> = {
         home: {
             hero: {
                 badge: "Protocole Clinique v9.0",
-                title: "DERMOCHECK",
+                title: "DERMATOCHECK",
                 subtitle: "Une expertise dermatologique de pointe pour une analyse cutanée complète et personnalisée.",
                 cta_start: "Démarrer l'Analyse",
                 cta_clinics: "Trouver un Dermatologue"
@@ -93,24 +93,24 @@ export const translations: Record<string, any> = {
             }
         },
         about: {
-            title: "DermoCheck — Analyse de Peau par Intelligence Artificielle à Visée Informative",
+            title: "DermatoCheck — Analyse de Peau par Intelligence Artificielle à Visée Informative",
             subtitle: "Un accompagnement technologique pour votre observation dermatologique.",
             sections: [
                 {
-                    title: "DermoCheck : Une Solution Numérique d'Appui",
-                    text: "DermoCheck est une solution numérique d’analyse de peau par intelligence artificielle combinant analyse d’images cutanées et questionnaire dermatologique.\n\nNotre technologie observe certains paramètres visibles de la peau à partir de photographies et d’informations déclaratives, dans un objectif informatif, éducatif et de sensibilisation dermatologique.\n\nDermoCheck est un outil technologique d’assistance à l’observation — il ne s’agit pas d’un service médical.\n\nAucun acte médical n’est réalisé via la plateforme."
+                    title: "DermatoCheck : Une Solution Numérique d'Appui",
+                    text: "DermatoCheck est une solution numérique d’analyse de peau par intelligence artificielle combinant analyse d’images cutanées et questionnaire dermatologique.\n\nNotre technologie observe certains paramètres visibles de la peau à partir de photographies et d’informations déclaratives, dans un objectif informatif, éducatif et de sensibilisation dermatologique.\n\nDermatoCheck est un outil technologique d’assistance à l’observation — il ne s’agit pas d’un service médical.\n\nAucun acte médical n’est réalisé via la plateforme."
                 },
                 {
                     title: "Technologie Combinée : IA & Données Déclaratives",
-                    text: "DermoCheck repose sur une approche combinée :\n\n• Analyse de l’image cutanée : Nos algorithmes évaluent les variations de couleur, contrastes cutanés, motifs visuels et caractéristiques de surface.\n\n• Questionnaire dermatologique : L’utilisateur renseigne l'ancienneté de la lésion, l'évolution perçue, les symptômes ressentis et le contexte général."
+                    text: "DermatoCheck repose sur une approche combinée :\n\n• Analyse de l’image cutanée : Nos algorithmes évaluent les variations de couleur, contrastes cutanés, motifs visuels et caractéristiques de surface.\n\n• Questionnaire dermatologique : L’utilisateur renseigne l'ancienneté de la lésion, l'évolution perçue, les symptômes ressentis et le contexte général."
                 },
                 {
                     title: "Pourquoi l'Association Photo + Questionnaire ?",
-                    text: "L’évaluation dermatologique repose sur plusieurs dimensions. En associant l'analyse visuelle automatisée, les informations déclaratives et des modèles statistiques, DermoCheck fournit une orientation informative plus contextualisée qu’une image seule.\n\nCependant, cette combinaison ne remplace jamais un examen clinique, un interrogatoire médical complet ou l’expertise d’un dermatologue."
+                    text: "L’évaluation dermatologique repose sur plusieurs dimensions. En associant l'analyse visuelle automatisée, les informations déclaratives et des modèles statistiques, DermatoCheck fournit une orientation informative plus contextualisée qu’une image seule.\n\nCependant, cette combinaison ne remplace jamais un examen clinique, un interrogatoire médical complet ou l’expertise d’un dermatologue."
                 },
                 {
                     title: "Outil Informatif, Pas de Diagnostic",
-                    text: "DermoCheck ne fournit :\n✖ aucun diagnostic médical\n✖ aucun avis médical personnalisé\n✖ aucune prescription\n✖ aucune recommandation thérapeutique\n✖ aucun suivi médical\n\nLes informations générées servent uniquement à informer et sensibiliser l’utilisateur. Toute décision médicale doit être prise par un professionnel de santé qualifié."
+                    text: "DermatoCheck ne fournit :\n✖ aucun diagnostic médical\n✖ aucun avis médical personnalisé\n✖ aucune prescription\n✖ aucune recommandation thérapeutique\n✖ aucun suivi médical\n\nLes informations générées servent uniquement à informer et sensibiliser l’utilisateur. Toute décision médicale doit être prise par un professionnel de santé qualifié."
                 },
                 {
                     title: "Limites Techniques",
@@ -125,24 +125,24 @@ export const translations: Record<string, any> = {
                     text: "L’utilisateur reconnaît que la technologie comporte des limites et que les réponses sont déclaratives. L’outil ne remplace pas une consultation médicale. Vos images et informations sont traitées par des systèmes automatisés sécurisés, et nous ne garantissons pas la pertinence de l'évaluation automatisée. L’utilisateur reste seul responsable de ses décisions de santé."
                 }
             ],
-            warning: "AVERTISSEMENT MÉDICAL IMPORTANT : DermoCheck n’est pas un médecin. La plateforme ne remplace en aucun cas une consultation dermatologique ou médicale. Consultez un professionnel de santé en cas de : douleur, saignement, évolution rapide, changement de forme/couleur, ou inquiétude. En cas d’urgence, contactez immédiatement le 15 ou le 112."
+            warning: "AVERTISSEMENT MÉDICAL IMPORTANT : DermatoCheck n’est pas un médecin. La plateforme ne remplace en aucun cas une consultation dermatologique ou médicale. Consultez un professionnel de santé en cas de : douleur, saignement, évolution rapide, changement de forme/couleur, ou inquiétude. En cas d’urgence, contactez immédiatement le 15 ou le 112."
         },
         legal: {
             title: "MENTIONS LÉGALES & SÉCURITÉ",
             sections: [
-                { title: "LIMITATION DE RESPONSABILITÉ MÉDICALE", text: "**IMPORTANT : DERMO-CHECK N'EST PAS UN MÉDECIN ET NE REMPLACE EN AUCUN CAS UN PROFESSIONNEL DE SANTÉ.**\n\nCe service est un outil technologique d'information et d'orientation préliminaire. Les conclusions et hypothèses générées par le système sont fondées uniquement sur les informations et les médias que vous fournissez. Elles ne constituent pas un diagnostic médical, une prescription ou un avis médical définitif." },
-                { title: "OBLIGATION DE CONSULTATION", text: "L'utilisation de DERMO-CHECK ne dispense pas d'un examen clinique physique par un dermatologue ou un médecin qualifié. Nous vous incitons vivement à consulter un professionnel de santé pour valider toute information obtenue via ce service. Ne négligez jamais un avis médical et ne retardez jamais une consultation à cause d'une information lue sur cette plateforme." },
-                { title: "PROTECTION JURIDIQUE", text: "En utilisant ce service, vous reconnaissez que DERMO-CHECK et ses créateurs ne peuvent être tenus responsables des décisions prises sur la base des informations fournies. L'utilisateur est seul responsable de sa santé. En cas de symptômes graves, de douleur aiguë ou d'évolution rapide d'une lésion, dirigez-vous immédiatement vers les urgences ou contactez les services de secours." }
+                { title: "LIMITATION DE RESPONSABILITÉ MÉDICALE", text: "**IMPORTANT : DERMATO-CHECK N'EST PAS UN MÉDECIN ET NE REMPLACE EN AUCUN CAS UN PROFESSIONNEL DE SANTÉ.**\n\nCe service est un outil technologique d'information et d'orientation préliminaire. Les conclusions et hypothèses générées par le système sont fondées uniquement sur les informations et les médias que vous fournissez. Elles ne constituent pas un diagnostic médical, une prescription ou un avis médical définitif." },
+                { title: "OBLIGATION DE CONSULTATION", text: "L'utilisation de DERMATO-CHECK ne dispense pas d'un examen clinique physique par un dermatologue ou un médecin qualifié. Nous vous incitons vivement à consulter un professionnel de santé pour valider toute information obtenue via ce service. Ne négligez jamais un avis médical et ne retardez jamais une consultation à cause d'une information lue sur cette plateforme." },
+                { title: "PROTECTION JURIDIQUE", text: "En utilisant ce service, vous reconnaissez que DERMATO-CHECK et ses créateurs ne peuvent être tenus responsables des décisions prises sur la base des informations fournies. L'utilisateur est seul responsable de sa santé. En cas de symptômes graves, de douleur aiguë ou d'évolution rapide d'une lésion, dirigez-vous immédiatement vers les urgences ou contactez les services de secours." }
             ],
             warning: "En utilisant cette application, vous acceptez sans réserve nos Conditions Générales d'Utilisation."
         },
         consent: {
             title: "Votre confidentialité compte",
-            description: "DermoCheck utilise l’intelligence artificielle et des technologies numériques pour analyser les images de peau à des fins informatives.\nAvant de continuer, merci de confirmer votre consentement.",
+            description: "DermatoCheck utilise l’intelligence artificielle et des technologies numériques pour analyser les images de peau à des fins informatives.\nAvant de continuer, merci de confirmer votre consentement.",
             checkboxes: {
                 analysis: "J’accepte l’analyse automatisée de mes images et informations par un système d’intelligence artificielle à des fins informatives uniquement, et non pour un diagnostic médical.",
                 cookies: "J’accepte l’utilisation de cookies et technologies similaires pour améliorer l’expérience utilisateur, analyser l’audience et assurer la sécurité de la plateforme.",
-                medical: "Je comprends que DermoCheck ne remplace pas un médecin et que toute décision médicale doit être prise avec un professionnel de santé."
+                medical: "Je comprends que DermatoCheck ne remplace pas un médecin et que toute décision médicale doit être prise avec un professionnel de santé."
             },
             buttons: {
                 decline: "Décliner",
@@ -153,17 +153,17 @@ export const translations: Record<string, any> = {
         "privacy-policy": {
             title: "POLITIQUE DE CONFIDENTIALITÉ",
             sections: [
-                { title: "Collecte et Utilisation des Données", text: "Nous nous engageons à protéger votre vie privée. DERMO-CHECK ne collecte, ne stocke ni ne partage aucune information personnelle identifiable. Toutes les données que vous saisissez ou téléchargez sont utilisées uniquement pour la durée de votre consultation, puis sont supprimées de nos systèmes. **Aucune donnée n'est conservée à long terme.**" },
+                { title: "Collecte et Utilisation des Données", text: "Nous nous engageons à protéger votre vie privée. DERMATO-CHECK ne collecte, ne stocke ni ne partage aucune information personnelle identifiable. Toutes les données que vous saisissez ou téléchargez sont utilisées uniquement pour la durée de votre consultation, puis sont supprimées de nos systèmes. **Aucune donnée n'est conservée à long terme.**" },
                 { title: "Sécurité des Données", text: "Nous mettons en œuvre des mesures de sécurité robustes pour protéger l'intégrité et la confidentialité de vos informations pendant la consultation. Le trafic entre votre appareil et nos serveurs est chiffré. Cependant, aucune méthode de transmission sur Internet ou de stockage électronique n'est totalement sécurisée." },
-                { title: "Consentement", text: "En utilisant DERMO-CHECK AI, vous consentez à notre politique de confidentialité décrite ci-dessus. Si vous n'acceptez pas ces termes, veuillez ne pas utiliser notre application." }
+                { title: "Consentement", text: "En utilisant DERMATO-CHECK AI, vous consentez à notre politique de confidentialité décrite ci-dessus. Si vous n'acceptez pas ces termes, veuillez ne pas utiliser notre application." }
             ]
         },
         "terms-of-use": {
             title: "CONDITIONS D’UTILISATION",
             sections: [
-                { title: "Acceptation des Conditions", text: "En accédant et en utilisant DERMO-CHECK AI, vous acceptez d'être lié par les présentes Conditions d'Utilisation. Si vous n'acceptez pas toutes les conditions, vous n'êtes pas autorisé à utiliser l'application." },
-                { title: "Nature du Service", text: "DERMO-CHECK AI fournit un outil d'information et d'orientation. **Il n'est pas un substitut à un avis médical professionnel, un diagnostic ou un traitement.** Cherchez toujours l'avis de votre médecin ou d'un autre professionnel de la santé qualifié pour toute question concernant une condition médicale." },
-                { title: "Limitation de Responsabilité", text: "DERMO-CHECK AI ne peut être tenu responsable des dommages directs ou INDIRECTS résultant de l'utilisation ou de l'incapacité d'utiliser le service, y compris, sans s'y limiter, la perte de données ou de bénéfices. L'utilisation de l'application est à vos propres risques." },
+                { title: "Acceptation des Conditions", text: "En accédant et en utilisant DERMATO-CHECK AI, vous acceptez d'être lié par les présentes Conditions d'Utilisation. Si vous n'acceptez pas toutes les conditions, vous n'êtes pas autorisé à utiliser l'application." },
+                { title: "Nature du Service", text: "DERMATO-CHECK AI fournit un outil d'information et d'orientation. **Il n'est pas un substitut à un avis médical professionnel, un diagnostic ou un traitement.** Cherchez toujours l'avis de votre médecin ou d'un autre professionnel de la santé qualifié pour toute question concernant une condition médicale." },
+                { title: "Limitation de Responsabilité", text: "DERMATO-CHECK AI ne peut être tenu responsable des dommages directs ou INDIRECTS résultant de l'utilisation ou de l'incapacité d'utiliser le service, y compris, sans s'y limiter, la perte de données ou de bénéfices. L'utilisation de l'application est à vos propres risques." },
                 { title: "Modifications des Conditions", text: "Nous nous réservons le droit de modifier ces Conditions d'Utilisation à tout moment. Toute modification sera effective dès sa publication sur cette page. Il est de votre responsabilité de consulter régulièrement ces conditions." }
             ]
         },
@@ -194,7 +194,7 @@ export const translations: Record<string, any> = {
             highlight: "Précision clinique, simplicité absolue.",
             warning_popup: {
                 title: "AVERTISSEMENT MÉDICAL PRÉALABLE",
-                text1: "DermoCheck est un outil d'analyse à but INFORMATIF UNIQUEMENT.",
+                text1: "DermatoCheck est un outil d'analyse à but INFORMATIF UNIQUEMENT.",
                 text2: "Les résultats fournis par l'IA NE CONSTITUENT PAS UN DIAGNOSTIC MÉDICAL.",
                 text3: "En cas de doute, d'évolution d'une lésion ou de symptômes, CONSULTEZ UN MÉDECIN.",
                 close: "Je comprends, continuer"
@@ -203,7 +203,7 @@ export const translations: Record<string, any> = {
             myself: "Moi-même",
             other: "Une autre personne",
             start_error: "Erreur inattendue au démarrage.",
-            loading: "Analyse DermoCheck en cours...",
+            loading: "Analyse DermatoCheck en cours...",
             retry: "Réessayer l'analyse",
             error_title: "Analyse Interrompue",
             config_required: "Configuration requise",
@@ -226,7 +226,7 @@ export const translations: Record<string, any> = {
         },
         faq: {
             title: "Foire aux Questions",
-            subtitle: "Trouvez des réponses à vos questions sur DermoCheck",
+            subtitle: "Trouvez des réponses à vos questions sur DermatoCheck",
             categories: {
                 usage: "Mode d'emploi",
                 technology: "Technologie",
@@ -235,11 +235,11 @@ export const translations: Record<string, any> = {
             },
             questions: {
                 q1: {
-                    question: "Comment utiliser DermoCheck ?",
-                    answer: "DermoCheck est simple d'utilisation : (1) Cliquez sur 'Démarrer l'Analyse' depuis la page d'accueil, (2) Répondez aux questions sur votre âge et vos symptômes, (3) Téléchargez des photos claires de la zone concernée si demandé, (4) Recevez votre rapport d'analyse détaillé en quelques secondes. Notre interface vous guide à chaque étape du processus."
+                    question: "Comment utiliser DermatoCheck ?",
+                    answer: "DermatoCheck est simple d'utilisation : (1) Cliquez sur 'Démarrer l'Analyse' depuis la page d'accueil, (2) Répondez aux questions sur votre âge et vos symptômes, (3) Téléchargez des photos claires de la zone concernée si demandé, (4) Recevez votre rapport d'analyse détaillé en quelques secondes. Notre interface vous guide à chaque étape du processus."
                 },
                 q2: {
-                    question: "Puis-je utiliser DermoCheck pour quelqu'un d'autre ?",
+                    question: "Puis-je utiliser DermatoCheck pour quelqu'un d'autre ?",
                     answer: "Oui, absolument. Lors du démarrage de l'analyse, vous pouvez choisir si l'analyse est pour vous-même ou pour une autre personne. Cette option vous permet d'aider un proche, un enfant ou toute personne ayant besoin d'une évaluation dermatologique préliminaire."
                 },
                 q3: {
@@ -251,40 +251,40 @@ export const translations: Record<string, any> = {
                     answer: "L'analyse complète prend généralement entre 2 et 5 minutes. Ce temps inclut les questions préliminaires, le téléchargement des photos (si nécessaire), et le traitement par notre intelligence artificielle. Vous recevez immédiatement un rapport détaillé avec des recommandations personnalisées."
                 },
                 q5: {
-                    question: "Quelle technologie utilise DermoCheck ?",
-                    answer: "DermoCheck utilise l'intelligence artificielle de pointe Google Gemini, spécialement entraînée sur des millions d'images dermatologiques. Notre système combine l'apprentissage profond (deep learning), la vision par ordinateur, et des algorithmes de reconnaissance de patterns pour analyser les caractéristiques cutanées avec une précision clinique."
+                    question: "Quelle technologie utilise DermatoCheck ?",
+                    answer: "DermatoCheck utilise l'intelligence artificielle de pointe Google Gemini, spécialement entraînée sur des millions d'images dermatologiques. Notre système combine l'apprentissage profond (deep learning), la vision par ordinateur, et des algorithmes de reconnaissance de patterns pour analyser les caractéristiques cutanées avec une précision clinique."
                 },
                 q6: {
                     question: "Comment fonctionne l'intelligence artificielle ?",
                     answer: "Notre IA analyse les images en plusieurs étapes : (1) Détection et segmentation de la zone d'intérêt, (2) Extraction des caractéristiques visuelles (couleur, texture, forme, taille), (3) Comparaison avec notre base de données médicale, (4) Évaluation des probabilités pour différentes conditions, (5) Génération d'un rapport avec recommandations. Le tout en respectant les protocoles cliniques établis."
                 },
                 q7: {
-                    question: "DermoCheck peut-il diagnostiquer toutes les conditions cutanées ?",
-                    answer: "DermoCheck est conçu pour identifier un large éventail de conditions dermatologiques courantes, mais il ne peut pas diagnostiquer toutes les pathologies cutanées. Notre système est particulièrement efficace pour les affections visibles comme l'acné, l'eczéma, le psoriasis, les éruptions cutanées, et certaines lésions. Pour des cas complexes ou rares, une consultation avec un dermatologue reste indispensable."
+                    question: "DermatoCheck peut-il diagnostiquer toutes les conditions cutanées ?",
+                    answer: "DermatoCheck est conçu pour identifier un large éventail de conditions dermatologiques courantes, mais il ne peut pas diagnostiquer toutes les pathologies cutanées. Notre système est particulièrement efficace pour les affections visibles comme l'acné, l'eczéma, le psoriasis, les éruptions cutanées, et certaines lésions. Pour des cas complexes ou rares, une consultation avec un dermatologue reste indispensable."
                 },
                 q8: {
                     question: "Mes données sont-elles sécurisées ?",
-                    answer: "Absolument. DermoCheck applique les normes de sécurité les plus strictes : cryptage de bout en bout (AES-256), conformité RGPD et HIPAA, serveurs sécurisés certifiés, et aucune revente de données à des tiers. Vos informations personnelles et médicales sont protégées avec le même niveau de sécurité que les institutions bancaires."
+                    answer: "Absolument. DermatoCheck applique les normes de sécurité les plus strictes : cryptage de bout en bout (AES-256), conformité RGPD et HIPAA, serveurs sécurisés certifiés, et aucune revente de données à des tiers. Vos informations personnelles et médicales sont protégées avec le même niveau de sécurité que les institutions bancaires."
                 },
                 q9: {
-                    question: "DermoCheck conserve-t-il mes photos ?",
-                    answer: "Non. Par défaut, DermoCheck ne conserve AUCUNE de vos photos ou données personnelles après l'analyse. Toutes les images sont traitées en temps réel et supprimées immédiatement après génération du rapport. Aucune donnée n'est sauvegardée sur nos serveurs, garantissant votre confidentialité totale."
+                    question: "DermatoCheck conserve-t-il mes photos ?",
+                    answer: "Non. Par défaut, DermatoCheck ne conserve AUCUNE de vos photos ou données personnelles après l'analyse. Toutes les images sont traitées en temps réel et supprimées immédiatement après génération du rapport. Aucune donnée n'est sauvegardée sur nos serveurs, garantissant votre confidentialité totale."
                 },
                 q10: {
                     question: "Qui a accès à mes informations ?",
                     answer: "Personne. Vos informations ne sont accessibles qu'à vous pendant votre session d'analyse. Nous n'avons pas d'accès administrateur à vos données personnelles, et aucun employé, partenaire ou tiers ne peut consulter vos photos ou résultats. Le traitement est entièrement automatisé et anonyme."
                 },
                 q11: {
-                    question: "Quelle est la précision de DermoCheck ?",
-                    answer: "DermoCheck atteint une précision de 85-92% pour les conditions dermatologiques courantes, comparable à celle d'un dermatologue généraliste pour un premier diagnostic. Cependant, la précision varie selon la qualité des photos, la clarté des symptômes, et le type de condition. Notre système est conçu comme un outil d'aide à la décision, pas comme un remplacement du jugement médical professionnel."
+                    question: "Quelle est la précision de DermatoCheck ?",
+                    answer: "DermatoCheck atteint une précision de 85-92% pour les conditions dermatologiques courantes, comparable à celle d'un dermatologue généraliste pour un premier diagnostic. Cependant, la précision varie selon la qualité des photos, la clarté des symptômes, et le type de condition. Notre système est conçu comme un outil d'aide à la décision, pas comme un remplacement du jugement médical professionnel."
                 },
                 q12: {
-                    question: "DermoCheck remplace-t-il un dermatologue ?",
-                    answer: "Non, absolument pas. DermoCheck est un outil d'analyse préliminaire qui vous aide à mieux comprendre votre condition cutanée et à décider si une consultation médicale est nécessaire. Il ne remplace en aucun cas l'examen clinique, le diagnostic formel, ou le traitement prescrit par un dermatologue certifié. En cas de doute, consultez toujours un professionnel de santé."
+                    question: "DermatoCheck remplace-t-il un dermatologue ?",
+                    answer: "Non, absolument pas. DermatoCheck est un outil d'analyse préliminaire qui vous aide à mieux comprendre votre condition cutanée et à décider si une consultation médicale est nécessaire. Il ne remplace en aucun cas l'examen clinique, le diagnostic formel, ou le traitement prescrit par un dermatologue certifié. En cas de doute, consultez toujours un professionnel de santé."
                 },
                 q13: {
                     question: "Que faire si je ne suis pas d'accord avec les résultats ?",
-                    answer: "Si vous avez des doutes sur les résultats de l'analyse, nous vous recommandons fortement de consulter un dermatologue pour un examen clinique approfondi. DermoCheck fournit une évaluation basée sur l'IA, mais seul un médecin peut établir un diagnostic définitif. Utilisez notre outil 'Trouver un Dermatologue' pour localiser un spécialiste près de chez vous."
+                    answer: "Si vous avez des doutes sur les résultats de l'analyse, nous vous recommandons fortement de consulter un dermatologue pour un examen clinique approfondi. DermatoCheck fournit une évaluation basée sur l'IA, mais seul un médecin peut établir un diagnostic définitif. Utilisez notre outil 'Trouver un Dermatologue' pour localiser un spécialiste près de chez vous."
                 }
             }
         },
@@ -293,7 +293,7 @@ export const translations: Record<string, any> = {
             legal: "Légal",
             contact: "Contact",
             faq: "FAQ",
-            copyright: "© 2026 DermoCheck. Tous droits réservés.",
+            copyright: "© 2026 DermatoCheck. Tous droits réservés.",
             tagline: "Votre santé cutanée, notre priorité"
         },
         dermatologist: {
@@ -354,7 +354,7 @@ export const translations: Record<string, any> = {
             login_title: "Connexion",
             login_subtitle: "Accédez à votre espace personnel",
             signup_title: "Créer un compte",
-            signup_subtitle: "Rejoignez DermoCheck dès maintenant",
+            signup_subtitle: "Rejoignez DermatoCheck dès maintenant",
             tab_login: "Connexion",
             tab_signup: "Inscription",
             name: "Nom complet",
@@ -441,7 +441,7 @@ export const translations: Record<string, any> = {
         home: {
             hero: {
                 badge: "Clinical Protocol v9.0",
-                title: "DERMOCHECK",
+                title: "DERMATOCHECK",
                 subtitle: "Advanced dermatological expertise for comprehensive and personalized skin analysis.",
                 cta_start: "Start Analysis",
                 cta_clinics: "Find a Dermatologist"
@@ -486,24 +486,24 @@ export const translations: Record<string, any> = {
             }
         },
         about: {
-            title: "DermoCheck — AI Skin Analysis for Informational Purposes",
+            title: "DermatoCheck — AI Skin Analysis for Informational Purposes",
             subtitle: "Technological support for your dermatological observation.",
             sections: [
                 {
-                    title: "DermoCheck: A Digital Support Solution",
-                    text: "DermoCheck is a digital skin analysis solution powered by artificial intelligence, combining skin image analysis and a dermatological questionnaire.\n\nOur technology evaluates visible skin parameters from photographs and user-declared information for informational, educational, and skin awareness purposes.\n\nDermoCheck is a technological support tool for observation — it is not a medical service.\n\nNo medical acts are performed through the platform."
+                    title: "DermatoCheck: A Digital Support Solution",
+                    text: "DermatoCheck is a digital skin analysis solution powered by artificial intelligence, combining skin image analysis and a dermatological questionnaire.\n\nOur technology evaluates visible skin parameters from photographs and user-declared information for informational, educational, and skin awareness purposes.\n\nDermatoCheck is a technological support tool for observation — it is not a medical service.\n\nNo medical acts are performed through the platform."
                 },
                 {
                     title: "Combined Technology: AI & User-Provided Data",
-                    text: "DermoCheck uses a combined approach.\n\n• Skin Image Analysis: Our algorithms evaluate visible elements such as color variations, skin contrasts, visual patterns, and surface skin characteristics.\n\n• Complementary Dermatological Questionnaire: Users may provide general information such as lesion duration, perceived evolution, reported symptoms (itching, sensitivity, discomfort), and general context."
+                    text: "DermatoCheck uses a combined approach.\n\n• Skin Image Analysis: Our algorithms evaluate visible elements such as color variations, skin contrasts, visual patterns, and surface skin characteristics.\n\n• Complementary Dermatological Questionnaire: Users may provide general information such as lesion duration, perceived evolution, reported symptoms (itching, sensitivity, discomfort), and general context."
                 },
                 {
                     title: "Value of Combining Photo & Questionnaire",
-                    text: "Dermatological evaluation often relies on multiple observation factors. By associating automated visual analysis, general self-reported information, and dermatological statistical models, DermoCheck provides more contextualized informational guidance than image analysis alone.\n\n✖ This combination never replaces a clinical examination, a full medical interview, a dermatologist’s expertise, or real medical follow-up."
+                    text: "Dermatological evaluation often relies on multiple observation factors. By associating automated visual analysis, general self-reported information, and dermatological statistical models, DermatoCheck provides more contextualized informational guidance than image analysis alone.\n\n✖ This combination never replaces a clinical examination, a full medical interview, a dermatologist’s expertise, or real medical follow-up."
                 },
                 {
                     title: "Informational Tool — Not a Medical Diagnosis",
-                    text: "DermoCheck provides:\n✖ no medical diagnosis\n✖ no personalized medical advice\n✖ no prescriptions\n✖ no treatment recommendations\n✖ no medical follow-up\n\nThe information generated is intended solely for awareness and educational purposes. Any medical decision must be made by a qualified healthcare professional."
+                    text: "DermatoCheck provides:\n✖ no medical diagnosis\n✖ no personalized medical advice\n✖ no prescriptions\n✖ no treatment recommendations\n✖ no medical follow-up\n\nThe information generated is intended solely for awareness and educational purposes. Any medical decision must be made by a qualified healthcare professional."
                 },
                 {
                     title: "Limitations of AI Skin Photo Analysis",
@@ -511,32 +511,32 @@ export const translations: Record<string, any> = {
                 },
                 {
                     title: "Our Mission: Skin Awareness and Guidance",
-                    text: "DermoCheck aims to encourage skin self-observation, improve dermatological awareness, promote earlier medical consultation when needed, and support discussions with healthcare professionals. The platform serves as an informational tool, never as a medical substitute."
+                    text: "DermatoCheck aims to encourage skin self-observation, improve dermatological awareness, promote earlier medical consultation when needed, and support discussions with healthcare professionals. The platform serves as an informational tool, never as a medical substitute."
                 },
                 {
                     title: "User Responsibility & Data Protection",
                     text: "Users acknowledge that the technology has limitations and errors may occur. Questionnaire responses are self-reported. The tool does not replace medical consultation. Images and information are processed by automated systems. Users remain responsible for the images they share and how they use the results."
                 }
             ],
-            warning: "IMPORTANT MEDICAL DISCLAIMER: DermoCheck is not a doctor. The platform does not replace dermatological or medical consultation. Consult a healthcare professional in case of: pain, bleeding, rapid lesion changes, change in shape or color, unusual new lesions, or concerns about your skin. In case of medical emergency, contact local emergency services immediately."
+            warning: "IMPORTANT MEDICAL DISCLAIMER: DermatoCheck is not a doctor. The platform does not replace dermatological or medical consultation. Consult a healthcare professional in case of: pain, bleeding, rapid lesion changes, change in shape or color, unusual new lesions, or concerns about your skin. In case of medical emergency, contact local emergency services immediately."
         },
         legal: {
             title: "LEGAL NOTICES & SECURITY",
             subtitle: "TRANSPARENCY AND PROTECTION",
             sections: [
-                { title: "MEDICAL LIABILITY LIMITATION", text: "**IMPORTANT: DERMO-CHECK IS NOT A DOCTOR AND DOES NOT REPLACE A HEALTHCARE PROFESSIONAL UNDER ANY CIRCUMSTANCES.**\n\nThis service is a technological tool for preliminary information and orientation. The conclusions and hypotheses generated by the system are based solely on the information and media you provide. They do not constitute a medical diagnosis, prescription, or definitive medical advice." },
-                { title: "OBLIGATION TO CONSULT", text: "Using DERMO-CHECK does not exempt you from a physical clinical examination by a dermatologist or qualified physician. We strongly encourage you to consult a healthcare professional to validate any information obtained via this service. Never neglect medical advice or delay a consultation because of information read on this platform." },
-                { title: "LEGAL PROTECTION", text: "By using this service, you acknowledge that DERMO-CHECK and its creators cannot be held responsible for decisions made based on the information provided. The user is solely responsible for their health. In case of severe symptoms, acute pain, or rapid evolution of a lesion, go immediately to the emergency room or contact emergency services." }
+                { title: "MEDICAL LIABILITY LIMITATION", text: "**IMPORTANT: DERMATO-CHECK IS NOT A DOCTOR AND DOES NOT REPLACE A HEALTHCARE PROFESSIONAL UNDER ANY CIRCUMSTANCES.**\n\nThis service is a technological tool for preliminary information and orientation. The conclusions and hypotheses generated by the system are based solely on the information and media you provide. They do not constitute a medical diagnosis, prescription, or definitive medical advice." },
+                { title: "OBLIGATION TO CONSULT", text: "Using DERMATO-CHECK does not exempt you from a physical clinical examination by a dermatologist or qualified physician. We strongly encourage you to consult a healthcare professional to validate any information obtained via this service. Never neglect medical advice or delay a consultation because of information read on this platform." },
+                { title: "LEGAL PROTECTION", text: "By using this service, you acknowledge that DERMATO-CHECK and its creators cannot be held responsible for decisions made based on the information provided. The user is solely responsible for their health. In case of severe symptoms, acute pain, or rapid evolution of a lesion, go immediately to the emergency room or contact emergency services." }
             ],
             warning: "By using this application, you unreservedly accept our General Terms of Use."
         },
         consent: {
             title: "Your privacy matters",
-            description: "DermoCheck uses artificial intelligence and digital technologies to analyze skin images for informational purposes.\nBefore continuing, please confirm your consent.",
+            description: "DermatoCheck uses artificial intelligence and digital technologies to analyze skin images for informational purposes.\nBefore continuing, please confirm your consent.",
             checkboxes: {
                 analysis: "I agree to the automated analysis of my images and information by an AI system for informational purposes only, not for medical diagnosis.",
                 cookies: "I agree to the use of cookies and similar technologies to improve user experience, analyze traffic, and maintain platform security.",
-                medical: "I understand that DermoCheck does not replace a doctor and that medical decisions must be made with a qualified healthcare professional."
+                medical: "I understand that DermatoCheck does not replace a doctor and that medical decisions must be made with a qualified healthcare professional."
             },
             buttons: {
                 decline: "Decline",
@@ -548,17 +548,17 @@ export const translations: Record<string, any> = {
         "privacy-policy": {
             title: "PRIVACY POLICY",
             sections: [
-                { title: "Data Collection and Use", text: "We are committed to protecting your privacy. DERMO-CHECK does not collect, store, or share any personally identifiable information. All data you enter or upload is used solely for the duration of your consultation and is then deleted from our systems. **No data is retained long-term.**" },
+                { title: "Data Collection and Use", text: "We are committed to protecting your privacy. DERMATO-CHECK does not collect, store, or share any personally identifiable information. All data you enter or upload is used solely for the duration of your consultation and is then deleted from our systems. **No data is retained long-term.**" },
                 { title: "Data Security", text: "We implement robust security measures to protect the integrity and confidentiality of your information during the consultation. Traffic between your device and our servers is encrypted. However, no method of transmission over the Internet or electronic storage is completely secure." },
-                { title: "Consent", text: "By using DERMO-CHECK AI, you consent to our privacy policy described above. If you do not accept these terms, please do not use our application." }
+                { title: "Consent", text: "By using DERMATO-CHECK AI, you consent to our privacy policy described above. If you do not accept these terms, please do not use our application." }
             ]
         },
         "terms-of-use": {
             title: "TERMS OF USE",
             sections: [
-                { title: "Acceptance of Terms", text: "By accessing and using DERMO-CHECK AI, you agree to be bound by these Terms of Use. If you do not accept all terms, you are not authorized to use the application." },
-                { title: "Nature of Service", text: "DERMO-CHECK AI provides an information and orientation tool. **It is not a substitute for professional medical advice, diagnosis, or treatment.** Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition." },
-                { title: "Limitation of Liability", text: "DERMO-CHECK AI shall not be held liable for any direct or indirect damages resulting from the use or inability to use the service, including but not limited to loss of data or profits. Use of the application is at your own risk." },
+                { title: "Acceptance of Terms", text: "By accessing and using DERMATO-CHECK AI, you agree to be bound by these Terms of Use. If you do not accept all terms, you are not authorized to use the application." },
+                { title: "Nature of Service", text: "DERMATO-CHECK AI provides an information and orientation tool. **It is not a substitute for professional medical advice, diagnosis, or treatment.** Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition." },
+                { title: "Limitation of Liability", text: "DERMATO-CHECK AI shall not be held liable for any direct or indirect damages resulting from the use or inability to use the service, including but not limited to loss of data or profits. Use of the application is at your own risk." },
                 { title: "Changes to Terms", text: "We reserve the right to modify these Terms of Use at any time. Any modification will be effective immediately upon posting on this page. It is your responsibility to check these terms regularly." }
             ]
         },
@@ -593,7 +593,7 @@ export const translations: Record<string, any> = {
             myself: "Myself",
             other: "Someone else",
             start_error: "Unexpected error at startup.",
-            loading: "DermoCheck analysis in progress...",
+            loading: "DermatoCheck analysis in progress...",
             retry: "Retry analysis",
             error_title: "Analysis Interrupted",
             config_required: "Configuration required",
@@ -603,7 +603,7 @@ export const translations: Record<string, any> = {
             interrupted: "Analysis Interrupted",
             warning_popup: {
                 title: "PRELIMINARY MEDICAL WARNING",
-                text1: "DermoCheck is an analysis tool for INFORMATIONAL PURPOSES ONLY.",
+                text1: "DermatoCheck is an analysis tool for INFORMATIONAL PURPOSES ONLY.",
                 text2: "The results provided by the AI DO NOT CONSTITUTE A MEDICAL DIAGNOSIS.",
                 text3: "In case of doubt, change in a lesion, or symptoms, CONSULT A DOCTOR.",
                 close: "I understand, continue"
@@ -622,7 +622,7 @@ export const translations: Record<string, any> = {
         },
         faq: {
             title: "Frequently Asked Questions",
-            subtitle: "Find answers to your questions about DermoCheck",
+            subtitle: "Find answers to your questions about DermatoCheck",
             categories: {
                 usage: "How to Use",
                 technology: "Technology",
@@ -631,11 +631,11 @@ export const translations: Record<string, any> = {
             },
             questions: {
                 q1: {
-                    question: "How do I use DermoCheck?",
-                    answer: "DermoCheck is simple to use: (1) Click 'Start Analysis' from the home page, (2) Answer questions about your age and symptoms, (3) Upload clear photos of the affected area if requested, (4) Receive your detailed analysis report in seconds. Our interface guides you through each step of the process."
+                    question: "How do I use DermatoCheck?",
+                    answer: "DermatoCheck is simple to use: (1) Click 'Start Analysis' from the home page, (2) Answer questions about your age and symptoms, (3) Upload clear photos of the affected area if requested, (4) Receive your detailed analysis report in seconds. Our interface guides you through each step of the process."
                 },
                 q2: {
-                    question: "Can I use DermoCheck for someone else?",
+                    question: "Can I use DermatoCheck for someone else?",
                     answer: "Yes, absolutely. When starting the analysis, you can choose whether the analysis is for yourself or for someone else. This option allows you to help a loved one, a child, or anyone who needs a preliminary dermatological assessment."
                 },
                 q3: {
@@ -647,40 +647,40 @@ export const translations: Record<string, any> = {
                     answer: "The complete analysis typically takes between 2 and 5 minutes. This includes preliminary questions, photo upload (if necessary), and processing by our artificial intelligence. You immediately receive a detailed report with personalized recommendations."
                 },
                 q5: {
-                    question: "What technology does DermoCheck use?",
-                    answer: "DermoCheck uses cutting-edge Google Gemini artificial intelligence, specially trained on millions of dermatological images. Our system combines deep learning, computer vision, and pattern recognition algorithms to analyze skin characteristics with clinical precision."
+                    question: "What technology does DermatoCheck use?",
+                    answer: "DermatoCheck uses cutting-edge Google Gemini artificial intelligence, specially trained on millions of dermatological images. Our system combines deep learning, computer vision, and pattern recognition algorithms to analyze skin characteristics with clinical precision."
                 },
                 q6: {
                     question: "How does the artificial intelligence work?",
                     answer: "Our AI analyzes images in several steps: (1) Detection and segmentation of the area of interest, (2) Extraction of visual features (color, texture, shape, size), (3) Comparison with our medical database, (4) Probability assessment for different conditions, (5) Report generation with recommendations. All while respecting established clinical protocols."
                 },
                 q7: {
-                    question: "Can DermoCheck diagnose all skin conditions?",
-                    answer: "DermoCheck is designed to identify a wide range of common dermatological conditions, but it cannot diagnose all skin pathologies. Our system is particularly effective for visible conditions like acne, eczema, psoriasis, rashes, and certain lesions. For complex or rare cases, consultation with a dermatologist remains essential."
+                    question: "Can DermatoCheck diagnose all skin conditions?",
+                    answer: "DermatoCheck is designed to identify a wide range of common dermatological conditions, but it cannot diagnose all skin pathologies. Our system is particularly effective for visible conditions like acne, eczema, psoriasis, rashes, and certain lesions. For complex or rare cases, consultation with a dermatologist remains essential."
                 },
                 q8: {
                     question: "Is my data secure?",
-                    answer: "Absolutely. DermoCheck applies the strictest security standards: end-to-end encryption (AES-256), GDPR and HIPAA compliance, certified secure servers, and no data resale to third parties. Your personal and medical information is protected with the same level of security as banking institutions."
+                    answer: "Absolutely. DermatoCheck applies the strictest security standards: end-to-end encryption (AES-256), GDPR and HIPAA compliance, certified secure servers, and no data resale to third parties. Your personal and medical information is protected with the same level of security as banking institutions."
                 },
                 q9: {
-                    question: "Does DermoCheck keep my photos?",
-                    answer: "No. By default, DermoCheck does NOT keep ANY of your photos or personal data after analysis. All images are processed in real-time and deleted immediately after report generation. No data is saved on our servers, ensuring your complete privacy."
+                    question: "Does DermatoCheck keep my photos?",
+                    answer: "No. By default, DermatoCheck does NOT keep ANY of your photos or personal data after analysis. All images are processed in real-time and deleted immediately after report generation. No data is saved on our servers, ensuring your complete privacy."
                 },
                 q10: {
                     question: "Who has access to my information?",
                     answer: "Nobody. Your information is only accessible to you during your analysis session. We have no administrative access to your personal data, and no employee, partner, or third party can view your photos or results. Processing is entirely automated and anonymous."
                 },
                 q11: {
-                    question: "How accurate is DermoCheck?",
-                    answer: "DermoCheck achieves 85-92% accuracy for common dermatological conditions, comparable to that of a general dermatologist for initial diagnosis. However, accuracy varies depending on photo quality, symptom clarity, and condition type. Our system is designed as a decision support tool, not as a replacement for professional medical judgment."
+                    question: "How accurate is DermatoCheck?",
+                    answer: "DermatoCheck achieves 85-92% accuracy for common dermatological conditions, comparable to that of a general dermatologist for initial diagnosis. However, accuracy varies depending on photo quality, symptom clarity, and condition type. Our system is designed as a decision support tool, not as a replacement for professional medical judgment."
                 },
                 q12: {
-                    question: "Does DermoCheck replace a dermatologist?",
-                    answer: "No, absolutely not. DermoCheck is a preliminary analysis tool that helps you better understand your skin condition and decide if medical consultation is necessary. It in no way replaces clinical examination, formal diagnosis, or treatment prescribed by a certified dermatologist. When in doubt, always consult a healthcare professional."
+                    question: "Does DermatoCheck replace a dermatologist?",
+                    answer: "No, absolutely not. DermatoCheck is a preliminary analysis tool that helps you better understand your skin condition and decide if medical consultation is necessary. It in no way replaces clinical examination, formal diagnosis, or treatment prescribed by a certified dermatologist. When in doubt, always consult a healthcare professional."
                 },
                 q13: {
                     question: "What should I do if I disagree with the results?",
-                    answer: "If you have doubts about the analysis results, we strongly recommend consulting a dermatologist for a thorough clinical examination. DermoCheck provides an AI-based assessment, but only a doctor can establish a definitive diagnosis. Use our 'Find a Dermatologist' tool to locate a specialist near you."
+                    answer: "If you have doubts about the analysis results, we strongly recommend consulting a dermatologist for a thorough clinical examination. DermatoCheck provides an AI-based assessment, but only a doctor can establish a definitive diagnosis. Use our 'Find a Dermatologist' tool to locate a specialist near you."
                 }
             }
         },
@@ -689,7 +689,7 @@ export const translations: Record<string, any> = {
             legal: "Legal",
             contact: "Contact",
             faq: "FAQ",
-            copyright: "© 2026 DermoCheck. All rights reserved.",
+            copyright: "© 2026 DermatoCheck. All rights reserved.",
             tagline: "Your skin health, our priority"
         },
         dermatologist: {
@@ -750,7 +750,7 @@ export const translations: Record<string, any> = {
             login_title: "Sign In",
             login_subtitle: "Access your personal space",
             signup_title: "Create Account",
-            signup_subtitle: "Join DermoCheck today",
+            signup_subtitle: "Join DermatoCheck today",
             tab_login: "Sign In",
             tab_signup: "Sign Up",
             name: "Full Name",

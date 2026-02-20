@@ -21,7 +21,7 @@ import LanguagePopup from './components/LanguagePopup';
 import { useLanguage } from './context/LanguageContext';
 import ConsentPopup from './components/ConsentPopup';
 import { FAQPage } from './components/FAQPage';
-import { DermoCheckLogo } from './components/icons';
+import { DermatoCheckLogo } from './components/icons';
 import { BlogListPage } from './components/BlogListPage';
 import { BlogArticlePageComponent } from './components/BlogArticlePage';
 import AuthPage from './components/AuthPage';
@@ -290,7 +290,7 @@ const App: React.FC = () => {
                                 className="group transition-transform duration-300 hover:scale-105 active:scale-95 focus:outline-none"
                                 aria-label="Retour à l'accueil"
                             >
-                                <DermoCheckLogo size={56} className="h-auto drop-shadow-[0_0_25px_rgba(45,212,191,0.5)] group-hover:drop-shadow-[0_0_40px_rgba(45,212,191,0.7)] transition-all duration-300" />
+                                <DermatoCheckLogo size={56} className="h-auto drop-shadow-[0_0_25px_rgba(45,212,191,0.5)] group-hover:drop-shadow-[0_0_40px_rgba(45,212,191,0.7)] transition-all duration-300" />
                             </button>
                         </div>
                         {/* Using the glass-panel class from styles.css */}

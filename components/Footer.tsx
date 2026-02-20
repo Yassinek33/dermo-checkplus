@@ -25,7 +25,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 <div className="flex justify-center mb-8">
                     <img
                         src="/nouveau-logo.png"
-                        alt="DermoCheck Logo"
+                        alt="DermatoCheck Logo"
                         className="h-16 w-auto opacity-80 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                         onClick={() => onNavigate('home')}
                     />

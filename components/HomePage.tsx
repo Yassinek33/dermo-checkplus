@@ -98,7 +98,7 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate }) => {
                 >
 
                     <h1 className="text-5xl md:text-8xl lg:text-9xl font-display font-bold tracking-tight leading-[0.9] text-white">
-                        DERMO<span className="text-brand-primary italic">CHECK</span>
+                        DERMATO<span className="text-brand-primary italic">CHECK</span>
                     </h1>
 
                     <p className="text-lg md:text-2xl text-brand-secondary/60 max-w-2xl mx-auto font-light leading-relaxed">

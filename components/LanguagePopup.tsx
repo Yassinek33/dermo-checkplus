@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { DermoCheckLogo } from './icons';
+import { DermatoCheckLogo } from './icons';
 
 const LanguagePopup: React.FC = () => {
     const { setLanguage, isLanguageSelected, t } = useLanguage();
@@ -26,7 +26,7 @@ const LanguagePopup: React.FC = () => {
 
                     {/* Logo */}
                     <div className="flex justify-center mb-0">
-                        <DermoCheckLogo size={32} className="h-auto drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]" />
+                        <DermatoCheckLogo size={32} className="h-auto drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]" />
                     </div>
 
                     <div className="space-y-2">
@@ -67,7 +67,7 @@ const LanguagePopup: React.FC = () => {
                     </div>
 
                     <p className="text-[9px] text-white/20 font-mono uppercase tracking-[0.3em] pt-4">
-                        DermoCheck Core Multi-Language System
+                        DermatoCheck Core Multi-Language System
                     </p>
                 </motion.div>
             </div>

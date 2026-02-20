@@ -15,7 +15,7 @@ export const appConfig: AppConfig = {
         },
         layout: {
             header: {
-                logoText: "DERMO-CHECK",
+                logoText: "DERMATO-CHECK",
                 subtitle: "Votre dermatologue virtuel de confiance",
                 nav: [
                     { id: "home", label: "Accueil" },
@@ -29,14 +29,14 @@ export const appConfig: AppConfig = {
                 title: "Analyse dermatologique intelligente",
                 subtitle: "Obtenez une évaluation de vos problèmes de peau en quelques minutes.",
                 cta: { label: "Commencer la consultation", target: "questionnaire" },
-                illustration: { type: "DermoCheckLogo", prompt: "none" }, // Changed to use DermoCheckLogo type
+                illustration: { type: "DermatoCheckLogo", prompt: "none" }, // Changed to use DermatoCheckLogo type
                 badges: ["Analyse rapide", "Confidentiel", "Anonyme"],
             },
         },
         pages: [
             {
                 id: "home",
-                title: "Bienvenue sur DERMO-CHECK",
+                title: "Bienvenue sur DERMATO-CHECK",
                 description: "Votre assistant dermatologique personnel.",
                 sections: [
                     // Removed the 'cards' section as it is now handled by FeaturesSection component
@@ -54,17 +54,17 @@ export const appConfig: AppConfig = {
             },
             {
                 id: "about",
-                title: "À PROPOS DE DERMO-CHECK : L'INNOVATION AU SERVICE DE VOTRE PEAU",
+                title: "À PROPOS DE DERMATO-CHECK : L'INNOVATION AU SERVICE DE VOTRE PEAU",
                 sections: [
                     {
                         type: "text",
                         title: "L'ÉLITE DE LA TECHNOLOGIE DERMATOLOGIQUE",
-                        text: "DERMO-CHECK est le fruit d'une collaboration entre des génies de la tech et des experts cliniciens chevronnés. Notre mission est de propulser la science de la peau dans une nouvelle dimension : celle de l'immédiateté, de la précision chirurgicale et de l'anonymat absolu. Nous avons créé un système capable d'interpréter les nuances les plus subtiles des conditions cutanées pour vous offrir une clarté immédiate.",
+                        text: "DERMATO-CHECK est le fruit d'une collaboration entre des génies de la tech et des experts cliniciens chevronnés. Notre mission est de propulser la science de la peau dans une nouvelle dimension : celle de l'immédiateté, de la précision chirurgicale et de l'anonymat absolu. Nous avons créé un système capable d'interpréter les nuances les plus subtiles des conditions cutanées pour vous offrir une clarté immédiate.",
                     },
                     {
                         type: "text",
                         title: "UN NOUVEAU GÉNIE AU SERVICE DE VOTRE SANTÉ",
-                        text: "Là où la médecine traditionnelle prend du temps, notre technologie agit instantanément. Nous avons synthétisé des décennies de savoir médical dans un algorithme propriétaire de pointe. DERMO-CHECK ne se contente pas de répondre ; il analyse, corrèle et oriente avec une finesse inégalée, vous offrant un premier regard expert directement depuis votre écran.",
+                        text: "Là où la médecine traditionnelle prend du temps, notre technologie agit instantanément. Nous avons synthétisé des décennies de savoir médical dans un algorithme propriétaire de pointe. DERMATO-CHECK ne se contente pas de répondre ; il analyse, corrèle et oriente avec une finesse inégalée, vous offrant un premier regard expert directement depuis votre écran.",
                     },
                     {
                         type: "text",
@@ -73,7 +73,7 @@ export const appConfig: AppConfig = {
                     },
                     {
                         type: "warning",
-                        text: "AVERTISSEMENT CRUCIAL : DERMO-CHECK est un outil technologique d'aide à l'orientation et ne peut en aucun cas remplacer une consultation médicale professionnelle, un diagnostic établi par un médecin qualifié, ou un plan de traitement personnalisé. Un examen clinique en personne est indispensable pour confirmer toute hypothèse. En cas d'urgence, consultez immédiatement.",
+                        text: "AVERTISSEMENT CRUCIAL : DERMATO-CHECK est un outil technologique d'aide à l'orientation et ne peut en aucun cas remplacer une consultation médicale professionnelle, un diagnostic établi par un médecin qualifié, ou un plan de traitement personnalisé. Un examen clinique en personne est indispensable pour confirmer toute hypothèse. En cas d'urgence, consultez immédiatement.",
                     },
                 ],
             },
@@ -238,8 +238,8 @@ export const appConfig: AppConfig = {
                 sections: [
                     {
                         type: "text",
-                        title: "Qu'est-ce que DERMO-CHECK ?",
-                        text: "DERMO-CHECK est un outil d'assistance dermatologique de pointe. Il vous pose des questions structurées et analyse les informations fournies, y compris les photos, pour générer un rapport préliminaire sur votre condition cutanée. **Il ne remplace pas une consultation médicale.**",
+                        title: "Qu'est-ce que DERMATO-CHECK ?",
+                        text: "DERMATO-CHECK est un outil d'assistance dermatologique de pointe. Il vous pose des questions structurées et analyse les informations fournies, y compris les photos, pour générer un rapport préliminaire sur votre condition cutanée. **Il ne remplace pas une consultation médicale.**",
                     },
                     {
                         type: "text",
@@ -254,7 +254,7 @@ export const appConfig: AppConfig = {
                     {
                         type: "text",
                         title: "Puis-je utiliser cette application pour un diagnostic ?",
-                        text: "**Non, DERMO-CHECK AI ne fournit pas de diagnostic médical.** Les informations et hypothèses générées sont à titre indicatif et ne remplacent en aucun cas l'avis, le diagnostic ou le traitement d'un professionnel de santé qualifié. Consultez toujours un dermatologue pour un diagnostic précis.",
+                        text: "**Non, DERMATO-CHECK AI ne fournit pas de diagnostic médical.** Les informations et hypothèses générées sont à titre indicatif et ne remplacent en aucun cas l'avis, le diagnostic ou le traitement d'un professionnel de santé qualifié. Consultez toujours un dermatologue pour un diagnostic précis.",
                     },
                 ],
             },
@@ -265,7 +265,7 @@ export const appConfig: AppConfig = {
                     {
                         type: "text",
                         title: "Collecte et Utilisation des Données",
-                        text: "Nous nous engageons à protéger votre vie privée. DERMO-CHECK ne collecte, ne stocke ni ne partage aucune information personnelle identifiable. Toutes les données que vous saisissez ou téléchargez sont utilisées uniquement pour la durée de votre consultation, puis sont supprimées de nos systèmes. **Aucune donnée n'est conservée à long terme.**",
+                        text: "Nous nous engageons à protéger votre vie privée. DERMATO-CHECK ne collecte, ne stocke ni ne partage aucune information personnelle identifiable. Toutes les données que vous saisissez ou téléchargez sont utilisées uniquement pour la durée de votre consultation, puis sont supprimées de nos systèmes. **Aucune donnée n'est conservée à long terme.**",
                     },
                     {
                         type: "text",
@@ -275,7 +275,7 @@ export const appConfig: AppConfig = {
                     {
                         type: "text",
                         title: "Consentement",
-                        text: "En utilisant DERMO-CHECK AI, vous consentez à notre politique de confidentialité décrite ci-dessus. Si vous n'acceptez pas ces termes, veuillez ne pas utiliser notre application.",
+                        text: "En utilisant DERMATO-CHECK AI, vous consentez à notre politique de confidentialité décrite ci-dessus. Si vous n'acceptez pas ces termes, veuillez ne pas utiliser notre application.",
                     },
                 ],
             },
@@ -286,17 +286,17 @@ export const appConfig: AppConfig = {
                     {
                         type: "text",
                         title: "LIMITATION DE RESPONSABILITÉ MÉDICALE",
-                        text: "**IMPORTANT : DERMO-CHECK N'EST PAS UN MÉDECIN ET NE REMPLACE EN AUCUN CAS UN PROFESSIONNEL DE SANTÉ.**\n\nCe service est un outil technologique d'information et d'orientation préliminaire. Les conclusions et hypothèses générées par le système sont fondées uniquement sur les informations et les médias que vous fournissez. Elles ne constituent pas un diagnostic médical, une prescription ou un avis médical définitif.",
+                        text: "**IMPORTANT : DERMATO-CHECK N'EST PAS UN MÉDECIN ET NE REMPLACE EN AUCUN CAS UN PROFESSIONNEL DE SANTÉ.**\n\nCe service est un outil technologique d'information et d'orientation préliminaire. Les conclusions et hypothèses générées par le système sont fondées uniquement sur les informations et les médias que vous fournissez. Elles ne constituent pas un diagnostic médical, une prescription ou un avis médical définitif.",
                     },
                     {
                         type: "text",
                         title: "OBLIGATION DE CONSULTATION",
-                        text: "L'utilisation de DERMO-CHECK ne dispense pas d'un examen clinique physique par un dermatologue ou un médecin qualifié. Nous vous incitons vivement à consulter un professionnel de santé pour valider toute information obtenue via ce service. Ne négligez jamais un avis médical et ne retardez jamais une consultation à cause d'une information lue sur cette plateforme.",
+                        text: "L'utilisation de DERMATO-CHECK ne dispense pas d'un examen clinique physique par un dermatologue ou un médecin qualifié. Nous vous incitons vivement à consulter un professionnel de santé pour valider toute information obtenue via ce service. Ne négligez jamais un avis médical et ne retardez jamais une consultation à cause d'une information lue sur cette plateforme.",
                     },
                     {
                         type: "text",
                         title: "PROTECTION JURIDIQUE",
-                        text: "En utilisant ce service, vous reconnaissez que DERMO-CHECK et ses créateurs ne peuvent être tenus responsables des décisions prises sur la base des informations fournies. L'utilisateur est seul responsable de sa santé. En cas de symptômes graves, de douleur aiguë ou d'évolution rapide d'une lésion, dirigez-vous immédiatement vers les urgences ou contactez les services de secours.",
+                        text: "En utilisant ce service, vous reconnaissez que DERMATO-CHECK et ses créateurs ne peuvent être tenus responsables des décisions prises sur la base des informations fournies. L'utilisateur est seul responsable de sa santé. En cas de symptômes graves, de douleur aiguë ou d'évolution rapide d'une lésion, dirigez-vous immédiatement vers les urgences ou contactez les services de secours.",
                     },
                 ],
             },
@@ -307,17 +307,17 @@ export const appConfig: AppConfig = {
                     {
                         type: "text",
                         title: "Acceptation des Conditions",
-                        text: "En accédant et en utilisant DERMO-CHECK AI, vous acceptez d'être lié par les présentes Conditions d'Utilisation. Si vous n'acceptez pas toutes les conditions, vous n'êtes pas autorisé à utiliser l'application.",
+                        text: "En accédant et en utilisant DERMATO-CHECK AI, vous acceptez d'être lié par les présentes Conditions d'Utilisation. Si vous n'acceptez pas toutes les conditions, vous n'êtes pas autorisé à utiliser l'application.",
                     },
                     {
                         type: "text",
                         title: "Nature du Service",
-                        text: "DERMO-CHECK AI fournit un outil d'information et d'orientation. **Il n'est pas un substitut à un avis médical professionnel, un diagnostic ou un traitement.** Cherchez toujours l'avis de votre médecin ou d'un autre professionnel de la santé qualifié pour toute question concernant une condition médicale.",
+                        text: "DERMATO-CHECK AI fournit un outil d'information et d'orientation. **Il n'est pas un substitut à un avis médical professionnel, un diagnostic ou un traitement.** Cherchez toujours l'avis de votre médecin ou d'un autre professionnel de la santé qualifié pour toute question concernant une condition médicale.",
                     },
                     {
                         type: "text",
                         title: "Limitation de Responsabilité",
-                        text: "DERMO-CHECK AI ne peut être tenu responsable des dommages directs ou indirects résultant de l'utilisation ou de l'incapacité d'utiliser le service, y compris, sans s'y limiter, la perte de données ou de bénéfices. L'utilisation de l'application est à vos propres risques.",
+                        text: "DERMATO-CHECK AI ne peut être tenu responsable des dommages directs ou indirects résultant de l'utilisation ou de l'incapacité d'utiliser le service, y compris, sans s'y limiter, la perte de données ou de bénéfices. L'utilisation de l'application est à vos propres risques.",
                     },
                     {
                         type: "text",
@@ -334,7 +334,7 @@ export const appConfig: AppConfig = {
             {
                 id: "auth",
                 title: "Connexion / Inscription",
-                description: "Connectez-vous ou créez un compte DermoCheck.",
+                description: "Connectez-vous ou créez un compte DermatoCheck.",
             },
         ],
         uiGuidelines: {

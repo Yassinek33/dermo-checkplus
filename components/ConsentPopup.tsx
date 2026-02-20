@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
-import { DermoCheckLogo } from './icons';
+import { DermatoCheckLogo } from './icons';
 
 interface ConsentPopupProps {
     onAccept: () => void;
@@ -39,7 +39,7 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
 
                     {/* Logo */}
                     <div className="flex justify-center mb-0">
-                        <DermoCheckLogo size={28} className="h-auto drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]" />
+                        <DermatoCheckLogo size={28} className="h-auto drop-shadow-[0_0_15px_rgba(45,212,191,0.5)]" />
                     </div>
 
                     <div className="text-center space-y-4">
