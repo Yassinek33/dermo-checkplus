@@ -1,5 +1,4 @@
 import React from "react";
-import { appConfig } from '../config'; // Import appConfig to access theme
 
 const features = [
   {
@@ -11,7 +10,7 @@ const features = [
         width="72"
         height="72"
         fill="none"
-        stroke={appConfig.app.theme.primaryColor} // Using theme's primary color
+        stroke="#2dd4bf"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -32,9 +31,9 @@ const features = [
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <rect x="18" y="24" width="36" height="28" rx="4" stroke={appConfig.app.theme.primaryColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="36" cy="38" r="8" stroke={appConfig.app.theme.primaryColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M48 24V18H24V24" stroke={appConfig.app.theme.primaryColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <rect x="18" y="24" width="36" height="28" rx="4" stroke="#2dd4bf" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="36" cy="38" r="8" stroke="#2dd4bf" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M48 24V18H24V24" stroke="#2dd4bf" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
   },
@@ -47,7 +46,7 @@ const features = [
         width="72"
         height="72"
         fill="none"
-        stroke={appConfig.app.theme.primaryColor} // Using theme's primary color
+        stroke="#2dd4bf"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -67,7 +66,7 @@ const features = [
         width="72"
         height="72"
         fill="none"
-        stroke={appConfig.app.theme.primaryColor} // Using theme's primary color
+        stroke="#2dd4bf"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"

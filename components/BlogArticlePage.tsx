@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { blogArticlesFR, blogArticlesEN, BlogArticle } from '../data/blogArticles';
+import { blogArticlesNL } from '../data/blogArticlesNL';
+import { blogArticlesES } from '../data/blogArticlesES';
 
 interface BlogArticlePageProps {
     slug: string;
@@ -9,22 +11,22 @@ interface BlogArticlePageProps {
 }
 
 export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug, onNavigate }) => {
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
 
-    // Use English or French articles based on language
-    const articles = language === 'fr' ? blogArticlesFR : blogArticlesEN;
+    // Use specific articles based on language
+    const articles = language === 'fr' ? blogArticlesFR : language === 'nl' ? blogArticlesNL : language === 'es' ? blogArticlesES : blogArticlesEN;
     const article = articles.find(a => a.slug === slug);
 
     if (!article) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-brand-deep via-[#0d1117] to-black flex items-center justify-center">
                 <div className="text-center">
-                    <h1 className="text-4xl font-bold text-white mb-4">Article non trouvé</h1>
+                    <h1 className="text-4xl font-bold text-white mb-4">{t('blog.not_found')}</h1>
                     <button
                         onClick={() => onNavigate('blog')}
                         className="text-brand-primary hover:underline"
                     >
-                        Retour au blog
+                        {t('blog.back')}
                     </button>
                 </div>
             </div>
@@ -33,12 +35,21 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
 
     const getCategoryColor = (category: string) => {
         switch (category) {
-            case 'Soins de la peau': return 'from-blue-500 to-cyan-500';
-            case 'Conditions cutanées': return 'from-purple-500 to-pink-500';
-            case 'Prévention': return 'from-green-500 to-emerald-500';
+            case 'skincare': return 'from-blue-500 to-cyan-500';
+            case 'conditions': return 'from-purple-500 to-pink-500';
+            case 'prevention': return 'from-green-500 to-emerald-500';
             default: return 'from-brand-primary to-cyan-500';
         }
     };
+
+    const getLocale = (lang: string) => {
+        switch (lang) {
+            case 'en': return 'en-US';
+            case 'nl': return 'nl-NL';
+            case 'es': return 'es-ES';
+            default: return 'fr-FR';
+        }
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-brand-deep via-[#0d1117] to-black py-20">
@@ -53,7 +64,7 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
                     <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
-                    Retour au blog
+                    {t('blog.back')}
                 </motion.button>
 
                 {/* Article Header */}
@@ -64,7 +75,7 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
                 >
                     {/* Category Badge */}
                     <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r ${getCategoryColor(article.category)} text-white mb-6`}>
-                        {article.category}
+                        {t(`blog.categories.${article.category}`)}
                     </span>
 
                     {/* Title */}
@@ -84,13 +95,13 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
                             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            {new Date(article.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            {new Date(article.date).toLocaleDateString(getLocale(language), { year: 'numeric', month: 'long', day: 'numeric' })}
                         </div>
                         <div className="flex items-center">
                             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {article.readTime} min de lecture
+                            {article.readTime} {t('blog.read_time')}
                         </div>
                     </div>
 
@@ -167,7 +178,7 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
                         onClick={() => onNavigate('blog')}
                         className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-brand-primary to-cyan-500 text-white font-bold rounded-full hover:shadow-lg hover:shadow-brand-primary/50 transition-all duration-300"
                     >
-                        Voir tous les articles
+                        {t('blog.see_all')}
                     </button>
                 </motion.div>
             </div>

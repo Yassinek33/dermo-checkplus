@@ -2,19 +2,21 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { blogArticlesFR, blogArticlesEN } from '../data/blogArticles';
+import { blogArticlesNL } from '../data/blogArticlesNL';
+import { blogArticlesES } from '../data/blogArticlesES';
 
 interface BlogListPageProps {
     onNavigate: (pageId: string, articleSlug?: string) => void;
 }
 
 export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-    // Use English or French articles based on language
-    const articles = language === 'fr' ? blogArticlesFR : blogArticlesEN;
+    // Use specific articles based on language
+    const articles = language === 'fr' ? blogArticlesFR : language === 'nl' ? blogArticlesNL : language === 'es' ? blogArticlesES : blogArticlesEN;
 
-    const categories = ['all', 'Soins de la peau', 'Conditions cutanées', 'Prévention'];
+    const categories = ['all', 'skincare', 'conditions', 'prevention'];
 
     const filteredArticles = selectedCategory === 'all'
         ? articles
@@ -22,9 +24,9 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
 
     const getCategoryColor = (category: string) => {
         switch (category) {
-            case 'Soins de la peau': return 'from-blue-500 to-cyan-500';
-            case 'Conditions cutanées': return 'from-purple-500 to-pink-500';
-            case 'Prévention': return 'from-green-500 to-emerald-500';
+            case 'skincare': return 'from-blue-500 to-cyan-500';
+            case 'conditions': return 'from-purple-500 to-pink-500';
+            case 'prevention': return 'from-green-500 to-emerald-500';
             default: return 'from-brand-primary to-cyan-500';
         }
     };
@@ -39,10 +41,10 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
                     className="text-center mb-16"
                 >
                     <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-brand-primary via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                        Blog Dermatologique
+                        {t('blog.title')}
                     </h1>
                     <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                        Conseils d'experts et informations scientifiques pour prendre soin de votre peau
+                        {t('blog.subtitle')}
                     </p>
                 </motion.div>
 
@@ -62,7 +64,7 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
                                 : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                                 }`}
                         >
-                            {category === 'all' ? 'Tous les articles' : category}
+                            {t(`blog.categories.${category}`)}
                         </button>
                     ))}
                 </motion.div>
@@ -75,30 +77,30 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 * index }}
-                            className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-brand-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/20 cursor-pointer"
+                            className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-brand-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/20 cursor-pointer flex flex-col h-full"
                             onClick={() => onNavigate('blog-article', article.slug)}
                         >
                             {/* Category Badge */}
                             <div className="p-6 pb-0">
                                 <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r ${getCategoryColor(article.category)} text-white`}>
-                                    {article.category}
+                                    {t(`blog.categories.${article.category}`)}
                                 </span>
                             </div>
 
                             {/* Content */}
-                            <div className="p-6">
+                            <div className="p-6 flex-grow flex flex-col">
                                 <h2 className="text-2xl font-bold text-white mb-3 group-hover:text-brand-primary transition-colors line-clamp-2">
                                     {article.title}
                                 </h2>
 
-                                <p className="text-gray-400 mb-4 line-clamp-3">
+                                <p className="text-gray-400 mb-4 flex-grow">
                                     {article.excerpt}
                                 </p>
 
                                 {/* Meta Info */}
-                                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                                <div className="flex items-center justify-between text-sm text-gray-500 mb-4 mt-auto">
                                     <span>{article.author.split(',')[0]}</span>
-                                    <span>{article.readTime} min de lecture</span>
+                                    <span>{article.readTime} {t('blog.read_time')}</span>
                                 </div>
 
                                 {/* Tags */}
@@ -115,9 +117,9 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
                             </div>
 
                             {/* Read More Arrow */}
-                            <div className="px-6 pb-6">
+                            <div className="px-6 pb-6 mt-auto">
                                 <div className="flex items-center text-brand-primary group-hover:translate-x-2 transition-transform">
-                                    <span className="font-medium">Lire l'article</span>
+                                    <span className="font-medium">{t('blog.read_article')}</span>
                                     <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
@@ -130,7 +132,7 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
                 {/* No Articles Message */}
                 {filteredArticles.length === 0 && (
                     <div className="text-center py-20">
-                        <p className="text-gray-400 text-lg">Aucun article dans cette catégorie pour le moment.</p>
+                        <p className="text-gray-400 text-lg">{t('blog.no_articles')}</p>
                     </div>
                 )}
             </div>

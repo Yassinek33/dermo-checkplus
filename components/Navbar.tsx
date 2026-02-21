@@ -221,12 +221,12 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                         >
                             <div className="flex flex-col h-full p-6 pt-20">
                                 {/* Language Switcher */}
-                                <div className="mb-8 flex items-center justify-center gap-2 bg-white/5 rounded-full p-1 border border-white/10">
+                                <div className="mb-8 grid grid-cols-2 gap-2 bg-white/5 rounded-2xl p-2 border border-white/10">
                                     <button
                                         onClick={() => setLanguage('fr')}
                                         className={clsx(
-                                            "flex-1 px-4 py-2 text-xs font-bold rounded-full transition-all duration-300",
-                                            language === 'fr' ? "bg-brand-primary text-brand-deep" : "text-white/40"
+                                            "w-full px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300",
+                                            language === 'fr' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white hover:bg-white/5"
                                         )}
                                     >
                                         Français
@@ -234,8 +234,8 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                     <button
                                         onClick={() => setLanguage('en')}
                                         className={clsx(
-                                            "flex-1 px-4 py-2 text-xs font-bold rounded-full transition-all duration-300",
-                                            language === 'en' ? "bg-brand-primary text-brand-deep" : "text-white/40"
+                                            "w-full px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300",
+                                            language === 'en' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white hover:bg-white/5"
                                         )}
                                     >
                                         English
@@ -243,8 +243,8 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                     <button
                                         onClick={() => setLanguage('nl')}
                                         className={clsx(
-                                            "flex-1 px-4 py-2 text-xs font-bold rounded-full transition-all duration-300",
-                                            language === 'nl' ? "bg-brand-primary text-brand-deep" : "text-white/40"
+                                            "w-full px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300",
+                                            language === 'nl' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white hover:bg-white/5"
                                         )}
                                     >
                                         Nederlands
@@ -252,8 +252,8 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                     <button
                                         onClick={() => setLanguage('es')}
                                         className={clsx(
-                                            "flex-1 px-4 py-2 text-xs font-bold rounded-full transition-all duration-300",
-                                            language === 'es' ? "bg-brand-primary text-brand-deep" : "text-white/40"
+                                            "w-full px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300",
+                                            language === 'es' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white hover:bg-white/5"
                                         )}
                                     >
                                         Español

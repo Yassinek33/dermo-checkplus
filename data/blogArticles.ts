@@ -25,7 +25,7 @@ export const blogArticlesFR: BlogArticle[] = [
         author: "Dr. Sophie Martin, Dermatologue",
         date: "2026-02-05",
         readTime: 6,
-        category: "Soins de la peau",
+        category: "skincare",
         tags: ["Hiver", "Hydratation", "Prévention"],
         expertQuote: {
             text: "La barrière cutanée des mains est particulièrement vulnérable en hiver. Une routine de protection adaptée peut prévenir 80% des cas de dermatite irritative.",
@@ -96,7 +96,7 @@ La protection des mains contre le froid nécessite une approche préventive et r
         author: "Dr. Thomas Dubois, Dermatologue",
         date: "2026-02-03",
         readTime: 8,
-        category: "Conditions cutanées",
+        category: "conditions",
         tags: ["Eczéma", "Dermatite", "Inflammation"],
         expertQuote: {
             text: "L'eczéma n'est pas une maladie unique mais un syndrome regroupant plusieurs affections. Un diagnostic précis est essentiel pour un traitement efficace.",
@@ -199,7 +199,7 @@ L'eczéma constitue une pathologie chronique dont la prise en charge doit être 
         author: "Dr. Claire Rousseau, Dermatologue",
         date: "2026-02-01",
         readTime: 7,
-        category: "Conditions cutanées",
+        category: "conditions",
         tags: ["Acné", "Soins naturels", "Prévention"],
         expertQuote: {
             text: "Les modifications du mode de vie et l'hygiène adaptée constituent la base du traitement de l'acné. Les traitements médicamenteux sont plus efficaces quand ces fondamentaux sont respectés.",
@@ -294,7 +294,7 @@ L'acné se gère efficacement par une approche globale et personnalisée combina
         author: "Dr. Marie Lefebvre, Dermatologue",
         date: "2026-01-28",
         readTime: 7,
-        category: "Prévention",
+        category: "prevention",
         tags: ["Anti-âge", "Rides", "Prévention"],
         expertQuote: {
             text: "90% du vieillissement cutané visible est dû aux facteurs environnementaux, notamment le soleil. La prévention reste notre meilleure arme anti-âge.",
@@ -395,7 +395,7 @@ Le vieillissement cutané, processus naturel largement influencé par nos choix 
         author: "Dr. Jean Moreau, Angiologue",
         date: "2026-01-25",
         readTime: 6,
-        category: "Prévention",
+        category: "prevention",
         tags: ["Varices", "Circulation", "Prévention"],
         expertQuote: {
             text: "Les varices ne sont pas qu'un problème esthétique. Elles peuvent entraîner des complications sérieuses. La prévention et le dépistage précoce sont essentiels.",
@@ -494,7 +494,7 @@ Les varices constituent une pathologie veineuse fréquente, favorisée par l'hé
         author: "Dr. Anne Bertrand, Dermatologue",
         date: "2026-01-22",
         readTime: 6,
-        category: "Prévention",
+        category: "prevention",
         tags: ["Grains de beauté", "Mélanome", "Dépistage"],
         expertQuote: {
             text: "Le mélanome détecté précocement a un taux de guérison de 95%. L'auto-surveillance régulière et les consultations dermatologiques sont vitales.",
@@ -579,7 +579,7 @@ La surveillance des grains de beauté constitue un geste simple pouvant sauver d
         author: "Dr. Émilie Durand, Dermatologue",
         date: "2026-01-20",
         readTime: 8,
-        category: "Soins de la peau",
+        category: "skincare",
         tags: ["Routine", "Soins", "Hydratation"],
         expertQuote: {
             text: "Une routine de soins efficace n'a pas besoin d'être compliquée. Les trois piliers sont : nettoyage doux, hydratation adaptée et protection solaire quotidienne.",
@@ -662,7 +662,7 @@ export const blogArticlesEN: BlogArticle[] = [
         author: "Dr. Sophie Martin, Dermatologist",
         date: "2026-02-05",
         readTime: 6,
-        category: "Skin Care",
+        category: "skincare",
         tags: ["Winter", "Hydration", "Prevention"],
         expertQuote: {
             text: "The skin barrier of the hands is particularly vulnerable in winter. An adapted protection routine can prevent 80% of irritant dermatitis cases.",
@@ -733,7 +733,7 @@ Protecting hands from cold requires a preventive and regular approach rather tha
         author: "Dr. Thomas Dubois, Dermatologist",
         date: "2026-02-03",
         readTime: 8,
-        category: "Skin Conditions",
+        category: "conditions",
         tags: ["Eczema", "Dermatitis", "Inflammation"],
         expertQuote: {
             text: "Eczema is not a single disease but a family of inflammatory skin conditions. Identifying the specific type is essential for effective treatment.",
@@ -810,7 +810,7 @@ Eczema, in its various forms, is a common condition that can be effectively mana
         author: "Dr. Claire Rousseau, Dermatologist",
         date: "2026-02-01",
         readTime: 7,
-        category: "Skin Conditions",
+        category: "conditions",
         tags: ["Acne", "Natural", "Prevention"],
         expertQuote: {
             text: "A holistic approach combining adapted hygiene, balanced diet, and stress management can significantly improve acne, sometimes avoiding the need for heavy treatments.",
@@ -1031,7 +1031,7 @@ Varicose veins are a common condition that can be prevented and effectively mana
         author: "Dr. Anne Bertrand, Dermatologist",
         date: "2026-01-22",
         readTime: 6,
-        category: "Prevention",
+        category: "prevention",
         tags: ["Moles", "Melanoma", "Screening"],
         expertQuote: {
             text: "Melanoma detected early has a 95% cure rate. Regular self-examination and dermatological consultations are vital.",
@@ -1116,7 +1116,7 @@ Mole surveillance constitutes a simple gesture that can save lives. Regular self
         author: "Dr. Émilie Durand, Dermatologist",
         date: "2026-01-20",
         readTime: 8,
-        category: "Skin Care",
+        category: "skincare",
         tags: ["Routine", "Care", "Hydration"],
         expertQuote: {
             text: "An effective skincare routine doesn't need to be complicated. The three pillars are: gentle cleansing, adapted hydration, and daily sun protection.",

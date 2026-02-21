@@ -299,6 +299,22 @@ export const translations: Record<string, any> = {
             copyright: "© 2026 DermatoCheck. Tous droits réservés.",
             tagline: "Votre santé cutanée, notre priorité"
         },
+        blog: {
+            title: "Blog Dermatologique",
+            subtitle: "Conseils d'experts et informations scientifiques pour prendre soin de votre peau",
+            categories: {
+                all: "Tous les articles",
+                skincare: "Soins de la peau",
+                conditions: "Conditions cutanées",
+                prevention: "Prévention"
+            },
+            read_time: "min de lecture",
+            read_article: "Lire l'article",
+            no_articles: "Aucun article dans cette catégorie pour le moment.",
+            not_found: "Article non trouvé",
+            back: "Retour au blog",
+            see_all: "Voir tous les articles"
+        },
         dermatologist: {
             title: "Trouver un Dermatologue",
             description: "Utilisez notre outil pour localiser des dermatologues près de chez vous grâce à Google Maps. Un professionnel de santé est indispensable pour un diagnostic.",
@@ -697,6 +713,22 @@ export const translations: Record<string, any> = {
             faq: "FAQ",
             copyright: "© 2026 DermatoCheck. All rights reserved.",
             tagline: "Your skin health, our priority"
+        },
+        blog: {
+            title: "Dermatological Blog",
+            subtitle: "Expert advice and scientific information to care for your skin",
+            categories: {
+                all: "All articles",
+                skincare: "Skin Care",
+                conditions: "Skin Conditions",
+                prevention: "Prevention"
+            },
+            read_time: "min read",
+            read_article: "Read article",
+            no_articles: "No articles in this category at the moment.",
+            not_found: "Article not found",
+            back: "Back to blog",
+            see_all: "View all articles"
         },
         dermatologist: {
             title: "Find a Dermatologist",
@@ -1097,6 +1129,22 @@ export const translations: Record<string, any> = {
             copyright: "© 2026 DermatoCheck. Alle rechten voorbehouden.",
             tagline: "Uw huidgezondheid, onze prioriteit"
         },
+        blog: {
+            title: "Dermatologische Blog",
+            subtitle: "Deskundig advies en wetenschappelijke informatie voor uw huidverzorging",
+            categories: {
+                all: "Alle artikelen",
+                skincare: "Huidverzorging",
+                conditions: "Huidaandoeningen",
+                prevention: "Preventie"
+            },
+            read_time: "min leestijd",
+            read_article: "Lees artikel",
+            no_articles: "Momenteel geen artikelen in deze categorie.",
+            not_found: "Artikel niet gevonden",
+            back: "Terug naar blog",
+            see_all: "Bekijk alle artikelen"
+        },
         dermatologist: {
             title: "Vind een Dermatoloog",
             description: "Gebruik onze tool om dermatologen bij u in de buurt te vinden met behulp van Google Maps. Een gezondheidsprofessional is onmisbaar voor een diagnose.",
@@ -1414,6 +1462,22 @@ export const translations: Record<string, any> = {
             select_age: "Selecciona tu edad",
             age_prompt: "Por favor indica tu edad."
         },
+        blog: {
+            title: "Blog Dermatológico",
+            subtitle: "Consejos de expertos e información científica para el cuidado de la piel",
+            categories: {
+                all: "Todos los artículos",
+                skincare: "Cuidado de la piel",
+                conditions: "Condiciones de la piel",
+                prevention: "Prevención"
+            },
+            read_time: "min de lectura",
+            read_article: "Leer el artículo",
+            no_articles: "No hay artículos en esta categoría por el momento.",
+            not_found: "Artículo no encontrado",
+            back: "Volver al blog",
+            see_all: "Ver todos los artículos"
+        },
         dermatologist: {
             title: "Encontrar un Dermatólogo",
             description: "Usa nuestra herramienta para localizar especialistas cerca de ti. Un profesional es indispensable.",
@@ -1456,19 +1520,12 @@ export const translations: Record<string, any> = {
             }
         },
         footer: {
-            tagline: "Reescribiendo los Estándares de Evaluación Dermatológica.",
-            quick_links: "Enlaces Rápidos",
-            expert_network: "Red de Expertos",
-            find_specialist: "Encontrar un especialista",
-            partner_clinics: "Clínicas asociadas",
-            medical_collaboration: "Colaboración médica",
-            legal: "Legal y Privacidad",
-            terms: "Términos de Servicio",
-            privacy: "Política de Privacidad",
-            cookie_policy: "Política de Cookies",
-            medical_disclaimer: "Aviso Médico",
-            clinical_protocol: "Protocolo Clínico v9.0",
-            rights_reserved: "Todos los derechos reservados."
+            about: "Acerca de",
+            legal: "Legal",
+            contact: "Contacto",
+            faq: "Preguntas frecuentes",
+            copyright: "© 2026 DermatoCheck. Todos los derechos reservados.",
+            tagline: "Tu salud cutánea, nuestra prioridad"
         },
         find_dermatologist: {
             title: "Encuentra un Dermatólogo",
