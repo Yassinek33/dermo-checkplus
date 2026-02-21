@@ -170,7 +170,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         let hasNoneButton = false;
         let noneButtonText: string | undefined;
         // Keywords that should be treated as a dedicated "None" button
-        const noneKeywords = ["Je ne sais pas", "Aucun symptôme notable", "Aucun antécédent", "Aucun", "Aucun de ces facteurs", "Ignorer"]; // Added "Ignorer"
+        const noneKeywords = [
+            // French
+            "Je ne sais pas", "Aucun symptôme notable", "Aucun antécédent", "Aucun", "Aucun de ces facteurs", "Ignorer",
+            // English
+            "I don't know", "No notable symptoms", "No history", "None", "None of these factors", "Skip",
+            // Dutch
+            "Ik weet het niet", "Geen noemenswaardige symptomen", "Geen voorgeschiedenis", "Geen", "Geen van deze factoren", "Overslaan", "Sla deze stap over",
+            // Spanish
+            "No lo sé", "Sin síntomas notables", "Sin antecedentes médicos", "Ninguno", "Ninguno de estos factores", "Omitir", "Omitir este paso"
+        ];
 
         // Extract specific noneButtonText for TEXT_INPUT_WITH_NONE if provided in the tag
         let noneButtonTextForTextInput: string | undefined;
@@ -287,11 +296,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             // OPTIMIZATION: We no longer fetch the first question from the AI to ensure instant loading.
             // We hardcode the initial state that corresponds to "Démarrer la consultation."
 
-            const initialUserPrompt = language === 'fr' ? "Démarrer la consultation." : "Start consultation.";
+            let initialUserPrompt = "Démarrer la consultation.";
+            if (language === 'en') initialUserPrompt = "Start consultation.";
+            if (language === 'nl') initialUserPrompt = "Start consult.";
+            if (language === 'es') initialUserPrompt = "Iniciar consulta.";
+
             // This MUST match the expected output for the "Welcome" UI logic
-            const staticAiResponseText = language === 'fr'
-                ? `Cette auto-analyse concerne : [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`
-                : `This self-analysis concerns: [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
+            let staticAiResponseText = `Cette auto-analyse concerne : [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
+            if (language === 'en') staticAiResponseText = `This self-analysis concerns: [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
+            if (language === 'nl') staticAiResponseText = `Deze zelfanalyse betreft: [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
+            if (language === 'es') staticAiResponseText = `Este autoanálisis es para: [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
 
             const initialAiMessage = parseAiResponse(staticAiResponseText, `ai-initial-${Date.now()}`);
 
@@ -380,7 +394,12 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // Removed videoAnalysisResult and associated logic
 
         // --- Client-side interception for age-related questions ---
-        if (currentAssistantMessage?.text.includes("Cette auto-analyse concerne :") || currentAssistantMessage?.text.includes("This self-analysis concerns:")) {
+        const isSelfConcern = currentAssistantMessage?.text.includes("Cette auto-analyse concerne :") ||
+            currentAssistantMessage?.text.includes("This self-analysis concerns:") ||
+            currentAssistantMessage?.text.includes("Deze zelfanalyse betreft:") ||
+            currentAssistantMessage?.text.includes("Este autoanálisis es para:");
+
+        if (isSelfConcern) {
             if (userText === "Moi-même" || userText === t('analysis.myself')) {
                 setConsultationType('self');
             } else if (userText === "Une autre personne" || userText === t('analysis.other')) {
@@ -396,10 +415,10 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             }
             // If age is valid and >= 18, continue as normal, sending age to AI
             actualUserTextToSend = userText;
-        } else if (consultationType === 'other' && (currentAssistantMessage?.text.includes("Quel est son âge ?") || currentAssistantMessage?.text.includes("What is their age?"))) {
+        } else if (consultationType === 'other' && (currentAssistantMessage?.text.includes("Quel est son âge ?") || currentAssistantMessage?.text.includes("What is their age?") || currentAssistantMessage?.text.includes("Wat is de leeftijd?") || currentAssistantMessage?.text.includes("¿Cuál es su edad?"))) {
             // AgeMonthYearDropdown sends a formatted string like "7 ans et 6 mois"
             // The AI is expected to parse this string, so client-side validation here is minimal
-            if (!userText.includes("ans") && !userText.includes("mois") && !userText.includes("years") && !userText.includes("months") && userText !== "Moins de 1 mois" && userText !== "Less than 1 month") { // Also allow "Moins de 1 mois"
+            if (!userText.includes("ans") && !userText.includes("mois") && !userText.includes("years") && !userText.includes("months") && !userText.includes("jaar") && !userText.includes("maanden") && !userText.includes("años") && !userText.includes("meses") && userText !== "Moins de 1 mois" && userText !== "Less than 1 month" && userText !== "Minder dan 1 maand" && userText !== "Menos de 1 mes") { // Also allow translations for < 1 month
                 setError(t('analysis.age_error_child'));
                 setIsLoading(false);
                 return; // Do not send to AI
@@ -517,10 +536,17 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // Let's refine the condition to only trigger number input for "Quelques jours", "Quelques semaines", "Quelques mois", "Plus d'un an".
         const optionsRequiringNumberInput = [
             "Quelques jours", "Quelques semaines", "Quelques mois", "Plus d'un an",
-            "A few days", "A few weeks", "A few months", "More than a year"
+            "A few days", "A few weeks", "A few months", "More than a year",
+            "Enkele dagen", "Enkele weken", "Enkele maanden", "Meer dan een jaar",
+            "Unos días", "Unas semanas", "Unos meses", "Más de un año"
         ];
 
-        if ((currentAssistantMessage?.text.includes("Depuis combien de temps la lésion est apparue ?") || currentAssistantMessage?.text.includes("How long has the lesion appeared?")) && optionsRequiringNumberInput.includes(option)) {
+        const isDurationQuestion = currentAssistantMessage?.text.includes("Depuis combien de temps la lésion est apparue ?") ||
+            currentAssistantMessage?.text.includes("How long has the lesion appeared?") ||
+            currentAssistantMessage?.text.includes("Hoe lang is de laesie al zichtbaar?") ||
+            currentAssistantMessage?.text.includes("¿Desde hace cuánto tiempo se nota la lesión?");
+
+        if (isDurationQuestion && optionsRequiringNumberInput.includes(option)) {
             setAwaitingNumberInputForOption(option);
             // Do not send to AI yet, wait for number input
             setIsLoading(false); // Stop loading since we're waiting for local input
@@ -622,7 +648,10 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                 setCurrentAssistantMessage(previousAiMessage);
 
                 // Re-evaluate consultationType if going back to the first question
-                if (previousAiMessage.text.includes("Cette auto-analyse concerne :") || previousAiMessage.text.includes("This self-analysis concerns:")) {
+                if (previousAiMessage.text.includes("Cette auto-analyse concerne :") ||
+                    previousAiMessage.text.includes("This self-analysis concerns:") ||
+                    previousAiMessage.text.includes("Deze zelfanalyse betreft:") ||
+                    previousAiMessage.text.includes("Este autoanálisis es para:")) {
                     setConsultationType(null);
                 }
             } else {
@@ -759,7 +788,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                 <div ref={containerRef} tabIndex={-1} role="region" aria-live="polite" aria-atomic="true" className="w-full max-w-2xl mx-auto glass-panel rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col animate-fade-in relative z-10 transition-all duration-300">
                     {(currentStep > 0 && !isGameOver) && ( // Start conditional rendering for the entire progress bar container
                         <div className="flex items-center justify-between mb-8 px-4 py-3 bg-white/5 border border-white/5 rounded-xl backdrop-blur-md">
-                            <button onClick={handleBack} className="p-2 text-brand-secondary/60 hover:text-brand-primary transition-colors rounded-full hover:bg-white/5" aria-label="Retour à l'étape précédente">
+                            <button onClick={handleBack} className="p-2 text-brand-secondary/60 hover:text-brand-primary transition-colors rounded-full hover:bg-white/5" aria-label={t('common.back')}>
                                 <BackArrowIcon />
                             </button>
                             <div className="flex-grow mx-4" role="progressbar" aria-valuenow={currentStep} aria-valuemin={0} aria-valuemax={TOTAL_QUESTIONNAIRE_STAGES} aria-label={`Progression du questionnaire, étape ${currentStep} sur ${TOTAL_QUESTIONNAIRE_STAGES}`}>
@@ -783,7 +812,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                         </div>
                     )} {/* End conditional rendering for the entire progress bar container */}
 
-                    {currentAssistantMessage.text.includes("Cette auto-analyse concerne :") || currentAssistantMessage.text.includes("This self-analysis concerns:") ? (
+                    {currentAssistantMessage.text.includes("Cette auto-analyse concerne :") ||
+                        currentAssistantMessage.text.includes("This self-analysis concerns:") ||
+                        currentAssistantMessage.text.includes("Deze zelfanalyse betreft:") ? (
                         <div className="text-center mb-12 md:mb-16 animate-fade-in">
                             <div className="inline-block p-4 rounded-full bg-brand-primary/10 mb-8 ring-1 ring-brand-primary/20">
                                 <svg className="w-10 h-10 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
@@ -1026,7 +1057,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                         <button
                             className="mt-8 bg-brand-primary text-[#030305] text-base font-bold py-3 px-12 rounded-full shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_30px_rgba(45,212,191,0.5)] hover:bg-brand-primary/90 transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:ring-offset-2 focus:ring-offset-[#0a0b0d]"
                             onClick={() => setShowInitialWarningPopup(false)}
-                            aria-label="Fermer l'avertissement et commencer"
+                            aria-label={t('analysis.warning_popup.close')}
                         >
                             {t('analysis.warning_popup.close')}
                         </button>

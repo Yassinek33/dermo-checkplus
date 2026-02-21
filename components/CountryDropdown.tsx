@@ -83,9 +83,17 @@ const CountryDropdown = forwardRef<HTMLSelectElement, CountryDropdownProps>(({ o
             en: {
                 select_country: "Select your country",
                 validate: "Validate Country"
+            },
+            nl: {
+                select_country: "Selecteer uw land",
+                validate: "Land valideren"
+            },
+            es: {
+                select_country: "Seleccione su país",
+                validate: "Validar país"
             }
         };
-        return translations[language as 'fr' | 'en']?.[key] || translations['fr'][key];
+        return translations[language as 'fr' | 'en' | 'nl' | 'es']?.[key] || translations['fr'][key];
     };
 
     const handleSubmit = (e: React.FormEvent) => {

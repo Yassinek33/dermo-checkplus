@@ -64,6 +64,24 @@ const LanguagePopup: React.FC = () => {
                             <span className="text-xl font-display font-semibold text-white group-hover:text-brand-primary transition-colors">ENGLISH</span>
                             <p className="text-[10px] text-white/30 font-mono tracking-tighter mt-1 uppercase">English Interface</p>
                         </button>
+                        {/* Dutch Option */}
+                        <button
+                            onClick={() => setLanguage('nl')}
+                            className="group relative px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all duration-300 overflow-hidden"
+                        >
+                            <div className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                            <span className="text-xl font-display font-semibold text-white group-hover:text-brand-primary transition-colors">NEDERLANDS</span>
+                            <p className="text-[10px] text-white/30 font-mono tracking-tighter mt-1 uppercase">Dutch Interface</p>
+                        </button>
+                        {/* Spanish Option */}
+                        <button
+                            onClick={() => setLanguage('es')}
+                            className="group relative px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all duration-300 overflow-hidden"
+                        >
+                            <div className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                            <span className="text-xl font-display font-semibold text-white group-hover:text-brand-primary transition-colors">ESPAÑOL</span>
+                            <p className="text-[10px] text-white/30 font-mono tracking-tighter mt-1 uppercase">Spanish Interface</p>
+                        </button>
                     </div>
 
                     <p className="text-[9px] text-white/20 font-mono uppercase tracking-[0.3em] pt-4">

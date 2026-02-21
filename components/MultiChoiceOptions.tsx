@@ -14,11 +14,33 @@ interface MultiChoiceOptionsProps {
 
 // Define mutually exclusive options (these will be removed from options array in Questionnaire.tsx now)
 const MUTUALLY_EXCLUSIVE_OPTIONS = [
+    // French (default)
     "Je ne sais pas",
     "Aucun symptôme notable",
     "Aucun antécédent",
     "Aucun",
-    "Aucun de ces facteurs" // Added for consistency
+    "Aucun de ces facteurs",
+
+    // English
+    "I don't know",
+    "No notable symptoms",
+    "No history",
+    "None",
+    "None of these factors",
+
+    // Dutch
+    "Ik weet het niet",
+    "Geen noemenswaardige symptomen",
+    "Geen voorgeschiedenis",
+    "Geen",
+    "Geen van deze factoren",
+
+    // Spanish
+    "No lo sé",
+    "Sin síntomas notables",
+    "Sin antecedentes médicos",
+    "Ninguno",
+    "Ninguno de estos factores"
 ];
 
 const formatOptionText = (text: string) => {

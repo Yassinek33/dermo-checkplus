@@ -21,7 +21,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
         { id: 'home', label: t('common.nav.home') },
         { id: 'questionnaire', label: t('common.nav.analysis') },
         { id: 'find-dermatologist', label: t('common.nav.find_derm') },
-        { id: 'blog', label: 'Blog' },
+        { id: 'blog', label: t('common.nav.blog') },
         { id: 'about', label: t('common.nav.about') },
         { id: 'legal', label: t('common.nav.legal') },
         { id: 'contact', label: t('common.nav.contact') },
@@ -62,6 +62,24 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                             )}
                         >
                             EN
+                        </button>
+                        <button
+                            onClick={() => setLanguage('nl')}
+                            className={clsx(
+                                "px-2 py-1 text-[10px] font-bold rounded-full transition-all duration-300",
+                                language === 'nl' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white"
+                            )}
+                        >
+                            NL
+                        </button>
+                        <button
+                            onClick={() => setLanguage('es')}
+                            className={clsx(
+                                "px-2 py-1 text-[10px] font-bold rounded-full transition-all duration-300",
+                                language === 'es' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white"
+                            )}
+                        >
+                            ES
                         </button>
                     </div>
 
@@ -221,6 +239,24 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                         )}
                                     >
                                         English
+                                    </button>
+                                    <button
+                                        onClick={() => setLanguage('nl')}
+                                        className={clsx(
+                                            "flex-1 px-4 py-2 text-xs font-bold rounded-full transition-all duration-300",
+                                            language === 'nl' ? "bg-brand-primary text-brand-deep" : "text-white/40"
+                                        )}
+                                    >
+                                        Nederlands
+                                    </button>
+                                    <button
+                                        onClick={() => setLanguage('es')}
+                                        className={clsx(
+                                            "flex-1 px-4 py-2 text-xs font-bold rounded-full transition-all duration-300",
+                                            language === 'es' ? "bg-brand-primary text-brand-deep" : "text-white/40"
+                                        )}
+                                    >
+                                        Español
                                     </button>
                                 </div>
 

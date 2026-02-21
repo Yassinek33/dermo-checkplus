@@ -31,9 +31,25 @@ const AgeMonthYearDropdown: React.FC<AgeMonthYearDropdownProps> = ({ onSubmit, m
                 less_than_1: "Less than 1 month",
                 month_suffix: "months",
                 year_suffix: "years"
+            },
+            nl: {
+                months: "Maanden",
+                years: "Jaren",
+                validate: "Leeftijd valideren",
+                less_than_1: "Minder dan 1 maand",
+                month_suffix: "maanden",
+                year_suffix: "jaar"
+            },
+            es: {
+                months: "Meses",
+                years: "Años",
+                validate: "Validar edad",
+                less_than_1: "Menos de 1 mes",
+                month_suffix: "meses",
+                year_suffix: "años"
             }
         };
-        return translations[language as 'fr' | 'en']?.[key] || translations['fr'][key];
+        return translations[language as 'fr' | 'en' | 'nl' | 'es']?.[key] || translations['fr'][key];
     };
 
     const months: { label: string; value: string }[] = useMemo(() => {

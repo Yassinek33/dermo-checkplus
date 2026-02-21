@@ -24,9 +24,19 @@ const AgeDropdown = forwardRef<HTMLSelectElement, AgeDropdownProps>(({ onSubmit,
                 select_age: "Select your age",
                 years: "years",
                 validate: "Validate Age"
+            },
+            nl: {
+                select_age: "Selecteer uw leeftijd",
+                years: "jaar",
+                validate: "Leeftijd valideren"
+            },
+            es: {
+                select_age: "Seleccione su edad",
+                years: "años",
+                validate: "Validar edad"
             }
         };
-        return translations[language as 'fr' | 'en']?.[key] || translations['fr'][key];
+        return translations[language as 'fr' | 'en' | 'nl' | 'es']?.[key] || translations['fr'][key];
     };
 
     const ages: number[] = [];
