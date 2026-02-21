@@ -11,11 +11,10 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
     const { t } = useLanguage();
     const [checks, setChecks] = useState({
         analysis: false,
-        cookies: false,
-        medical: false
+        cookies: false
     });
 
-    const allChecked = checks.analysis && checks.cookies && checks.medical;
+    const allChecked = checks.analysis && checks.cookies;
 
     const toggleCheck = (key: keyof typeof checks) => {
         setChecks(prev => ({ ...prev, [key]: !prev[key] }));
@@ -63,7 +62,7 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
                             <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${checks.analysis ? 'bg-brand-primary border-brand-primary' : 'border-white/20'}`}>
                                 {checks.analysis && <svg className="w-3.5 h-3.5 text-black" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
                             </div>
-                            <p className="text-sm text-brand-secondary/90 font-light">
+                            <p className="text-sm text-brand-secondary/90 font-light leading-relaxed">
                                 {t('consent.checkboxes.analysis')}
                             </p>
                         </div>
@@ -76,21 +75,8 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
                             <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${checks.cookies ? 'bg-brand-primary border-brand-primary' : 'border-white/20'}`}>
                                 {checks.cookies && <svg className="w-3.5 h-3.5 text-black" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
                             </div>
-                            <p className="text-sm text-brand-secondary/90 font-light">
+                            <p className="text-sm text-brand-secondary/90 font-light leading-relaxed">
                                 {t('consent.checkboxes.cookies')}
-                            </p>
-                        </div>
-
-                        {/* Checkbox 3 */}
-                        <div
-                            onClick={() => toggleCheck('medical')}
-                            className={`group flex gap-4 p-4 rounded-xl border transition-all duration-300 cursor-pointer ${checks.medical ? 'bg-brand-primary/10 border-brand-primary/30' : 'bg-white/5 border-white/5 hover:border-white/10'}`}
-                        >
-                            <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${checks.medical ? 'bg-brand-primary border-brand-primary' : 'border-white/20'}`}>
-                                {checks.medical && <svg className="w-3.5 h-3.5 text-black" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
-                            </div>
-                            <p className="text-sm text-brand-secondary/90 font-light">
-                                {t('consent.checkboxes.medical')}
                             </p>
                         </div>
                     </div>

@@ -143,9 +143,8 @@ export const translations: Record<string, any> = {
             title: "Votre confidentialité compte",
             description: "DermatoCheck utilise l’intelligence artificielle et des technologies numériques pour analyser les images de peau à des fins informatives.\nAvant de continuer, merci de confirmer votre consentement.",
             checkboxes: {
-                analysis: "J’accepte l’analyse automatisée de mes images et informations par un système d’intelligence artificielle à des fins informatives uniquement, et non pour un diagnostic médical.",
-                cookies: "J’accepte l’utilisation de cookies et technologies similaires pour améliorer l’expérience utilisateur, analyser l’audience et assurer la sécurité de la plateforme.",
-                medical: "Je comprends que DermatoCheck ne remplace pas un médecin et que toute décision médicale doit être prise avec un professionnel de santé."
+                analysis: "J’accepte l’analyse automatisée de mes images par une intelligence artificielle à des fins informatives, et je comprends que DermatoCheck ne remplace en aucun cas l'avis d'un médecin pour toute décision médicale.",
+                cookies: "J’accepte l’utilisation de cookies et technologies similaires pour améliorer l’expérience utilisateur, analyser l’audience et assurer la sécurité de la plateforme."
             },
             buttons: {
                 decline: "Décliner",
@@ -556,9 +555,8 @@ export const translations: Record<string, any> = {
             title: "Your privacy matters",
             description: "DermatoCheck uses artificial intelligence and digital technologies to analyze skin images for informational purposes.\nBefore continuing, please confirm your consent.",
             checkboxes: {
-                analysis: "I agree to the automated analysis of my images and information by an AI system for informational purposes only, not for medical diagnosis.",
-                cookies: "I agree to the use of cookies and similar technologies to improve user experience, analyze traffic, and maintain platform security.",
-                medical: "I understand that DermatoCheck does not replace a doctor and that medical decisions must be made with a qualified healthcare professional."
+                analysis: "I agree to the automated analysis of my images by artificial intelligence for informational purposes, and I understand that DermatoCheck does not replace a doctor for any medical decisions.",
+                cookies: "I agree to the use of cookies and similar technologies to improve user experience, analyze traffic, and maintain platform security."
             },
             buttons: {
                 decline: "Decline",
@@ -971,9 +969,8 @@ export const translations: Record<string, any> = {
             title: "Uw privacy is belangrijk",
             description: "DermatoCheck gebruikt kunstmatige intelligentie en digitale technologieën om huidafbeeldingen te analyseren voor informatieve doeleinden.\nBevestig uw toestemming voordat u doorgaat.",
             checkboxes: {
-                analysis: "Ik ga akkoord met de geautomatiseerde analyse van mijn afbeeldingen en informatie door een AI-systeem, uitsluitend voor informatieve doeleinden, niet voor een medische diagnose.",
-                cookies: "Ik ga akkoord met het gebruik van cookies en vergelijkbare technologieën om de gebruikerservaring te verbeteren, het verkeer te analyseren en de veiligheid van het platform te handhaven.",
-                medical: "Ik begrijp dat DermatoCheck geen arts vervangt en dat medische beslissingen moeten worden genomen in overleg met een gekwalificeerde zorgprofessional."
+                analysis: "Ik ga akkoord met de geautomatiseerde analyse van mijn afbeeldingen door kunstmatige intelligentie voor informatieve doeleinden, en ik begrijp dat DermatoCheck geen arts vervangt voor medische beslissingen.",
+                cookies: "Ik ga akkoord met het gebruik van cookies en vergelijkbare technologieën om de gebruikerservaring te verbeteren, het verkeer te analyseren en de veiligheid van het platform te handhaven."
             },
             buttons: {
                 decline: "Weigeren",
@@ -1405,10 +1402,17 @@ export const translations: Record<string, any> = {
             warning: "Al utilizar esta aplicación aceptas nuestros Términos de Servicio."
         },
         consent: {
-            title: "Consentimiento Informado",
-            content: "Al usar DERMATOCHECK, entiendes que los resultados proporcionados son para fines informativos y no son un diagnóstico médico formal. Debes buscar el consejo de un profesional de la salud calificado con cualquier pregunta que puedas tener sobre una afección médica.",
-            accept: "Acepto los términos",
-            decline: "No acepto"
+            title: "Tu Privacidad Importa",
+            description: "DermatoCheck utiliza inteligencia artificial y tecnologías digitales para analizar imágenes de la piel con fines informativos.\nAntes de continuar, por favor confirma tu consentimiento.",
+            checkboxes: {
+                analysis: "Acepto el análisis automatizado de mis imágenes por inteligencia artificial con fines informativos, y entiendo que DermatoCheck no reemplaza a un médico para ninguna decisión médica.",
+                cookies: "Acepto el uso de cookies y tecnologías similares para mejorar la experiencia del usuario, analizar el tráfico y mantener la seguridad de la plataforma."
+            },
+            buttons: {
+                decline: "Rechazar",
+                accept: "Aceptar y Continuar"
+            },
+            footer: "Tus datos permanecen seguros y no conceden acceso a tu información en otras aplicaciones o sitios web.\nPara más detalles, consulta nuestra Política de Privacidad."
         },
         minors: {
             title: "Bienvenido a",
