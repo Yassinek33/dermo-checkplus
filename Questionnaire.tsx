@@ -152,7 +152,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         // Updated regex to capture optional none button text
         const textInputMatch = text.match(/\[TEXT_INPUT(_WITH_NONE)?(?::([^:]+?))?(?::([^\]]+?))?\]/);
         const comboInputMatch = text.match(/\[COMBO_INPUT(?::([^\]]+?))?\]/); // New: Capture placeholder for combo input, non-greedy
-        const ageDropdownMatch = text.match(/\[AGE_DROPDOWN:(\d+):(\d+)\]/); // New: Match for age dropdown with min/max
+        const ageDropdownMatch = text.match(/\[AGE_DROPDOWN:\s*(\d+)\s*:\s*(\d+)\s*\]/); // New: Match for age dropdown with min/max, tolerant of spaces
         const multiChoiceMatch = text.includes('[MULTI_CHOIX]');
         const singleChoiceMatch = text.includes('[CHOIX]');
 
@@ -198,7 +198,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             cleanText = cleanText.replace(/\[COMBO_INPUT(?::[^\]]+)?\]/g, '').trim();
         }
         if (ageDropdownMatch) { // New: Clean text for age dropdown
-            cleanText = cleanText.replace(/\[AGE_DROPDOWN:\d+:\d+\]/g, '').trim();
+            cleanText = cleanText.replace(/\[AGE_DROPDOWN:\s*\d+\s*:\s*\d+\s*\]/g, '').trim();
         }
 
         if (multiChoiceMatch) {
