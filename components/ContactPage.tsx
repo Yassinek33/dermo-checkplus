@@ -64,12 +64,12 @@ const ContactPage: React.FC<ContactPageProps> = ({ config }) => {
                                     onChange={handleChange}
                                     required
                                     rows={5}
-                                    maxLength={3000}
+                                    maxLength={500}
                                     className="px-5 py-4 bg-white/5 border border-white/10 text-white text-base rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-primary/40 focus:border-brand-primary/40 transition-all shadow-inner backdrop-blur-sm placeholder-white/20"
                                     placeholder={field.placeholder}
                                 />
                                 <div className="mt-2 text-right text-[10px] uppercase tracking-widest text-brand-secondary/40 font-mono">
-                                    {formData[field.name].length} / 3000
+                                    {formData[field.name].length} / 500
                                 </div>
                             </>
                         ) : (

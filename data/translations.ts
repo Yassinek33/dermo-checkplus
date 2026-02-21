@@ -186,7 +186,7 @@ export const translations: Record<string, any> = {
                 subject: "Sujet",
                 subject_placeholder: "Sujet de votre message...",
                 message: "Votre Message",
-                message_placeholder: "Entrez votre message (max 3000 caractères)...",
+                message_placeholder: "Entrez votre message (max 500 caractères)...",
                 submit: "Envoyer le Message"
             }
         },
@@ -601,7 +601,7 @@ export const translations: Record<string, any> = {
                 subject: "Subject",
                 subject_placeholder: "Subject of your message...",
                 message: "Your Message",
-                message_placeholder: "Enter your message (max 3000 characters)...",
+                message_placeholder: "Enter your message (max 500 characters)...",
                 submit: "Send Message"
             }
         },
@@ -1015,7 +1015,7 @@ export const translations: Record<string, any> = {
                 subject: "Onderwerp",
                 subject_placeholder: "Onderwerp van uw bericht...",
                 message: "Uw Bericht",
-                message_placeholder: "Voer uw bericht in (max 3000 tekens)...",
+                message_placeholder: "Voer uw bericht in (max 500 tekens)...",
                 submit: "Verstuur Bericht"
             }
         },
@@ -1431,7 +1431,7 @@ export const translations: Record<string, any> = {
                 subject: "Asunto",
                 subject_placeholder: "Asunto de tu mensaje...",
                 message: "Tu Mensaje",
-                message_placeholder: "Ingresa tu mensaje (máx. 3000 caracteres)...",
+                message_placeholder: "Ingresa tu mensaje (máx. 500 caracteres)...",
                 submit: "Enviar Mensaje"
             }
         },
