@@ -1362,6 +1362,12 @@ export const translations: Record<string, any> = {
             accept: "Acepto los términos",
             decline: "No acepto"
         },
+        minors: {
+            title: "Bienvenido a",
+            subtitle: "Para personalizar tu experiencia, por favor indica tu perfil.",
+            adult: "Soy mayor de edad",
+            minor: "Soy menor de edad"
+        },
         contact: {
             title: "Contáctanos",
             name: "Tu Nombre",
