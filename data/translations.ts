@@ -49,6 +49,7 @@ export const translations: Record<string, any> = {
             es: "Espagnol"
         },
         home: {
+            auth_marquee: "✨ Conservez votre historique médical et vos analyses en toute sécurité. Connectez-vous dès maintenant pour un suivi personnalisé ! ✨",
             hero: {
                 badge: "Protocole Clinique v9.0",
                 title: "DERMATOCHECK",
@@ -460,6 +461,7 @@ export const translations: Record<string, any> = {
             es: "Spanish"
         },
         home: {
+            auth_marquee: "✨ Keep your medical history and analysis results securely. Log in now for personalized tracking! ✨",
             hero: {
                 badge: "Clinical Protocol v9.0",
                 title: "DERMATOCHECK",
@@ -874,6 +876,7 @@ export const translations: Record<string, any> = {
             es: "Spaans"
         },
         home: {
+            auth_marquee: "✨ Bewaar uw medische geschiedenis en analyseresultaten veilig. Log nu in voor gepersonaliseerde opvolging! ✨",
             hero: {
                 badge: "Klinisch Protocol v9.0",
                 title: "DERMATOCHECK",
@@ -1288,6 +1291,7 @@ export const translations: Record<string, any> = {
             es: "Español"
         },
         home: {
+            auth_marquee: "✨ Guarda tu historial médico y resultados de análisis de forma segura. ¡Inicia sesión ahora para un seguimiento personalizado! ✨",
             hero: {
                 badge: "Protocolo Clínico v9.0",
                 title: "DERMATOCHECK",

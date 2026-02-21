@@ -4,6 +4,7 @@ import { PageConfig } from '../types';
 import MagneticButton from './MagneticButton';
 import { BentoGrid, BentoGridItem } from './BentoGrid';
 import { useLanguage } from '../context/LanguageContext';
+import AuthMarquee from './AuthMarquee';
 
 interface HomePageProps {
     config?: PageConfig;
@@ -123,6 +124,11 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate }) => {
                     </button>
                 </motion.div>
             </section>
+
+            {/* AUTH MARQUEE BANNER */}
+            <div className="w-full max-w-[100vw] -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden shadow-2xl">
+                <AuthMarquee onNavigate={onNavigate} />
+            </div>
 
             {/* MOBILE PROTOCOL CAROUSEL (Visible only on Mobile) */}
             <section className="block md:hidden w-full overflow-hidden py-8">
