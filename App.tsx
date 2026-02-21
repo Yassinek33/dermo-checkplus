@@ -129,6 +129,10 @@ const App: React.FC = () => {
         setCurrentPageId(pageId);
         setCurrentArticleSlug(articleSlug);
         setIsMobileMenuOpen(false); // Close menu on navigation
+
+        // Scroll to the top of the page smoothly
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
         // Reset state for new page if it's the dermatologist finder
         if (pageId === 'find-dermatologist') {
             setDermatologistMapResults(null);
