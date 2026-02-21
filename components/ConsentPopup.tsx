@@ -14,7 +14,7 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
         cookies: false
     });
 
-    const allChecked = checks.analysis && checks.cookies;
+    const canContinue = checks.analysis;
 
     const toggleCheck = (key: keyof typeof checks) => {
         setChecks(prev => ({ ...prev, [key]: !prev[key] }));
@@ -83,14 +83,14 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
 
                     <div className="pt-4 space-y-4">
                         <button
-                            disabled={!allChecked}
-                            onClick={allChecked ? onAccept : undefined}
-                            className={`w-full py-4 rounded-xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2 ${allChecked
+                            disabled={!canContinue}
+                            onClick={canContinue ? onAccept : undefined}
+                            className={`w-full py-4 rounded-xl font-bold tracking-wide transition-all duration-300 flex items-center justify-center gap-2 ${canContinue
                                 ? 'bg-brand-primary text-brand-deep hover:bg-brand-primary/90 shadow-[0_0_20px_rgba(45,212,191,0.3)] scale-100'
                                 : 'bg-red-500/10 border border-red-500/20 text-red-400 cursor-not-allowed'
                                 }`}
                         >
-                            {!allChecked ? (
+                            {!canContinue ? (
                                 <>
                                     <span>{t('consent.buttons.decline')}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

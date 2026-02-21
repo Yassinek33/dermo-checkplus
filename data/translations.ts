@@ -1421,12 +1421,19 @@ export const translations: Record<string, any> = {
             minor: "Soy menor de edad"
         },
         contact: {
-            title: "Contáctanos",
-            name: "Tu Nombre",
-            email: "Tu Correo Electrónico",
-            message: "Mensaje",
-            send: "Enviar Mensaje",
-            success: "Mensaje enviado con éxito."
+            title: "CONTÁCTANOS",
+            description: "¿Tienes una pregunta, una sugerencia o necesitas ayuda? No dudes en contactarnos.",
+            form: {
+                name: "Tu Nombre",
+                name_placeholder: "Ingresa tu nombre...",
+                email: "Tu Correo Electrónico",
+                email_placeholder: "Ingresa tu correo...",
+                subject: "Asunto",
+                subject_placeholder: "Asunto de tu mensaje...",
+                message: "Tu Mensaje",
+                message_placeholder: "Ingresa tu mensaje (máx. 3000 caracteres)...",
+                submit: "Enviar Mensaje"
+            }
         },
         analysis: {
             title: "Análisis Dermatológico",
