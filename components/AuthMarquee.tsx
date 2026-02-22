@@ -213,13 +213,13 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                 transition={{ repeat: Infinity, duration: 4, ease: 'linear', repeatDelay: 4 }}
             />
 
-            <div className="flex items-stretch">
+            <div className="flex flex-col md:flex-row items-stretch">
 
                 {/* ── LEFT CTA ── */}
                 <motion.div
                     onClick={() => onNavigate('auth')}
-                    className="relative flex-shrink-0 flex flex-col items-start justify-center px-6 md:px-7 py-4 cursor-pointer z-20 gap-2"
-                    style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
+                    className="relative flex-shrink-0 flex md:flex-col items-center justify-between md:items-start md:justify-center px-4 md:px-7 py-3 md:py-4 cursor-pointer z-20 gap-2 w-full md:w-auto"
+                    style={{ borderRight: `1px solid rgba(0,255,200,0.12)`, borderBottom: `1px solid rgba(0,255,200,0.12)` }}
                     whileHover={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
                     transition={{ duration: 0.2 }}
                 >
@@ -260,11 +260,17 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                 </motion.div>
 
                 {/* ── CENTER — marquee ── */}
-                <div className="flex-1 overflow-hidden flex flex-col justify-center gap-2 py-3">
+                <div className="flex-1 overflow-hidden flex flex-col justify-center gap-2 py-2 md:py-3 relative">
+                    {/* Left & Right Fade over the marquee */}
+                    <div className="absolute left-0 top-0 bottom-0 w-8 md:w-16 z-10 pointer-events-none" style={{ background: 'linear-gradient(to right, rgb(3,10,16), transparent)' }} />
+                    <div className="absolute right-0 top-0 bottom-0 w-8 md:w-16 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, rgb(3,10,16), transparent)' }} />
+
                     <Track items={items} paused={paused} speed={32} />
-                    {/* thin neon separator */}
-                    <div style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(0,255,200,0.12), transparent)`, flexShrink: 0, marginInline: 32 }} />
-                    <Track items={[...items.slice(4), ...items.slice(0, 4)]} reverse paused={paused} speed={42} />
+                    {/* thin neon separator - hidden on mobile to show just 1 row */}
+                    <div className="hidden md:block" style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(0,255,200,0.12), transparent)`, flexShrink: 0, marginInline: 32 }} />
+                    <div className="hidden md:block">
+                        <Track items={[...items.slice(4), ...items.slice(0, 4)]} reverse paused={paused} speed={42} />
+                    </div>
                 </div>
 
                 {/* ── RIGHT login (desktop only) ── */}
