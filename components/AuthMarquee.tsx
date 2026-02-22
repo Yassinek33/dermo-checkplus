@@ -213,42 +213,72 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                 transition={{ repeat: Infinity, duration: 4, ease: 'linear', repeatDelay: 4 }}
             />
 
-            <div className="flex flex-col md:flex-row items-stretch">
+            {/* ═══ MOBILE (< md): 2 buttons on top, 1 marquee row below ═══ */}
+            <div className="flex flex-col md:hidden">
 
-                {/* ── LEFT CTA ── */}
+                {/* ── Mobile: 2 side-by-side action buttons ── */}
+                <div className="flex" style={{ borderBottom: `1px solid rgba(0,255,200,0.12)` }}>
+
+                    {/* Créer mon espace */}
+                    <motion.div
+                        onClick={() => onNavigate('auth')}
+                        className="flex-1 flex flex-col items-center justify-center py-3.5 gap-0.5 cursor-pointer"
+                        style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
+                        whileTap={{ backgroundColor: 'rgba(0,255,200,0.07)' }}
+                    >
+                        <span className="text-[13.5px] font-bold tracking-[0.01em] whitespace-nowrap" style={{ color: NEON }}>
+                            {cta.action}
+                        </span>
+                        <span className="text-[10px] font-mono tracking-[0.08em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                            {cta.sub}
+                        </span>
+                    </motion.div>
+
+                    {/* Se connecter */}
+                    <motion.div
+                        onClick={() => onNavigate('auth')}
+                        className="flex-1 flex flex-col items-center justify-center py-3.5 gap-1 cursor-pointer"
+                        whileTap={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
+                    >
+                        <span className="text-[13.5px] font-semibold tracking-[0.01em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.72)' }}>
+                            {cta.login}
+                        </span>
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
+                            style={{ color: NEON_DIM }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />
+                        </svg>
+                    </motion.div>
+                </div>
+
+                {/* ── Mobile: single marquee row ── */}
+                <div className="overflow-hidden py-2.5 relative">
+                    <div className="absolute left-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
+                        style={{ background: 'linear-gradient(to right, rgb(2,12,18), transparent)' }} />
+                    <div className="absolute right-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
+                        style={{ background: 'linear-gradient(to left, rgb(2,12,18), transparent)' }} />
+                    <Track items={items} paused={paused} speed={28} />
+                </div>
+            </div>
+
+            {/* ═══ DESKTOP (md+): Left CTA | 2-row marquee | Right login ═══ */}
+            <div className="hidden md:flex items-stretch">
+
+                {/* LEFT CTA */}
                 <motion.div
                     onClick={() => onNavigate('auth')}
-                    className="relative flex-shrink-0 flex md:flex-col items-center justify-between md:items-start md:justify-center px-4 md:px-7 py-3 md:py-4 cursor-pointer z-20 gap-2 w-full md:w-auto"
-                    style={{ borderRight: `1px solid rgba(0,255,200,0.12)`, borderBottom: `1px solid rgba(0,255,200,0.12)` }}
+                    className="relative flex-shrink-0 flex flex-col items-start justify-center px-7 py-4 cursor-pointer z-20 gap-2"
+                    style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
                     whileHover={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
                     transition={{ duration: 0.2 }}
                 >
-                    {/* CTA label */}
-                    <span
-                        className="text-[14px] md:text-[15px] font-semibold whitespace-nowrap tracking-[0.02em]"
-                        style={{ color: '#fff' }}
-                    >
+                    <span className="text-[15px] font-semibold whitespace-nowrap tracking-[0.02em]" style={{ color: '#fff' }}>
                         {cta.action}
                     </span>
-
-                    {/* Glowing arrow button */}
-                    <motion.div
-                        className="flex items-center gap-2"
-                        whileHover={{ gap: '10px' }}
-                    >
-                        <span
-                            className="text-[11px] font-mono tracking-[0.1em]"
-                            style={{ color: NEON_DIM }}
-                        >
-                            {cta.sub}
-                        </span>
+                    <motion.div className="flex items-center gap-2" whileHover={{ gap: '10px' }}>
+                        <span className="text-[11px] font-mono tracking-[0.1em]" style={{ color: NEON_DIM }}>{cta.sub}</span>
                         <motion.div
                             className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{
-                                border: `1px solid ${NEON_DIM}`,
-                                color: NEON,
-                                boxShadow: `0 0 8px rgba(0,255,200,0.3)`,
-                            }}
+                            style={{ border: `1px solid ${NEON_DIM}`, color: NEON, boxShadow: `0 0 8px rgba(0,255,200,0.3)` }}
                             animate={{ boxShadow: ['0 0 6px rgba(0,255,200,0.2)', '0 0 14px rgba(0,255,200,0.6)', '0 0 6px rgba(0,255,200,0.2)'] }}
                             transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
                         >
@@ -259,24 +289,21 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                     </motion.div>
                 </motion.div>
 
-                {/* ── CENTER — marquee ── */}
-                <div className="flex-1 overflow-hidden flex flex-col justify-center gap-2 py-2 md:py-3 relative">
-                    {/* Left & Right Fade over the marquee */}
-                    <div className="absolute left-0 top-0 bottom-0 w-8 md:w-16 z-10 pointer-events-none" style={{ background: 'linear-gradient(to right, rgb(3,10,16), transparent)' }} />
-                    <div className="absolute right-0 top-0 bottom-0 w-8 md:w-16 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, rgb(3,10,16), transparent)' }} />
-
+                {/* CENTER — 2 marquee rows */}
+                <div className="flex-1 overflow-hidden flex flex-col justify-center gap-2 py-3 relative">
+                    <div className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+                        style={{ background: 'linear-gradient(to right, rgb(3,10,16), transparent)' }} />
+                    <div className="absolute right-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
+                        style={{ background: 'linear-gradient(to left, rgb(3,10,16), transparent)' }} />
                     <Track items={items} paused={paused} speed={32} />
-                    {/* thin neon separator - hidden on mobile to show just 1 row */}
-                    <div className="hidden md:block" style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(0,255,200,0.12), transparent)`, flexShrink: 0, marginInline: 32 }} />
-                    <div className="hidden md:block">
-                        <Track items={[...items.slice(4), ...items.slice(0, 4)]} reverse paused={paused} speed={42} />
-                    </div>
+                    <div style={{ height: 1, background: `linear-gradient(90deg, transparent, rgba(0,255,200,0.12), transparent)`, flexShrink: 0, marginInline: 32 }} />
+                    <Track items={[...items.slice(4), ...items.slice(0, 4)]} reverse paused={paused} speed={42} />
                 </div>
 
-                {/* ── RIGHT login (desktop only) ── */}
+                {/* RIGHT login */}
                 <motion.div
                     onClick={() => onNavigate('auth')}
-                    className="hidden lg:flex flex-shrink-0 flex-col items-end justify-center px-6 md:px-7 py-4 cursor-pointer z-20 gap-1.5"
+                    className="flex-shrink-0 flex flex-col items-end justify-center px-7 py-4 cursor-pointer z-20 gap-1.5"
                     style={{ borderLeft: `1px solid rgba(0,255,200,0.12)` }}
                     whileHover={{ backgroundColor: 'rgba(0,255,200,0.03)' }}
                     transition={{ duration: 0.2 }}
@@ -284,18 +311,11 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                     <span className="text-[10px] font-mono tracking-[0.1em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.25)' }}>
                         Déjà inscrit ?
                     </span>
-                    <motion.div
-                        className="flex items-center gap-1.5"
-                        whileHover={{ x: -2 }}
-                        transition={{ duration: 0.15 }}
-                    >
+                    <motion.div className="flex items-center gap-1.5" whileHover={{ x: -2 }} transition={{ duration: 0.15 }}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ color: NEON_DIM }}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />
                         </svg>
-                        <span
-                            className="text-[13px] font-medium whitespace-nowrap tracking-[0.03em]"
-                            style={{ color: NEON_DIM }}
-                        >
+                        <span className="text-[13px] font-medium whitespace-nowrap tracking-[0.03em]" style={{ color: NEON_DIM }}>
                             {cta.login}
                         </span>
                     </motion.div>
