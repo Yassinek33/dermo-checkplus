@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { blogArticlesFR, blogArticlesEN } from '../data/blogArticles';
 import { blogArticlesNL } from '../data/blogArticlesNL';
 import { blogArticlesES } from '../data/blogArticlesES';
+import { cmsService, Post } from '../services/cmsService';
 
 interface BlogListPageProps {
     onNavigate: (pageId: string, articleSlug?: string) => void;
@@ -12,6 +13,38 @@ interface BlogListPageProps {
 export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
     const { language, t } = useLanguage();
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    const [dbPosts, setDbPosts] = useState<Post[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const posts = await cmsService.getPosts('published');
+                setDbPosts(posts);
+            } catch (err) {
+                console.error("Erreur gérant les articles DB", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPosts();
+    }, []);
+
+    // Use specific articles based on language (Fallback)
+    const localArticles = language === 'fr' ? blogArticlesFR : language === 'nl' ? blogArticlesNL : language === 'es' ? blogArticlesES : blogArticlesEN;
+
+    // If we have DB posts, we map them to the same structure (or close to it)
+    const activeArticles = dbPosts.length > 0 ? dbPosts.map(p => ({
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        excerpt: p.excerpt,
+        category: p.tags?.[0] || 'skincare', // fallback category
+        author: p.author_name || 'Admin',
+        date: p.created_at,
+        readTime: 5, // mock read time
+        tags: p.tags || []
+    })) : localArticles;
 
     // Use specific articles based on language
     const articles = language === 'fr' ? blogArticlesFR : language === 'nl' ? blogArticlesNL : language === 'es' ? blogArticlesES : blogArticlesEN;
@@ -19,8 +52,8 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
     const categories = ['all', 'skincare', 'conditions', 'prevention'];
 
     const filteredArticles = selectedCategory === 'all'
-        ? articles
-        : articles.filter(article => article.category === selectedCategory);
+        ? activeArticles
+        : activeArticles.filter(article => article.category === selectedCategory || article.tags?.includes(selectedCategory));
 
     const getCategoryColor = (category: string) => {
         switch (category) {
@@ -70,67 +103,73 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
                 </motion.div>
 
                 {/* Articles Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {filteredArticles.map((article, index) => (
-                        <motion.article
-                            key={article.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * index }}
-                            className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-brand-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/20 cursor-pointer flex flex-col h-full"
-                            onClick={() => onNavigate('blog-article', article.slug)}
-                        >
-                            {/* Category Badge */}
-                            <div className="p-6 pb-0">
-                                <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r ${getCategoryColor(article.category)} text-white`}>
-                                    {t(`blog.categories.${article.category}`)}
-                                </span>
-                            </div>
-
-                            {/* Content */}
-                            <div className="p-6 flex-grow flex flex-col">
-                                <h2 className="text-2xl font-bold text-white mb-3 group-hover:text-brand-primary transition-colors line-clamp-2">
-                                    {article.title}
-                                </h2>
-
-                                <p className="text-gray-400 mb-4 flex-grow">
-                                    {article.excerpt}
-                                </p>
-
-                                {/* Meta Info */}
-                                <div className="flex items-center justify-between text-sm text-gray-500 mb-4 mt-auto">
-                                    <span>{article.author.split(',')[0]}</span>
-                                    <span>{article.readTime} {t('blog.read_time')}</span>
+                {loading ? (
+                    <div className="flex justify-center items-center py-20">
+                        <div className="w-12 h-12 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {filteredArticles.map((article, index) => (
+                            <motion.article
+                                key={article.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 * index }}
+                                className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-brand-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/20 cursor-pointer flex flex-col h-full"
+                                onClick={() => onNavigate('blog-article', article.slug)}
+                            >
+                                {/* Category Badge */}
+                                <div className="p-6 pb-0">
+                                    <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r ${getCategoryColor(article.category)} text-white`}>
+                                        {t(`blog.categories.${article.category}`)}
+                                    </span>
                                 </div>
 
-                                {/* Tags */}
-                                <div className="flex flex-wrap gap-2">
-                                    {article.tags.map((tag, i) => (
-                                        <span
-                                            key={i}
-                                            className="px-3 py-1 bg-white/5 rounded-full text-xs text-gray-400"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
+                                {/* Content */}
+                                <div className="p-6 flex-grow flex flex-col">
+                                    <h2 className="text-2xl font-bold text-white mb-3 group-hover:text-brand-primary transition-colors line-clamp-2">
+                                        {article.title}
+                                    </h2>
 
-                            {/* Read More Arrow */}
-                            <div className="px-6 pb-6 mt-auto">
-                                <div className="flex items-center text-brand-primary group-hover:translate-x-2 transition-transform">
-                                    <span className="font-medium">{t('blog.read_article')}</span>
-                                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <p className="text-gray-400 mb-4 flex-grow">
+                                        {article.excerpt}
+                                    </p>
+
+                                    {/* Meta Info */}
+                                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4 mt-auto">
+                                        <span>{article.author.split(',')[0]}</span>
+                                        <span>{article.readTime} {t('blog.read_time')}</span>
+                                    </div>
+
+                                    {/* Tags */}
+                                    <div className="flex flex-wrap gap-2">
+                                        {article.tags.map((tag, i) => (
+                                            <span
+                                                key={i}
+                                                className="px-3 py-1 bg-white/5 rounded-full text-xs text-gray-400"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.article>
-                    ))}
-                </div>
+
+                                {/* Read More Arrow */}
+                                <div className="px-6 pb-6 mt-auto">
+                                    <div className="flex items-center text-brand-primary group-hover:translate-x-2 transition-transform">
+                                        <span className="font-medium">{t('blog.read_article')}</span>
+                                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </motion.article>
+                        ))}
+                    </div>
+                )}
 
                 {/* No Articles Message */}
-                {filteredArticles.length === 0 && (
+                {!loading && filteredArticles.length === 0 && (
                     <div className="text-center py-20">
                         <p className="text-gray-400 text-lg">{t('blog.no_articles')}</p>
                     </div>

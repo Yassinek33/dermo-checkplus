@@ -28,6 +28,18 @@ import AuthPage from './components/AuthPage';
 import ProfilePage from './components/ProfilePage';
 import { supabase } from './services/supabaseClient';
 
+// --- Admin Imports ---
+import { AdminLayout } from './components/admin/AdminLayout';
+import { AdminAuth } from './components/admin/AdminAuth';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AdminUsers } from './components/admin/AdminUsers';
+import { AdminPosts } from './components/admin/AdminPosts';
+import { AdminPages } from './components/admin/AdminPages';
+import { AdminMedia } from './components/admin/AdminMedia';
+import { AdminAppearance } from './components/admin/AdminAppearance';
+import { AdminSettings } from './components/admin/AdminSettings';
+import { AdminSEO } from './components/admin/AdminSEO';
+
 // --- Icons for Menu ---
 const MenuIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
@@ -97,6 +109,12 @@ const App: React.FC = () => {
 
     // Supabase Auth State
     const [user, setUser] = useState<any>(null);
+
+    // Admin State
+    const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
+        return sessionStorage.getItem('dermo_admin_auth') === 'true';
+    });
+    const [adminActiveTab, setAdminActiveTab] = useState('dashboard');
 
     useEffect(() => {
         // Check active session
@@ -252,6 +270,42 @@ const App: React.FC = () => {
             }} />;
         }
 
+        // --- Admin Zone ---
+        if (currentPageId === 'admin') {
+            if (!isAdminAuthenticated) {
+                return (
+                    <AdminAuth
+                        user={user}
+                        onLogin={() => {
+                            setIsAdminAuthenticated(true);
+                            sessionStorage.setItem('dermo_admin_auth', 'true');
+                        }}
+                    />
+                );
+            }
+
+            return (
+                <AdminLayout
+                    activeTab={adminActiveTab}
+                    onNavigate={setAdminActiveTab}
+                    onLogoutAdmin={() => {
+                        setIsAdminAuthenticated(false);
+                        sessionStorage.removeItem('dermo_admin_auth');
+                        navigateTo('home');
+                    }}
+                >
+                    {adminActiveTab === 'dashboard' && <AdminDashboard onNavigate={setAdminActiveTab} />}
+                    {adminActiveTab === 'posts' && <AdminPosts />}
+                    {adminActiveTab === 'pages' && <AdminPages />}
+                    {adminActiveTab === 'media' && <AdminMedia />}
+                    {adminActiveTab === 'users' && <AdminUsers />}
+                    {adminActiveTab === 'appearance' && <AdminAppearance />}
+                    {adminActiveTab === 'seo' && <AdminSEO />}
+                    {adminActiveTab === 'settings' && <AdminSettings />}
+                </AdminLayout>
+            );
+        }
+
         if (!currentPageConfig) return <div className="text-center text-red-600">Page non trouvée.</div>;
 
         // STRICT Security check for Minors accessing Questionnaire
@@ -352,6 +406,11 @@ const App: React.FC = () => {
 
     if (!userProfile) {
         return <MinorCheckPopup onConfirmAdult={() => handleProfileSelect('adult')} onConfirmMinor={() => handleProfileSelect('minor')} />;
+    }
+
+    // Hide layout context (Navigation, Footer, Background) if we are in admin mode to offer full control to AdminLayout
+    if (currentPageId === 'admin') {
+        return <>{renderContent()}</>;
     }
 
     return (

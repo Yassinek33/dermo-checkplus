@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { DermatoCheckLogo } from './icons';
 
 const LanguagePopup: React.FC = () => {
     const { setLanguage, isLanguageSelected, t } = useLanguage();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     if (isLanguageSelected) return null;
 

@@ -14,6 +14,10 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
         cookies: false
     });
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const canContinue = checks.analysis;
 
     const toggleCheck = (key: keyof typeof checks) => {

@@ -332,6 +332,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     // Effect for handling the initial warning popup's focus and tab index
     useEffect(() => {
         if (showInitialWarningPopup) {
+            window.scrollTo(0, 0);
             toggleTabIndexForMainContent(false);
             const modalElement = initialWarningModalRef.current;
             if (modalElement) {
@@ -668,6 +669,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
     // Handle reset confirmation
     const handleReset = useCallback(() => {
+        window.scrollTo(0, 0);
         setShowResetConfirmation(true);
         toggleTabIndexForMainContent(false); // Disable tabbing outside modal
     }, [toggleTabIndexForMainContent]);

@@ -5,6 +5,7 @@ import './src/styles.css'; // Import Global Glassmorphism Styles
 import App from './App';
 
 import { LanguageProvider } from './context/LanguageContext';
+import { SiteProvider } from './contexts/SiteContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -15,7 +16,9 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <LanguageProvider>
-      <App />
+      <SiteProvider>
+        <App />
+      </SiteProvider>
     </LanguageProvider>
   </React.StrictMode>
 );

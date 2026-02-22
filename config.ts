@@ -6,10 +6,10 @@ export const appConfig: AppConfig = {
         name: "SkinCheck",
         description: "Dermatologue virtuel professionnel",
         theme: {
-            primaryColor: "#059669", // Emerald-600 (Darker green for buttons)
-            background: "#F9FAFB", // Gray-50
-            card: "#FFFFFF",
-            accent: "#D1FAE5", // Emerald-100
+            primaryColor: "#2DD4BF", // Brand Teal
+            background: "#030305", // Void Black
+            card: "#0a0b0d",
+            accent: "#6366F1", // Indigo
             radius: 20, // Example radius
             font: "Inter, sans-serif",
         },

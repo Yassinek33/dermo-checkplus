@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { blogArticlesFR, blogArticlesEN, BlogArticle } from '../data/blogArticles';
 import { blogArticlesNL } from '../data/blogArticlesNL';
 import { blogArticlesES } from '../data/blogArticlesES';
+import { cmsService, Post } from '../services/cmsService';
 
 interface BlogArticlePageProps {
     slug: string;
@@ -12,10 +13,50 @@ interface BlogArticlePageProps {
 
 export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug, onNavigate }) => {
     const { language, t } = useLanguage();
+    const [dbPost, setDbPost] = useState<Post | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Use specific articles based on language
-    const articles = language === 'fr' ? blogArticlesFR : language === 'nl' ? blogArticlesNL : language === 'es' ? blogArticlesES : blogArticlesEN;
-    const article = articles.find(a => a.slug === slug);
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const post = await cmsService.getPostBySlug(slug);
+                if (post && post.status === 'published') {
+                    setDbPost(post);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPost();
+    }, [slug]);
+
+    // Fast local article finding
+    const localArticles = language === 'fr' ? blogArticlesFR : language === 'nl' ? blogArticlesNL : language === 'es' ? blogArticlesES : blogArticlesEN;
+    const localArticle = localArticles.find(a => a.slug === slug);
+
+    const article = dbPost ? {
+        id: dbPost.id,
+        title: dbPost.title,
+        slug: dbPost.slug,
+        content: dbPost.content,
+        excerpt: dbPost.excerpt,
+        category: dbPost.tags?.[0] || 'skincare',
+        author: dbPost.author_name || 'Admin',
+        date: dbPost.created_at,
+        readTime: 5,
+        tags: dbPost.tags || [],
+        expertQuote: null // DB posts don't have expertQuote inherently unless modeled in JSON
+    } : localArticle;
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-brand-deep via-[#0d1117] to-black flex items-center justify-center">
+                <div className="w-12 h-12 border-4 border-brand-primary/20 border-t-brand-primary rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     if (!article) {
         return (

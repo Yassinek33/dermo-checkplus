@@ -16,6 +16,10 @@ const MinorCheckPopup: React.FC<MinorCheckPopupProps> = ({ onConfirmAdult, onCon
     const modalRef = useRef<HTMLDivElement>(null);
     const triggerElementRef = useRef<HTMLElement | null>(null);
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     // ... (rest of useEffects)
 
     return ReactDOM.createPortal(

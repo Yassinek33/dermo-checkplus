@@ -80,7 +80,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             />
 
             {/* Main Content Area */}
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
                 <motion.main
                     key={currentPage}
                     initial={{ opacity: 0, scale: 0.98, filter: "blur(10px)" }}

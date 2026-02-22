@@ -53,9 +53,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6"></div>
 
                 {/* Copyright */}
-                <p className="text-center text-xs text-gray-500">
-                    {t('footer.copyright')}
-                </p>
+                <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-center text-xs text-gray-500">
+                        {t('footer.copyright')}
+                    </p>
+                    <button
+                        onClick={() => onNavigate('admin')}
+                        className="w-8 h-8 rounded-full bg-transparent hover:bg-white/5 transition-colors duration-300 opacity-20 hover:opacity-100 flex items-center justify-center text-[10px] text-brand-primary"
+                        title="Système Administratif"
+                    >
+                        ⚡
+                    </button>
+                </div>
             </div>
 
             {/* Bottom gradient fade */}
