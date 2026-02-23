@@ -4,6 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 interface AuthMarqueeProps {
     onNavigate: (pageId: string) => void;
+    user?: any;
 }
 
 // ─── SVG icons ────────────────────────────────────────────────────────────────
@@ -104,6 +105,57 @@ const CTA: Record<string, { action: string; sub: string; login: string }> = {
     es: { action: 'Crear mi espacio', sub: 'Gratis · Inmediato', login: 'Iniciar sesión' },
 };
 
+// ─── Logged-in scrolling messages ──────────────────────────────────────────────
+const LOGGED_ITEMS: Record<string, { icon: React.ReactNode; text: string }[]> = {
+    fr: [
+        { icon: <IconFlash />, text: 'Nouvelle analyse IA en 60 secondes' },
+        { icon: <IconChart />, text: 'Consultez votre historique dermato en un clic' },
+        { icon: <IconShield />, text: 'Vos données médicales sécurisées RGPD' },
+        { icon: <IconHeart />, text: 'Suivez l\'évolution de votre peau chaque semaine' },
+        { icon: <IconStar />, text: 'Trouvez un dermatologue près de chez vous' },
+        { icon: <IconSparkle />, text: 'Votre espace santé personnel, toujours disponible' },
+        { icon: <IconArrow />, text: 'Photo + questionnaire — résultat immédiat' },
+        { icon: <IconUser />, text: 'Gérez votre profil et vos préférences' },
+    ],
+    en: [
+        { icon: <IconFlash />, text: 'New AI analysis in 60 seconds' },
+        { icon: <IconChart />, text: 'View your dermatology history in one click' },
+        { icon: <IconShield />, text: 'Your medical data secured with GDPR' },
+        { icon: <IconHeart />, text: 'Track the evolution of your skin every week' },
+        { icon: <IconStar />, text: 'Find a dermatologist near you' },
+        { icon: <IconSparkle />, text: 'Your personal health space, always available' },
+        { icon: <IconArrow />, text: 'Photo + questionnaire — instant result' },
+        { icon: <IconUser />, text: 'Manage your profile and preferences' },
+    ],
+    nl: [
+        { icon: <IconFlash />, text: 'Nieuwe AI-analyse in 60 seconden' },
+        { icon: <IconChart />, text: 'Bekijk uw dermatologische geschiedenis in één klik' },
+        { icon: <IconShield />, text: 'Uw medische gegevens beveiligd met AVG' },
+        { icon: <IconHeart />, text: 'Volg de evolutie van uw huid elke week' },
+        { icon: <IconStar />, text: 'Vind een dermatoloog bij u in de buurt' },
+        { icon: <IconSparkle />, text: 'Uw persoonlijke gezondheidsruimte, altijd beschikbaar' },
+        { icon: <IconArrow />, text: 'Foto + vragenlijst — onmiddellijk resultaat' },
+        { icon: <IconUser />, text: 'Beheer uw profiel en voorkeuren' },
+    ],
+    es: [
+        { icon: <IconFlash />, text: 'Nuevo análisis IA en 60 segundos' },
+        { icon: <IconChart />, text: 'Consulta tu historial dermatológico en un clic' },
+        { icon: <IconShield />, text: 'Tus datos médicos protegidos con RGPD' },
+        { icon: <IconHeart />, text: 'Sigue la evolución de tu piel cada semana' },
+        { icon: <IconStar />, text: 'Encuentra un dermatólogo cerca de ti' },
+        { icon: <IconSparkle />, text: 'Tu espacio de salud personal, siempre disponible' },
+        { icon: <IconArrow />, text: 'Foto + cuestionario — resultado inmediato' },
+        { icon: <IconUser />, text: 'Gestiona tu perfil y preferencias' },
+    ],
+};
+
+const LOGGED_CTA: Record<string, { action: string; sub: string; dashboard: string }> = {
+    fr: { action: 'Analyser ma peau', sub: 'Résultat en 60 sec', dashboard: 'Mon Dashboard' },
+    en: { action: 'Analyse my skin', sub: 'Result in 60 sec', dashboard: 'My Dashboard' },
+    nl: { action: 'Analyseer mijn huid', sub: 'Resultaat in 60 sec', dashboard: 'Mijn Dashboard' },
+    es: { action: 'Analizar mi piel', sub: 'Resultado en 60 seg', dashboard: 'Mi Dashboard' },
+};
+
 // ─── Separator bead ────────────────────────────────────────────────────────────
 const Dot = () => (
     <span className="inline-flex items-center flex-shrink-0 mx-6">
@@ -166,13 +218,22 @@ const Track: React.FC<{
 };
 
 // ─── Main component ────────────────────────────────────────────────────────────
-const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
+const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate, user }) => {
     const { language } = useLanguage();
     const [paused, setPaused] = useState(false);
 
     const lang = ((language as string) || 'fr').slice(0, 2).toLowerCase();
-    const items = ITEMS[lang] || ITEMS.fr;
+    const isLoggedIn = !!user;
+
+    // Pick items and CTA based on auth state
+    const items = isLoggedIn ? (LOGGED_ITEMS[lang] || LOGGED_ITEMS.fr) : (ITEMS[lang] || ITEMS.fr);
     const cta = CTA[lang] || CTA.fr;
+    const logCta = LOGGED_CTA[lang] || LOGGED_CTA.fr;
+
+    // First name for personalisation
+    const firstName = user?.user_metadata?.full_name?.split(' ')[0]
+        || user?.email?.split('@')[0]
+        || '';
 
     return (
         <div
@@ -213,35 +274,33 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                 transition={{ repeat: Infinity, duration: 4, ease: 'linear', repeatDelay: 4 }}
             />
 
-            {/* ═══ MOBILE (< md): 2 buttons on top, 1 marquee row below ═══ */}
+            {/* ═══ MOBILE (<md) ═══ */}
             <div className="flex flex-col md:hidden">
-
-                {/* ── Mobile: 2 side-by-side action buttons ── */}
                 <div className="flex" style={{ borderBottom: `1px solid rgba(0,255,200,0.12)` }}>
 
-                    {/* Créer mon espace */}
+                    {/* Left button */}
                     <motion.div
-                        onClick={() => onNavigate('auth')}
+                        onClick={() => onNavigate(isLoggedIn ? 'questionnaire' : 'auth')}
                         className="flex-1 flex flex-col items-center justify-center py-3.5 gap-0.5 cursor-pointer"
                         style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
                         whileTap={{ backgroundColor: 'rgba(0,255,200,0.07)' }}
                     >
                         <span className="text-[13.5px] font-bold tracking-[0.01em] whitespace-nowrap" style={{ color: NEON }}>
-                            {cta.action}
+                            {isLoggedIn ? logCta.action : cta.action}
                         </span>
                         <span className="text-[10px] font-mono tracking-[0.08em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                            {cta.sub}
+                            {isLoggedIn ? logCta.sub : cta.sub}
                         </span>
                     </motion.div>
 
-                    {/* Se connecter */}
+                    {/* Right button */}
                     <motion.div
-                        onClick={() => onNavigate('auth')}
+                        onClick={() => onNavigate(isLoggedIn ? 'profile' : 'auth')}
                         className="flex-1 flex flex-col items-center justify-center py-3.5 gap-1 cursor-pointer"
                         whileTap={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
                     >
                         <span className="text-[13.5px] font-semibold tracking-[0.01em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.72)' }}>
-                            {cta.login}
+                            {isLoggedIn ? logCta.dashboard : cta.login}
                         </span>
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
                             style={{ color: NEON_DIM }}>
@@ -250,7 +309,6 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                     </motion.div>
                 </div>
 
-                {/* ── Mobile: single marquee row ── */}
                 <div className="overflow-hidden py-2.5 relative">
                     <div className="absolute left-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
                         style={{ background: 'linear-gradient(to right, rgb(2,12,18), transparent)' }} />
@@ -260,22 +318,29 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                 </div>
             </div>
 
-            {/* ═══ DESKTOP (md+): Left CTA | 2-row marquee | Right login ═══ */}
+            {/* ═══ DESKTOP (md+) ═══ */}
             <div className="hidden md:flex items-stretch">
 
                 {/* LEFT CTA */}
                 <motion.div
-                    onClick={() => onNavigate('auth')}
+                    onClick={() => onNavigate(isLoggedIn ? 'questionnaire' : 'auth')}
                     className="relative flex-shrink-0 flex flex-col items-start justify-center px-7 py-4 cursor-pointer z-20 gap-2"
                     style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
                     whileHover={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
                     transition={{ duration: 0.2 }}
                 >
+                    {isLoggedIn && firstName && (
+                        <span className="text-[10px] font-mono tracking-[0.08em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                            {lang === 'fr' ? `Bienvenue, ${firstName} !` : lang === 'nl' ? `Welkom, ${firstName}!` : lang === 'es' ? `Hola, ${firstName}!` : `Welcome, ${firstName}!`}
+                        </span>
+                    )}
                     <span className="text-[15px] font-semibold whitespace-nowrap tracking-[0.02em]" style={{ color: '#fff' }}>
-                        {cta.action}
+                        {isLoggedIn ? logCta.action : cta.action}
                     </span>
                     <motion.div className="flex items-center gap-2" whileHover={{ gap: '10px' }}>
-                        <span className="text-[11px] font-mono tracking-[0.1em]" style={{ color: NEON_DIM }}>{cta.sub}</span>
+                        <span className="text-[11px] font-mono tracking-[0.1em]" style={{ color: NEON_DIM }}>
+                            {isLoggedIn ? logCta.sub : cta.sub}
+                        </span>
                         <motion.div
                             className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                             style={{ border: `1px solid ${NEON_DIM}`, color: NEON, boxShadow: `0 0 8px rgba(0,255,200,0.3)` }}
@@ -300,23 +365,25 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate }) => {
                     <Track items={[...items.slice(4), ...items.slice(0, 4)]} reverse paused={paused} speed={42} />
                 </div>
 
-                {/* RIGHT login */}
+                {/* RIGHT — dashboard or login */}
                 <motion.div
-                    onClick={() => onNavigate('auth')}
+                    onClick={() => onNavigate(isLoggedIn ? 'profile' : 'auth')}
                     className="flex-shrink-0 flex flex-col items-end justify-center px-7 py-4 cursor-pointer z-20 gap-1.5"
                     style={{ borderLeft: `1px solid rgba(0,255,200,0.12)` }}
                     whileHover={{ backgroundColor: 'rgba(0,255,200,0.03)' }}
                     transition={{ duration: 0.2 }}
                 >
                     <span className="text-[10px] font-mono tracking-[0.1em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                        Déjà inscrit ?
+                        {isLoggedIn
+                            ? (lang === 'fr' ? 'Espace membre' : lang === 'nl' ? 'Ledengebied' : lang === 'es' ? 'Área miembro' : 'Member area')
+                            : 'Déjà inscrit ?'}
                     </span>
                     <motion.div className="flex items-center gap-1.5" whileHover={{ x: -2 }} transition={{ duration: 0.15 }}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" style={{ color: NEON_DIM }}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />
                         </svg>
                         <span className="text-[13px] font-medium whitespace-nowrap tracking-[0.03em]" style={{ color: NEON_DIM }}>
-                            {cta.login}
+                            {isLoggedIn ? logCta.dashboard : cta.login}
                         </span>
                     </motion.div>
                 </motion.div>

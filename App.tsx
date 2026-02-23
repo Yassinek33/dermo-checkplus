@@ -328,6 +328,7 @@ const App: React.FC = () => {
                     config={currentPageConfig}
                     onStart={() => navigateTo(userProfile === 'minor' ? 'find-dermatologist' : 'questionnaire')}
                     onNavigate={navigateTo}
+                    user={user}
                 />;
             case 'questionnaire':
                 return <Questionnaire config={currentPageConfig} />;

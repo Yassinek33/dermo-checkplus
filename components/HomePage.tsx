@@ -11,6 +11,7 @@ interface HomePageProps {
     config?: PageConfig;
     onStart: () => void;
     onNavigate: (page: string) => void;
+    user?: any;
 }
 
 const ClinicalVisual = ({ type }: { type: 'erythema' | 'scales' | 'scalp' | 'scan' }) => {
@@ -84,7 +85,7 @@ const RadarVisual = () => (
     </div>
 );
 
-const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate }) => {
+const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }) => {
     const { t, language } = useLanguage();
 
     return (
@@ -126,9 +127,9 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate }) => {
                 </motion.div>
             </section>
 
-            {/* AUTH MARQUEE BANNER */}
-            <div className="w-full max-w-[100vw] -mx-4 md:-mx-8 lg:-mx-12 overflow-hidden shadow-2xl">
-                <AuthMarquee onNavigate={onNavigate} />
+            {/* AUTH MARQUEE BANNER — full viewport width escape */}
+            <div style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', overflow: 'hidden' }}>
+                <AuthMarquee onNavigate={onNavigate} user={user} />
             </div>
 
             {/* MOBILE PROTOCOL CAROUSEL (Visible only on Mobile) */}
