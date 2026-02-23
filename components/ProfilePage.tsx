@@ -343,21 +343,15 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
                                                     <div style={{ fontSize: 12.5, color: C.muted2, lineHeight: 1.65, whiteSpace: 'pre-wrap', marginTop: 4 }}
                                                         dangerouslySetInnerHTML={{ __html: full.replace(/\*\*(.*?)\*\*/g, `<strong style="color:${C.text}">$1</strong>`).replace(/^- /gm, '• ') }}
                                                     />
-                                                    {/* Action buttons */}
+                                                    {/* Large action buttons in expanded state */}
                                                     <div onClick={e => e.stopPropagation()}
                                                         style={{ display: 'flex', gap: 10, marginTop: 16, paddingTop: 14, borderTop: `1px solid ${C.border}`, flexWrap: 'wrap' }}>
                                                         <button
                                                             disabled={pdfLoading === item.id}
                                                             onClick={async () => {
                                                                 setPdfLoading(item.id);
-                                                                try {
-                                                                    await generateAnalysisPDF(
-                                                                        item,
-                                                                        user?.email || '',
-                                                                        user?.user_metadata?.full_name || user?.email?.split('@')[0] || '',
-                                                                        lang
-                                                                    );
-                                                                } finally { setPdfLoading(null); }
+                                                                try { await generateAnalysisPDF(item, user?.email || '', user?.user_metadata?.full_name || user?.email?.split('@')[0] || '', lang); }
+                                                                finally { setPdfLoading(null); }
                                                             }}
                                                             style={{
                                                                 display: 'flex', alignItems: 'center', gap: 7,
@@ -376,12 +370,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
                                                                 : (lang === 'en' ? 'Download PDF' : lang === 'nl' ? 'PDF downloaden' : lang === 'es' ? 'Descargar PDF' : 'Télécharger PDF')}
                                                         </button>
                                                         <button
-                                                            onClick={() => shareByEmail(
-                                                                item,
-                                                                user?.email || '',
-                                                                user?.user_metadata?.full_name || user?.email?.split('@')[0] || '',
-                                                                lang
-                                                            )}
+                                                            onClick={() => shareByEmail(item, user?.email || '', user?.user_metadata?.full_name || user?.email?.split('@')[0] || '', lang)}
                                                             style={{
                                                                 display: 'flex', alignItems: 'center', gap: 7,
                                                                 padding: '9px 16px', borderRadius: 9,
@@ -401,72 +390,58 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
                                                 </motion.div>
 
                                             ) : (
-                                                <div style={{ fontSize: 12, color: C.muted2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } as any}>
-                                                    {full.substring(0, 160)}...
+                                                /* key="closed" so AnimatePresence tracks it correctly */
+                                                <div key="closed">
+                                                    <div style={{ fontSize: 12, color: C.muted2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } as any}>
+                                                        {full.substring(0, 160)}...
+                                                    </div>
+                                                    {/* Compact buttons always visible in preview */}
+                                                    <div onClick={e => e.stopPropagation()}
+                                                        style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                                                        <button
+                                                            disabled={pdfLoading === item.id}
+                                                            onClick={async () => {
+                                                                setPdfLoading(item.id);
+                                                                try { await generateAnalysisPDF(item, user?.email || '', user?.user_metadata?.full_name || user?.email?.split('@')[0] || '', lang); }
+                                                                finally { setPdfLoading(null); }
+                                                            }}
+                                                            style={{
+                                                                display: 'flex', alignItems: 'center', gap: 5,
+                                                                padding: '5px 10px', borderRadius: 7,
+                                                                background: pdfLoading === item.id ? C.surf2 : 'rgba(0,212,180,0.12)',
+                                                                color: pdfLoading === item.id ? C.muted : C.accent,
+                                                                border: '1px solid rgba(0,212,180,0.2)',
+                                                                cursor: pdfLoading === item.id ? 'not-allowed' : 'pointer',
+                                                                fontSize: 11, fontWeight: 600, transition: 'all .18s',
+                                                                opacity: pdfLoading === item.id ? 0.6 : 1,
+                                                            }}
+                                                            onMouseEnter={e => { if (pdfLoading !== item.id) (e.currentTarget as HTMLElement).style.background = 'rgba(0,212,180,0.22)'; }}
+                                                            onMouseLeave={e => { if (pdfLoading !== item.id) (e.currentTarget as HTMLElement).style.background = 'rgba(0,212,180,0.12)'; }}>
+                                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+                                                            </svg>
+                                                            PDF
+                                                        </button>
+                                                        <button
+                                                            onClick={() => shareByEmail(item, user?.email || '', user?.user_metadata?.full_name || user?.email?.split('@')[0] || '', lang)}
+                                                            style={{
+                                                                display: 'flex', alignItems: 'center', gap: 5,
+                                                                padding: '5px 10px', borderRadius: 7,
+                                                                background: 'rgba(255,255,255,0.04)', color: C.muted2,
+                                                                border: `1px solid ${C.border}`,
+                                                                cursor: 'pointer', fontSize: 11, fontWeight: 500, transition: 'all .18s',
+                                                            }}
+                                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = C.surf2; (e.currentTarget as HTMLElement).style.color = C.text; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,212,180,0.28)'; }}
+                                                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as HTMLElement).style.color = C.muted2; (e.currentTarget as HTMLElement).style.borderColor = C.border; }}>
+                                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                                                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
+                                                            </svg>
+                                                            Email
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             )}
                                         </AnimatePresence>
-
-                                        {/* ── Always-visible compact icon buttons ── */}
-                                        <div onClick={e => e.stopPropagation()}
-                                            style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                                            <button
-                                                disabled={pdfLoading === item.id}
-                                                title={lang === 'en' ? 'Download PDF' : lang === 'nl' ? 'PDF downloaden' : lang === 'es' ? 'Descargar PDF' : 'Télécharger PDF'}
-                                                onClick={async () => {
-                                                    setPdfLoading(item.id);
-                                                    try {
-                                                        await generateAnalysisPDF(
-                                                            item,
-                                                            user?.email || '',
-                                                            user?.user_metadata?.full_name || user?.email?.split('@')[0] || '',
-                                                            lang
-                                                        );
-                                                    } finally { setPdfLoading(null); }
-                                                }}
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', gap: 5,
-                                                    padding: '5px 10px', borderRadius: 7,
-                                                    background: pdfLoading === item.id ? C.surf2 : 'rgba(0,212,180,0.12)',
-                                                    color: pdfLoading === item.id ? C.muted : C.accent,
-                                                    border: `1px solid rgba(0,212,180,0.2)`,
-                                                    cursor: pdfLoading === item.id ? 'not-allowed' : 'pointer',
-                                                    fontSize: 11, fontWeight: 600,
-                                                    transition: 'all .18s', opacity: pdfLoading === item.id ? 0.6 : 1,
-                                                }}
-                                                onMouseEnter={e => { if (pdfLoading !== item.id) { (e.currentTarget as HTMLElement).style.background = 'rgba(0,212,180,0.22)'; } }}
-                                                onMouseLeave={e => { if (pdfLoading !== item.id) { (e.currentTarget as HTMLElement).style.background = 'rgba(0,212,180,0.12)'; } }}
-                                            >
-                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-                                                </svg>
-                                                PDF
-                                            </button>
-                                            <button
-                                                title={lang === 'en' ? 'Send by email' : lang === 'nl' ? 'Per e-mail verzenden' : lang === 'es' ? 'Enviar por email' : 'Envoyer par email'}
-                                                onClick={() => shareByEmail(
-                                                    item,
-                                                    user?.email || '',
-                                                    user?.user_metadata?.full_name || user?.email?.split('@')[0] || '',
-                                                    lang
-                                                )}
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', gap: 5,
-                                                    padding: '5px 10px', borderRadius: 7,
-                                                    background: 'rgba(255,255,255,0.04)',
-                                                    color: C.muted2,
-                                                    border: `1px solid ${C.border}`,
-                                                    cursor: 'pointer', fontSize: 11, fontWeight: 500, transition: 'all .18s',
-                                                }}
-                                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = C.surf2; (e.currentTarget as HTMLElement).style.color = C.text; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,212,180,0.28)'; }}
-                                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as HTMLElement).style.color = C.muted2; (e.currentTarget as HTMLElement).style.borderColor = C.border; }}
-                                            >
-                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
-                                                </svg>
-                                                {lang === 'en' ? 'Email' : 'Email'}
-                                            </button>
-                                        </div>
                                     </div>
 
                                     <div style={{ color: open ? C.accent : C.muted, alignSelf: 'center', flexShrink: 0, transition: 'color .18s' }}>
