@@ -32,10 +32,10 @@ const ConsentPopup: React.FC<ConsentPopupProps> = ({ onAccept }) => {
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] animate-pulse" />
 
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    initial={{ opacity: 0, scale: 0.9, y: -40 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative w-full max-w-lg glass-panel p-6 md:p-10 space-y-6 border border-white/10 shadow-3xl bg-brand-deep/50 overflow-hidden rounded-3xl flex-shrink-0 my-auto"
+                    className="relative w-full max-w-lg glass-panel p-6 md:p-10 space-y-6 border border-white/10 shadow-3xl bg-brand-deep/50 overflow-hidden rounded-3xl flex-shrink-0 mt-28 md:mt-32"
                 >
                     {/* Top Accent Line */}
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-primary/50 to-transparent" />
