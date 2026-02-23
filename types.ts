@@ -18,6 +18,7 @@ export interface Message {
   noneButtonText?: string; // New: text for the dedicated "None" button
   isMismatchWarning?: boolean; // New: indicates AI flagged a visual inconsistency
   mismatchReason?: string; // New: the specific warning message from the AI
+  trackId?: string; // New: ID to guarantee step tracking and linear path
 }
 
 // Type for the history sent to Gemini API

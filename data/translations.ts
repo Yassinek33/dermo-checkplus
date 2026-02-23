@@ -55,7 +55,10 @@ export const translations: Record<string, any> = {
                 title: "DERMATOCHECK",
                 subtitle: "Une expertise dermatologique de pointe pour une analyse cutanée complète et personnalisée.",
                 cta_start: "Démarrer l'Analyse",
-                cta_clinics: "Trouver un Dermatologue"
+                cta_clinics: "Trouver un Dermatologue",
+                cta_footer_title: "Prêt à analyser votre peau ?",
+                cta_footer_subtitle: "Obtenez une première évaluation en quelques minutes, en toute confidentialité et sans engagement.",
+                cta_footer_btn: "Démarrer mon analyse gratuitement"
             },
             showcase: {
                 title: "L'Expertise Clinique",
@@ -94,6 +97,22 @@ export const translations: Record<string, any> = {
                 step2: { title: "Acquisition", desc: "Capture numérique haute définition des marqueurs visuels de la lésion." },
                 step3: { title: "Corrélation", desc: "Analyse croisée des constantes déclaratives et des symptômes observés." },
                 step4: { title: "Orientation", desc: "Synthèse clinique exhaustive et mise en relation avec l'expertise locale." }
+            },
+            testimonials: {
+                title: "Avis Utilisateurs",
+                subtitle: "Ils ont utilisé DermatoCheck pour leur santé cutanée",
+                cards: [
+                    { name: "Sophie M.", role: "Paris", text: "J'avais un doute sur une tache apparue récemment. L'analyse a été bluffante de précision et m'a encouragée à consulter rapidement." },
+                    { name: "Marc T.", role: "Lyon", text: "Application très professionnelle. Le rapport PDF généré m'a permis d'avoir un vrai support visuel lors de ma consultation médicale." },
+                    { name: "Élodie L.", role: "Nantes", text: "Interface soignée, questionnaire complet et aucune attente pour le résultat. Très rassurant pour faire un premier point." }
+                ]
+            },
+            stats: {
+                title: "Nos Chiffres",
+                subtitle: "L'impact de DermatoCheck",
+                analyses: { value: "5 000+", label: "Analyses réalisées" },
+                languages: { value: "4", label: "Langues disponibles" },
+                satisfaction: { value: "96%", label: "Taux de satisfaction" }
             }
         },
         about: {
@@ -467,7 +486,10 @@ export const translations: Record<string, any> = {
                 title: "DERMATOCHECK",
                 subtitle: "Advanced dermatological expertise for comprehensive and personalized skin analysis.",
                 cta_start: "Start Analysis",
-                cta_clinics: "Find a Dermatologist"
+                cta_clinics: "Find a Dermatologist",
+                cta_footer_title: "Ready to analyze your skin?",
+                cta_footer_subtitle: "Get an initial assessment in minutes, fully confidentially and without commitment.",
+                cta_footer_btn: "Start my free analysis"
             },
             showcase: {
                 title: "Clinical Expertise",
@@ -506,6 +528,22 @@ export const translations: Record<string, any> = {
                 step2: { title: "Acquisition", desc: "High-definition digital capture of visual markers of the lesion." },
                 step3: { title: "Correlation", desc: "Cross-analysis of declarative constants and observed symptoms." },
                 step4: { title: "Orientation", desc: "Exhaustive clinical synthesis and connection with local expertise." }
+            },
+            testimonials: {
+                title: "User Testimonials",
+                subtitle: "They used DermatoCheck for their skin health",
+                cards: [
+                    { name: "Sarah J.", role: "London", text: "I had doubts about a recent spot. The analysis was astonishingly precise and encouraged me to consult a doctor quickly." },
+                    { name: "Michael T.", role: "Manchester", text: "Very professional app. The generated PDF report gave me real visual support during my medical consultation." },
+                    { name: "Emma L.", role: "Liverpool", text: "Clean interface, comprehensive questionnaire and instantly available results. Very reassuring for an initial assessment." }
+                ]
+            },
+            stats: {
+                title: "Our Numbers",
+                subtitle: "The impact of DermatoCheck",
+                analyses: { value: "5,000+", label: "Analyses performed" },
+                languages: { value: "4", label: "Available languages" },
+                satisfaction: { value: "96%", label: "Satisfaction rate" }
             }
         },
         about: {
@@ -881,8 +919,11 @@ export const translations: Record<string, any> = {
                 badge: "Klinisch Protocol v9.0",
                 title: "DERMATOCHECK",
                 subtitle: "Geavanceerde dermatologische expertise voor een uitgebreide en gepersonaliseerde huidanalyse.",
-                cta_start: "Start Analyse",
-                cta_clinics: "Vind een Dermatoloog"
+                cta_start: "Start de Analyse",
+                cta_clinics: "Vind een Dermatoloog",
+                cta_footer_title: "Klaar om uw huid te analyseren?",
+                cta_footer_subtitle: "Krijg binnen enkele minuten een eerste evaluatie, volledig vertrouwelijk en vrijblijvend.",
+                cta_footer_btn: "Start mijn gratis analyse"
             },
             showcase: {
                 title: "Klinische Expertise",
@@ -916,11 +957,27 @@ export const translations: Record<string, any> = {
 
             protocol: {
                 title: "Klinisch Protocol",
-                subtitle: "Reis in 4 fasen",
-                step1: { title: "Anamnese", desc: "Gestructureerd klinisch interview om de achtergrond en symptomatische geschiedenis te definiëren." },
-                step2: { title: "Acquisitie", desc: "High-definition digitale opname van visuele markers van de laesie." },
+                subtitle: "4-Fasen Traject",
+                step1: { title: "Anamnese", desc: "Gestructureerd klinisch interview om de achtergrond en symptomatische geschiedenis te bepalen." },
+                step2: { title: "Acquisitie", desc: "Digitale opname in hoge definitie van visuele markers van de laesie." },
                 step3: { title: "Correlatie", desc: "Kruisanalyse van declaratieve constanten en waargenomen symptomen." },
-                step4: { title: "Oriëntatie", desc: "Uitgebreide klinische synthese en verbinding met lokale expertise." }
+                step4: { title: "Oriëntatie", desc: "Uitputtende klinische synthese en verbinding met lokale expertise." }
+            },
+            testimonials: {
+                title: "Gebruikerservaringen",
+                subtitle: "Zij gebruikten DermatoCheck voor hun huidgezondheid",
+                cards: [
+                    { name: "Sanne M.", role: "Amsterdam", text: "Ik twijfelde over een recent plekje. De analyse was verbazingwekkend nauwkeurig en moedigde me aan snel een arts te raadplegen." },
+                    { name: "Mark T.", role: "Rotterdam", text: "Zeer professionele app. Het gegenereerde PDF-rapport gaf me echte visuele ondersteuning tijdens het consult." },
+                    { name: "Lisa L.", role: "Utrecht", text: "Strakke interface, uitgebreide vragenlijst en direct resultaat. Erg geruststellend voor een eerste beoordeling." }
+                ]
+            },
+            stats: {
+                title: "Onze Cijfers",
+                subtitle: "De impact van DermatoCheck",
+                analyses: { value: "5.000+", label: "Uitgevoerde analyses" },
+                languages: { value: "4", label: "Beschikbare talen" },
+                satisfaction: { value: "96%", label: "Klanttevredenheid" }
             }
         },
         about: {
@@ -1297,7 +1354,10 @@ export const translations: Record<string, any> = {
                 title: "DERMATOCHECK",
                 subtitle: "Experiencia dermatológica de vanguardia para un análisis cutáneo completo y personalizado.",
                 cta_start: "Iniciar Análisis",
-                cta_clinics: "Encontrar un Dermatólogo"
+                cta_clinics: "Encontrar un Dermatólogo",
+                cta_footer_title: "¿Listo para analizar tu piel?",
+                cta_footer_subtitle: "Obtén una evaluación inicial en minutos, de forma totalmente confidencial y sin compromiso.",
+                cta_footer_btn: "Iniciar mi análisis gratuito"
             },
             showcase: {
                 title: "Experiencia Clínica",
@@ -1330,11 +1390,27 @@ export const translations: Record<string, any> = {
             },
             protocol: {
                 title: "Protocolo Clínico",
-                subtitle: "Proceso de 4 fases",
-                step1: { title: "Anamnesis", desc: "Interrogatorio clínico estructurado para definir el terreno y el historial sintomático." },
-                step2: { title: "Adquisición", desc: "Captura digital de alta definición de marcadores visuales de la lesión." },
-                step3: { title: "Correlación", desc: "Análisis cruzado de los datos declarativos y los síntomas observados." },
+                subtitle: "Trayecto en 4 Fases",
+                step1: { title: "Anamnesis", desc: "Interrogatorio clínico estructurado para definir antecedentes y el historial de síntomas." },
+                step2: { title: "Adquisición", desc: "Captura digital en alta definición de marcadores visuales de la lesión." },
+                step3: { title: "Correlación", desc: "Análisis cruzado de constantes declarativas y síntomas observados." },
                 step4: { title: "Orientación", desc: "Síntesis clínica exhaustiva y conexión con especialistas locales." }
+            },
+            testimonials: {
+                title: "Opiniones de Usuarios",
+                subtitle: "Utilizaron DermatoCheck para el cuidado de su piel",
+                cards: [
+                    { name: "Sofía M.", role: "Madrid", text: "Tenía dudas sobre una mancha reciente. El análisis fue sorprendentemente preciso y me animó a consultar rápidamente." },
+                    { name: "Marcos T.", role: "Barcelona", text: "Aplicación muy profesional. El informe en PDF generado me sirvió de gran apoyo durante mi consulta." },
+                    { name: "Elena L.", role: "Valencia", text: "Interfaz cuidada, cuestionario completo y resultados instantáneos. Muy tranquilizador para una primera evaluación." }
+                ]
+            },
+            stats: {
+                title: "Nuestras Cifras",
+                subtitle: "El impacto de DermatoCheck",
+                analyses: { value: "5.000+", label: "Análisis realizados" },
+                languages: { value: "4", label: "Idiomas disponibles" },
+                satisfaction: { value: "96%", label: "Tasa de satisfacción" }
             }
         },
         about: {

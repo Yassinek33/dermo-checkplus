@@ -6,6 +6,8 @@ import { BentoGrid, BentoGridItem } from './BentoGrid';
 import { useLanguage } from '../context/LanguageContext';
 import AuthMarquee from './AuthMarquee';
 import { FAQSection } from './FAQSection';
+import { TestimonialSection } from './TestimonialSection';
+import { StatsSection } from './StatsSection';
 
 interface HomePageProps {
     config?: PageConfig;
@@ -132,6 +134,57 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
                 <AuthMarquee onNavigate={onNavigate} user={user} />
             </div>
 
+            {/* BRAND SHOWCASE - Clinical Style (Hidden on Mobile) */}
+            <section className="hidden md:block relative h-[60vh] md:h-[80vh] w-full overflow-hidden rounded-[3rem] border border-white/10 shadow-3xl bg-[#080809]">
+                <div className="absolute inset-0 z-0">
+                    <img
+                        src={language === 'fr' ? '/clinical-expertise-fr.png' : '/clinical-expertise-en.png'}
+                        alt={language === 'fr' ? 'Analyse Expertise Clinique' : 'Clinical Expertise Analysis'}
+                        className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-1000"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-deep/60 via-transparent to-transparent" />
+
+                    {/* Digital Scan Layer */}
+                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(45,212,191,0.2) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+                    <motion.div
+                        animate={{ top: ["-100%", "200%"] }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-brand-primary to-transparent shadow-[0_0_30px_rgba(45,212,191,1)] z-10"
+                    />
+                </div>
+
+                <div className="absolute bottom-0 left-0 right-0 p-8 pb-4 md:px-16 md:pt-16 md:pb-2 z-10 flex flex-col md:flex-row items-end justify-between gap-8">
+                    <motion.div
+                        initial={{ x: -50, opacity: 0 }}
+                        whileInView={{ x: 0, opacity: 1 }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        className="max-w-2xl"
+                    >
+                        <h2 className="text-4xl md:text-6xl font-display font-bold text-white mb-2 leading-tight">
+                            {t('home.showcase.title').split(' ')[0]} <span className="text-brand-primary">{t('home.showcase.title').split(' ').slice(1).join(' ')}</span>
+                        </h2>
+                        <p className="text-lg text-white/60 font-light leading-relaxed">
+                            {t('home.showcase.description')}
+                        </p>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ y: 50, opacity: 0 }}
+                        whileInView={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                        className="flex items-center gap-4"
+                    >
+                        <div className="h-12 w-px bg-brand-primary" />
+                        <span className="text-sm font-mono uppercase tracking-[0.5em] text-brand-primary whitespace-nowrap">
+                            {t('home.showcase.badge')}
+                        </span>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* PLATFORM STATS */}
+            <StatsSection />
+
             {/* MOBILE PROTOCOL CAROUSEL (Visible only on Mobile) */}
             <section className="block md:hidden w-full overflow-hidden py-8">
                 <div className="mb-6 text-center px-4">
@@ -198,53 +251,7 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
                 </div>
             </section>
 
-            {/* BRAND SHOWCASE - Clinical Style (Hidden on Mobile) */}
-            <section className="hidden md:block relative h-[60vh] md:h-[80vh] w-full overflow-hidden rounded-[3rem] border border-white/10 shadow-3xl bg-[#080809]">
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src={language === 'fr' ? '/clinical-expertise-fr.png' : '/clinical-expertise-en.png'}
-                        alt={language === 'fr' ? 'Analyse Expertise Clinique' : 'Clinical Expertise Analysis'}
-                        className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-1000"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-deep/60 via-transparent to-transparent" />
 
-                    {/* Digital Scan Layer */}
-                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(45,212,191,0.2) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-                    <motion.div
-                        animate={{ top: ["-100%", "200%"] }}
-                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-brand-primary to-transparent shadow-[0_0_30px_rgba(45,212,191,1)] z-10"
-                    />
-                </div>
-
-                <div className="absolute bottom-0 left-0 right-0 p-8 pb-4 md:px-16 md:pt-16 md:pb-2 z-10 flex flex-col md:flex-row items-end justify-between gap-8">
-                    <motion.div
-                        initial={{ x: -50, opacity: 0 }}
-                        whileInView={{ x: 0, opacity: 1 }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                        className="max-w-2xl"
-                    >
-                        <h2 className="text-4xl md:text-6xl font-display font-bold text-white mb-2 leading-tight">
-                            {t('home.showcase.title').split(' ')[0]} <span className="text-brand-primary">{t('home.showcase.title').split(' ').slice(1).join(' ')}</span>
-                        </h2>
-                        <p className="text-lg text-white/60 font-light leading-relaxed">
-                            {t('home.showcase.description')}
-                        </p>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ y: 50, opacity: 0 }}
-                        whileInView={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-                        className="flex items-center gap-4"
-                    >
-                        <div className="h-12 w-px bg-brand-primary" />
-                        <span className="text-sm font-mono uppercase tracking-[0.5em] text-brand-primary whitespace-nowrap">
-                            {t('home.showcase.badge')}
-                        </span>
-                    </motion.div>
-                </div>
-            </section>
 
             {/* BENTO GRID - Technology Showcase (Hidden on Mobile) */}
             <section className="hidden md:block relative z-10">
@@ -323,8 +330,8 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
             </section>
 
             {/* SCROLL TRIGGERED PROCESS STEPS (Hidden on Mobile) */}
-            <section className="hidden md:block py-20 relative">
-                <div className="mb-20 text-center">
+            <section className="hidden md:block pt-20 pb-4 relative">
+                <div className="mb-12 text-center">
                     <h2 className="text-3xl md:text-5xl font-display font-bold mb-4 tracking-tight">{t('home.protocol.title')}</h2>
                     <p className="text-brand-secondary/40 font-mono text-xs uppercase tracking-[0.4em]">{t('home.protocol.subtitle')}</p>
                 </div>
@@ -351,9 +358,70 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
                 </div>
             </section>
 
+            {/* USER TESTIMONIALS SECTION */}
+            <TestimonialSection />
+
             {/* FAQ SECTION — Visible content + SEO rich snippets */}
             <FAQSection />
 
+            {/* FINAL CTA SECTION */}
+            <section className="relative w-full rounded-3xl overflow-hidden mt-10 mb-10 py-24 text-center bg-[#050505] border border-brand-primary/20 shadow-[0_0_50px_rgba(45,212,191,0.15)] group">
+                {/* Background Textures & Animated Neon Glows */}
+                <div className="absolute inset-0 bg-grid-white/[0.03] bg-[length:32px_32px] z-0 pointer-events-none" />
+
+                {/* Top Right Neon */}
+                <motion.div
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.15, 0.35, 0.15],
+                        rotate: [0, 90, 0]
+                    }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    className="absolute -top-40 -right-40 w-96 h-96 bg-brand-primary rounded-full mix-blend-screen filter blur-[100px] z-0 pointer-events-none"
+                />
+
+                {/* Bottom Left Neon */}
+                <motion.div
+                    animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.1, 0.25, 0.1],
+                        rotate: [0, -90, 0]
+                    }}
+                    transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                    className="absolute -bottom-40 -left-60 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-screen filter blur-[100px] z-0 pointer-events-none"
+                />
+
+                {/* Center Pulse Glow */}
+                <motion.div
+                    animate={{
+                        opacity: [0.1, 0.25, 0.1]
+                    }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[60%] bg-emerald-400/10 rounded-full filter blur-[120px] z-0 pointer-events-none"
+                />
+
+                <div className="relative z-10 max-w-4xl mx-auto px-6">
+                    <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6 tracking-tight">
+                        {t('home.hero.cta_footer_title')}
+                    </h2>
+                    <p className="text-emerald-100/80 text-lg mb-10 max-w-2xl mx-auto font-light">
+                        {t('home.hero.cta_footer_subtitle')}
+                    </p>
+                    <div className="flex justify-center">
+                        <MagneticButton>
+                            <button
+                                onClick={onStart}
+                                className="bg-brand-primary text-emerald-950 px-10 py-4 rounded-xl text-lg font-bold shadow-[0_0_30px_rgba(45,212,191,0.3)] hover:shadow-[0_0_50px_rgba(45,212,191,0.5)] hover:-translate-y-1 transition-all duration-300 flex items-center gap-3"
+                            >
+                                <span>{t('home.hero.cta_footer_btn')}</span>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:translate-x-1 transition-transform">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </MagneticButton>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 };

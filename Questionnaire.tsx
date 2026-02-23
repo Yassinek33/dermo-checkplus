@@ -70,6 +70,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const [showInitialWarningPopup, setShowInitialWarningPopup] = useState(true); // State for the initial warning popup
     const [validationError, setValidationError] = useState<string | null>(null); // State for user-level validation errors
     const [mismatchWarning, setMismatchWarning] = useState<string | null>(null); // New state for AI visual inconsistency warning
+    const [completedTrackIds, setCompletedTrackIds] = useState<Record<string, boolean>>({}); // Tracks answered steps
+    const [currentTrackId, setCurrentTrackId] = useState<string | null>(null); // Tracks the current active step
 
     // Removed uploadedVideoFile and awaitingVideoQuestion states
 
@@ -93,6 +95,12 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const languageRef = useRef(language);
     const tRef = useRef(t);
     useEffect(() => { languageRef.current = language; tRef.current = t; }, [language, t]);
+
+    // Tracking refs to access latest state in processUserAction without stale closures
+    const completedTrackIdsRef = useRef(completedTrackIds);
+    useEffect(() => { completedTrackIdsRef.current = completedTrackIds; }, [completedTrackIds]);
+    const currentTrackIdRef = useRef(currentTrackId);
+    useEffect(() => { currentTrackIdRef.current = currentTrackId; }, [currentTrackId]);
 
     // isProcessingRef: synchronous guard against double-submit race conditions
     // Unlike isLoading (async state), this is set/cleared synchronously
@@ -166,6 +174,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         const photoRequestMatch = text.includes('[PHOTO_REQUEST]');
         const finalReportMatch = text.includes('[FINAL_REPORT]');
         const mismatchMatch = text.match(/\[WARNING_MISMATCH:\s*([\s\S]*?)\]/); // New: match mismatch warning
+        const trackIdMatch = text.match(/\[TRACKID:\s*([A-Z_0-9]+)\s*\]/); // New: Match step tracking ID
         // Updated regex to capture optional none button text
         const textInputMatch = text.match(/\[TEXT_INPUT(_WITH_NONE)?(?::([^:]+?))?(?::([^\]]+?))?\]/);
         const comboInputMatch = text.match(/\[COMBO_INPUT(?::([^\]]+?))?\]/); // New: Capture placeholder for combo input, non-greedy
@@ -209,6 +218,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         }
         if (mismatchMatch) {
             cleanText = cleanText.replace(/\[WARNING_MISMATCH:[\s\S]*?\]/g, '').trim();
+        }
+        if (trackIdMatch) {
+            cleanText = cleanText.replace(/\[TRACKID:\s*[A-Z_0-9]+\s*\]/g, '').trim();
         }
         if (textInputMatch) {
             // Updated to match the new regex for cleaning
@@ -293,6 +305,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             noneButtonText: noneButtonTextForTextInput || noneButtonText,
             isMismatchWarning: !!mismatchMatch,
             mismatchReason: mismatchMatch ? mismatchMatch[1].trim() : undefined,
+            trackId: trackIdMatch ? trackIdMatch[1] : undefined, // Assign parsed trackId to the message
             // Removed: isQuestionForVideoAnalysis: false, // Default to false
         };
     }, [setIsGameOver]);
@@ -312,6 +325,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         setConsultationType(null);
         setAwaitingNumberInputForOption(null); // Reset this state too
         setShowResetConfirmation(false); // Hide reset confirmation
+        setCompletedTrackIds({}); // Reset tracking
+        setCurrentTrackId(null); // Reset current active trackId
         // Removed uploadedVideoFile and awaitingVideoQuestion resets
 
         try {
@@ -475,6 +490,13 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             // Removed: isQuestionForVideoAnalysis: false, // Clear video analysis question flag
         } : null);
 
+        // --- Linear Step Tracking ---
+        // If the user is submitting an answer to a tracked step, mark that step as completed immediately.
+        if (currentTrackIdRef.current && actualUserTextToSend.trim() !== "") {
+            setCompletedTrackIds(prev => ({ ...prev, [currentTrackIdRef.current!]: true }));
+            setCurrentTrackId(null);
+        }
+
         const userParts: (GeminiTextPart | GeminiImagePart)[] = [{ text: actualUserTextToSend }];
         if (imageFiles && imageFiles.length > 0) {
             const imageParts = await Promise.all(imageFiles.map(file => fileToGenerativePart(file)));
@@ -482,21 +504,62 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         }
 
         // Use apiHistoryRef.current (always latest) instead of apiHistory (stale closure)
-        const currentApiHistoryWithUser = [
+        let currentApiHistoryWithUser = [
             ...apiHistoryRef.current,
             { role: 'user', parts: userParts }
         ];
-        const aiResponseText = await generateResponse(currentApiHistoryWithUser, actualUserTextToSend, imageFiles, getSystemInstruction(languageRef.current));
 
-        if (aiResponseText.startsWith("API_ERROR:") || aiResponseText.startsWith("SERVICE_ERROR:")) {
-            setError(aiResponseText.replace(/^(API_ERROR:|SERVICE_ERROR:)/, '').trim());
-            setLastFailedAction({ userText: actualUserTextToSend, imageFiles: imageFiles });
-            setIsLoading(false);
-            isProcessingRef.current = false;
-            return;
+        // Loop up to 2 times if the AI repeats an already answered step.
+        let aiResponseText = '';
+        let newAiMessage: Message | null = null;
+        let retries = 0;
+        const MAX_RETRIES = 2;
+
+        while (retries <= MAX_RETRIES) {
+            aiResponseText = await generateResponse(currentApiHistoryWithUser, actualUserTextToSend, imageFiles, getSystemInstruction(languageRef.current));
+
+            if (aiResponseText.startsWith("API_ERROR:") || aiResponseText.startsWith("SERVICE_ERROR:")) {
+                setError(aiResponseText.replace(/^(API_ERROR:|SERVICE_ERROR:)/, '').trim());
+                setLastFailedAction({ userText: actualUserTextToSend, imageFiles: imageFiles });
+                setIsLoading(false);
+                isProcessingRef.current = false;
+                return;
+            }
+
+            newAiMessage = parseAiResponse(aiResponseText, `ai-${Date.now()}-${retries}`);
+
+            // Detect mismatch first
+            if (newAiMessage.isMismatchWarning) {
+                break; // Stop loop and handle mismatch logic outside
+            }
+
+            // Detect if AI asked an already completed step
+            if (newAiMessage.trackId && completedTrackIdsRef.current[newAiMessage.trackId] && retries < MAX_RETRIES) {
+                console.warn(`[Tracking] AI repeated completed step ${newAiMessage.trackId}. Forcing next question.`);
+
+                // Construct a strict system correction to force advancement
+                currentApiHistoryWithUser = [
+                    ...currentApiHistoryWithUser,
+                    { role: 'model', parts: [{ text: aiResponseText }] },
+                    { role: 'user', parts: [{ text: `[SYSTEM] Attention: l'étape [TRACKID:${newAiMessage.trackId}] a déjà été complétée. Le parcours DOIT être strictement linéaire. Ne répète jamais une question. Pose la question SUIVANTE dans le protocole médical.` }] }
+                ];
+
+                retries++;
+                actualUserTextToSend = "[SYSTEM] Question already answered. Next question.";
+                imageFiles = null; // Do not resend image in the retry turn to save bandwidth
+                continue;
+            }
+
+            // Valid message or max retries reached, break the loop
+            break;
         }
 
-        const newAiMessage = parseAiResponse(aiResponseText, `ai-${Date.now()}`);
+        if (!newAiMessage) return; // Safeguard, should never happen due to error return
+
+        // Update tracking state if it's a new tracked question
+        if (newAiMessage.trackId) {
+            setCurrentTrackId(newAiMessage.trackId);
+        }
 
         if (newAiMessage.isMismatchWarning) {
             setMismatchWarning(newAiMessage.mismatchReason || t('analysis.warning_popup.text2') || 'Incohérence détectée.');

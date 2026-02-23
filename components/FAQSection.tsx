@@ -141,7 +141,7 @@ export const FAQSection: React.FC = () => {
 
     return (
         <section
-            className="w-full py-20 md:py-28"
+            className="w-full pt-10 pb-20 md:pt-14 md:pb-28"
             aria-label={title.heading}
             itemScope
             itemType="https://schema.org/FAQPage"
