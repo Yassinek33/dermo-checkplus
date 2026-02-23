@@ -26,6 +26,7 @@ import { BlogListPage } from './components/BlogListPage';
 import { BlogArticlePageComponent } from './components/BlogArticlePage';
 import AuthPage from './components/AuthPage';
 import ProfilePage from './components/ProfilePage';
+import Navbar from './components/Navbar';
 import { supabase } from './services/supabaseClient';
 
 // --- Admin Imports ---
@@ -408,9 +409,33 @@ const App: React.FC = () => {
         return <MinorCheckPopup onConfirmAdult={() => handleProfileSelect('adult')} onConfirmMinor={() => handleProfileSelect('minor')} />;
     }
 
-    // Hide layout context (Navigation, Footer, Background) if we are in admin mode to offer full control to AdminLayout
+    // Hide AppLayout for admin to give AdminLayout full control
     if (currentPageId === 'admin') {
         return <>{renderContent()}</>;
+    }
+
+    // Hide AppLayout for profile: gives ProfilePage full-screen layout control
+    // (sidebar needs to reach screen edge, unhindered by max-w-7xl)
+    if (currentPageId === 'profile') {
+        const handleLogout = async () => {
+            await supabase.auth.signOut();
+            localStorage.removeItem('dermo_user_profile');
+            setUserProfile(null);
+            setUser(null);
+            navigateTo('home');
+        };
+        return (
+            <div style={{ minHeight: '100vh', background: '#060d0f', color: '#e8f4f3' }}>
+                <Navbar
+                    activePage="profile"
+                    onNavigate={navigateTo}
+                    userProfile={userProfile}
+                    onLogout={handleLogout}
+                    user={user}
+                />
+                <ProfilePage user={user} onNavigate={navigateTo} onLogout={handleLogout} />
+            </div>
+        );
     }
 
     return (
