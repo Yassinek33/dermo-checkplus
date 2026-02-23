@@ -5,6 +5,7 @@ import MagneticButton from './MagneticButton';
 import { BentoGrid, BentoGridItem } from './BentoGrid';
 import { useLanguage } from '../context/LanguageContext';
 import AuthMarquee from './AuthMarquee';
+import { FAQSection } from './FAQSection';
 
 interface HomePageProps {
     config?: PageConfig;
@@ -348,6 +349,9 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate }) => {
                     ))}
                 </div>
             </section>
+
+            {/* FAQ SECTION — Visible content + SEO rich snippets */}
+            <FAQSection />
 
         </div>
     );
