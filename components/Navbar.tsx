@@ -19,7 +19,6 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
 
     const navItems = [
         { id: 'home', label: t('common.nav.home') },
-        { id: 'questionnaire', label: t('common.nav.analysis') },
         { id: 'find-dermatologist', label: t('common.nav.find_derm') },
         { id: 'blog', label: t('common.nav.blog') },
         { id: 'about', label: t('common.nav.about') },
