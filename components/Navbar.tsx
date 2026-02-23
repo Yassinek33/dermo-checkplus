@@ -21,6 +21,9 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
         { id: 'home', label: t('common.nav.home') },
         { id: 'find-dermatologist', label: t('common.nav.find_derm') },
         { id: 'blog', label: t('common.nav.blog') },
+        { id: 'about', label: t('common.nav.about') },
+        { id: 'legal', label: t('common.nav.legal') },
+        { id: 'contact', label: t('common.nav.contact') },
     ];
 
     const handleNavigate = (page: string) => {
@@ -35,7 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-auto hidden md:block"
+                className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-auto hidden lg:block"
             >
                 <div className="flex items-center gap-1 p-1 pl-3 bg-brand-deep/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl shadow-black/50">
 
@@ -86,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                 <button
                                     onClick={() => onNavigate(item.id)}
                                     className={clsx(
-                                        "relative px-3 py-1.5 text-[13px] font-medium transition-colors duration-300 rounded-full",
+                                        "relative px-2.5 py-1.5 text-[12px] font-medium transition-colors duration-300 rounded-full whitespace-nowrap",
                                         activePage === item.id ? "text-brand-deep" : "text-brand-secondary hover:text-white"
                                     )}
                                 >
@@ -109,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                         {!user && (
                             <button
                                 onClick={onLogout}
-                                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-all duration-300"
+                                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white transition-all duration-300 whitespace-nowrap"
                                 title={userProfile === 'adult' ? t('auth.switch_to_minor') : t('auth.switch_to_adult')}
                             >
                                 {userProfile === 'adult' ? (
@@ -176,7 +179,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed top-0 left-0 right-0 z-40 md:hidden"
+                className="fixed top-0 left-0 right-0 z-40 lg:hidden"
             >
                 <div className="flex items-center justify-end p-4 pl-40 bg-brand-deep/95 backdrop-blur-xl border-b border-white/10">
                     {/* Hamburger Button */}
@@ -211,7 +214,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
                         <motion.div
