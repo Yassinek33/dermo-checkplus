@@ -1,4 +1,3 @@
-
 export interface Message {
   id: string;
   sender: 'ai' | 'user';
@@ -17,7 +16,8 @@ export interface Message {
   ageDropdownMax?: number; // New: max age for dropdown
   hasNoneButton?: boolean; // New: indicates if a dedicated "None" button should be shown
   noneButtonText?: string; // New: text for the dedicated "None" button
-  // isQuestionForVideoAnalysis?: boolean; // Removed: indicates if AI is asking a question about an uploaded video
+  isMismatchWarning?: boolean; // New: indicates AI flagged a visual inconsistency
+  mismatchReason?: string; // New: the specific warning message from the AI
 }
 
 // Type for the history sent to Gemini API
@@ -27,14 +27,14 @@ export interface GeminiContent {
 }
 
 export interface GeminiTextPart {
-    text: string;
+  text: string;
 }
 
 export interface GeminiImagePart {
-    inlineData: {
-        mimeType: string;
-        data: string;
-    };
+  inlineData: {
+    mimeType: string;
+    data: string;
+  };
 }
 
 // New interface for selected file previews in FileUpload component
@@ -122,10 +122,10 @@ export interface PageConfig {
     title?: string;
     text?: string;
     // Updated to allow for different types of items based on section content
-    items?: GenericIconTextItem[] | ArticleItem[]; 
+    items?: GenericIconTextItem[] | ArticleItem[];
     style?: string;
     // Updated to use the new DictionaryTerm interface
-    dictionaryTerms?: DictionaryTerm[]; 
+    dictionaryTerms?: DictionaryTerm[];
   }[];
   steps?: QuestionnaireStep[];
   finalScreen?: {

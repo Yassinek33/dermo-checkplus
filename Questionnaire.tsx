@@ -69,6 +69,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const [showResetConfirmation, setShowResetConfirmation] = useState(false); // New state for reset confirmation
     const [showInitialWarningPopup, setShowInitialWarningPopup] = useState(true); // State for the initial warning popup
     const [validationError, setValidationError] = useState<string | null>(null); // State for user-level validation errors
+    const [mismatchWarning, setMismatchWarning] = useState<string | null>(null); // New state for AI visual inconsistency warning
 
     // Removed uploadedVideoFile and awaitingVideoQuestion states
 
@@ -164,6 +165,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const parseAiResponse = useCallback((text: string, id: string): Message => {
         const photoRequestMatch = text.includes('[PHOTO_REQUEST]');
         const finalReportMatch = text.includes('[FINAL_REPORT]');
+        const mismatchMatch = text.match(/\[WARNING_MISMATCH:\s*([\s\S]*?)\]/); // New: match mismatch warning
         // Updated regex to capture optional none button text
         const textInputMatch = text.match(/\[TEXT_INPUT(_WITH_NONE)?(?::([^:]+?))?(?::([^\]]+?))?\]/);
         const comboInputMatch = text.match(/\[COMBO_INPUT(?::([^\]]+?))?\]/); // New: Capture placeholder for combo input, non-greedy
@@ -204,6 +206,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
         if (photoRequestMatch || finalReportMatch) {
             cleanText = cleanText.replace(/\[(PHOTO_REQUEST|FINAL_REPORT)\]/g, '').trim();
+        }
+        if (mismatchMatch) {
+            cleanText = cleanText.replace(/\[WARNING_MISMATCH:[\s\S]*?\]/g, '').trim();
         }
         if (textInputMatch) {
             // Updated to match the new regex for cleaning
@@ -286,6 +291,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             // If TEXT_INPUT_WITH_NONE, `hasNoneButton` is true and `noneButtonText` comes from the tag
             hasNoneButton: hasNoneButton || isTextInputWithNone,
             noneButtonText: noneButtonTextForTextInput || noneButtonText,
+            isMismatchWarning: !!mismatchMatch,
+            mismatchReason: mismatchMatch ? mismatchMatch[1].trim() : undefined,
             // Removed: isQuestionForVideoAnalysis: false, // Default to false
         };
     }, [setIsGameOver]);
@@ -491,6 +498,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
         const newAiMessage = parseAiResponse(aiResponseText, `ai-${Date.now()}`);
 
+        if (newAiMessage.isMismatchWarning) {
+            setMismatchWarning(newAiMessage.mismatchReason || t('analysis.warning_popup.text2') || 'Incohérence détectée.');
+            setIsLoading(false);
+            isProcessingRef.current = false;
+            // The user's photo message *was* appended to `currentApiHistoryWithUser`. 
+            // We set it so that the AI's mismatch state understands what happened when we override.
+            setApiHistory(currentApiHistoryWithUser);
+            return;
+        }
+
         // If this is the final report, collect all user-uploaded images from history
         if (newAiMessage.isFinalReport) {
             const allUploadedImageUrls: string[] = [];
@@ -595,9 +612,20 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             }
             const fullAnswer = `${awaitingNumberInputForOption}: ${number}`;
             processUserAction(fullAnswer);
-        } else { // Removed awaitingVideoQuestion and uploadedVideoFile conditions
+        } else {
             processUserAction(text);
         }
+    };
+
+    const handleConfirmMismatch = () => {
+        setMismatchWarning(null);
+        // Instruct the AI to ignore the mismatch and proceed to the final report
+        processUserAction("[SYSTEM_OVERRIDE] User confirmed data. Proceed with [FINAL_REPORT].");
+    };
+
+    const handleRestartForMismatch = () => {
+        setMismatchWarning(null);
+        initializeApp();
     };
 
     const handleNoneSubmit = (noneText: string) => {
@@ -1031,6 +1059,37 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                         >
                             {t('analysis.validation_popup.close')}
                         </button>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Mismatch Warning Modal - Full Screen Overlay */}
+            {mismatchWarning && ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+                    <div className="relative bg-gradient-to-b from-[#1a0505] to-[#0a0b0d] border border-orange-500/30 rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl animate-fade-in-scale">
+                        <div className="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-6 ring-1 ring-orange-500/40">
+                            <svg className="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        </div>
+                        <h3 className="text-2xl font-display font-bold text-white mb-4">Vérification requise</h3>
+                        <p className="text-brand-secondary/90 text-lg font-light mb-8 leading-relaxed">
+                            {mismatchWarning}
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button
+                                onClick={handleConfirmMismatch}
+                                className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-bold transition-colors shadow-lg active:scale-95"
+                            >
+                                Je confirme mes informations
+                            </button>
+                            <button
+                                onClick={handleRestartForMismatch}
+                                className="px-6 py-3 bg-transparent border border-white/20 text-white rounded-full font-bold hover:bg-white/10 transition-colors shadow-lg active:scale-95"
+                            >
+                                Recommencer
+                            </button>
+                        </div>
                     </div>
                 </div>,
                 document.body
