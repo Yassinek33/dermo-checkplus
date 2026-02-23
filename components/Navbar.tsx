@@ -21,9 +21,6 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
         { id: 'home', label: t('common.nav.home') },
         { id: 'find-dermatologist', label: t('common.nav.find_derm') },
         { id: 'blog', label: t('common.nav.blog') },
-        { id: 'about', label: t('common.nav.about') },
-        { id: 'legal', label: t('common.nav.legal') },
-        { id: 'contact', label: t('common.nav.contact') },
     ];
 
     const handleNavigate = (page: string) => {
@@ -40,10 +37,10 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-auto hidden md:block"
             >
-                <div className="flex items-center gap-1 p-1.5 pl-4 bg-brand-deep/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl shadow-black/50">
+                <div className="flex items-center gap-1 p-1 pl-3 bg-brand-deep/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl shadow-black/50">
 
                     {/* Language Switcher */}
-                    <div className="mr-4 flex items-center bg-white/5 rounded-full p-1 border border-white/10">
+                    <div className="mr-2 flex items-center bg-white/5 rounded-full p-1 border border-white/10">
                         <button
                             onClick={() => setLanguage('fr')}
                             className={clsx(
@@ -89,7 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                 <button
                                     onClick={() => onNavigate(item.id)}
                                     className={clsx(
-                                        "relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-full",
+                                        "relative px-3 py-1.5 text-[13px] font-medium transition-colors duration-300 rounded-full",
                                         activePage === item.id ? "text-brand-deep" : "text-brand-secondary hover:text-white"
                                     )}
                                 >
