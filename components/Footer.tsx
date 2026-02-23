@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { cmsService } from '../services/cmsService';
 
 interface FooterProps {
     onNavigate: (pageId: string) => void;
@@ -7,6 +8,12 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
     const { t } = useLanguage();
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        // Only admins can see the administrative system button
+        cmsService.isAdmin().then(setIsAdmin).catch(console.error);
+    }, []);
 
     const footerLinks = [
         { label: t('footer.about'), path: 'about' },
@@ -57,13 +64,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                     <p className="text-center text-xs text-gray-500">
                         {t('footer.copyright')}
                     </p>
-                    <button
-                        onClick={() => onNavigate('admin')}
-                        className="w-8 h-8 rounded-full bg-transparent hover:bg-white/5 transition-colors duration-300 opacity-20 hover:opacity-100 flex items-center justify-center text-[10px] text-brand-primary"
-                        title="Système Administratif"
-                    >
-                        ⚡
-                    </button>
+                    {isAdmin && (
+                        <button
+                            onClick={() => onNavigate('admin')}
+                            className="w-8 h-8 rounded-full bg-transparent hover:bg-white/5 transition-colors duration-300 opacity-20 hover:opacity-100 flex items-center justify-center text-[10px] text-brand-primary"
+                            title="Système Administratif"
+                        >
+                            ⚡
+                        </button>
+                    )}
                 </div>
             </div>
 
