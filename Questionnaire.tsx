@@ -83,6 +83,21 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const countryDropdownRef = useRef<HTMLSelectElement>(null); // For CountryDropdown's select
     const initialWarningModalRef = useRef<HTMLDivElement>(null); // Ref for the initial warning modal
 
+    // ─── Stable refs to avoid stale closures ─────────────────────────────────
+    // apiHistoryRef mirrors apiHistory so processUserAction always uses the latest value
+    const apiHistoryRef = useRef<GeminiContent[]>([]);
+    useEffect(() => { apiHistoryRef.current = apiHistory; }, [apiHistory]);
+
+    // languageRef & tRef so initializeApp doesn't re-create (and restart!) on lang change
+    const languageRef = useRef(language);
+    const tRef = useRef(t);
+    useEffect(() => { languageRef.current = language; tRef.current = t; }, [language, t]);
+
+    // isProcessingRef: synchronous guard against double-submit race conditions
+    // Unlike isLoading (async state), this is set/cleared synchronously
+    const isProcessingRef = useRef(false);
+    // ─────────────────────────────────────────────────────────────────────────
+
     // Function to disable/enable tabIndex for elements outside modal
     const toggleTabIndexForMainContent = useCallback((enable: boolean) => {
         const mainAppContainer = document.querySelector('.flex.flex-col.min-h-screen.font-sans'); // Select the main app container
@@ -297,15 +312,17 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             // We hardcode the initial state that corresponds to "Démarrer la consultation."
 
             let initialUserPrompt = "Démarrer la consultation.";
-            if (language === 'en') initialUserPrompt = "Start consultation.";
-            if (language === 'nl') initialUserPrompt = "Start consult.";
-            if (language === 'es') initialUserPrompt = "Iniciar consulta.";
+            const lang = languageRef.current;
+            const tFn = tRef.current;
+            if (lang === 'en') initialUserPrompt = "Start consultation.";
+            if (lang === 'nl') initialUserPrompt = "Start consult.";
+            if (lang === 'es') initialUserPrompt = "Iniciar consulta.";
 
             // This MUST match the expected output for the "Welcome" UI logic
-            let staticAiResponseText = `Cette auto-analyse concerne : [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
-            if (language === 'en') staticAiResponseText = `This self-analysis concerns: [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
-            if (language === 'nl') staticAiResponseText = `Deze zelfanalyse betreft: [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
-            if (language === 'es') staticAiResponseText = `Este autoanálisis es para: [CHOIX]${t('analysis.myself')}[CHOIX]${t('analysis.other')}`;
+            let staticAiResponseText = `Cette auto-analyse concerne : [CHOIX]${tFn('analysis.myself')}[CHOIX]${tFn('analysis.other')}`;
+            if (lang === 'en') staticAiResponseText = `This self-analysis concerns: [CHOIX]${tFn('analysis.myself')}[CHOIX]${tFn('analysis.other')}`;
+            if (lang === 'nl') staticAiResponseText = `Deze zelfanalyse betreft: [CHOIX]${tFn('analysis.myself')}[CHOIX]${tFn('analysis.other')}`;
+            if (lang === 'es') staticAiResponseText = `Este autoanálisis es para: [CHOIX]${tFn('analysis.myself')}[CHOIX]${tFn('analysis.other')}`;
 
             const initialAiMessage = parseAiResponse(staticAiResponseText, `ai-initial-${Date.now()}`);
 
@@ -320,7 +337,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [parseAiResponse, setConsultationType, t, language]); // Added language dependency
+    }, [parseAiResponse, setConsultationType]); // stable: language/t read from refs inside
 
     // Effect for initial app setup, now dependent on the warning popup state
     useEffect(() => {
@@ -384,12 +401,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         }
     }, [showInitialWarningPopup, toggleTabIndexForMainContent]);
 
-    const processUserAction = useCallback(async (userText: string, imageFiles?: File[] | null) => { // Removed videoFileForAnalysis
+    const processUserAction = useCallback(async (userText: string, imageFiles?: File[] | null) => {
+        // Synchronous double-submit guard — prevents race conditions where isLoading
+        // state hasn't updated yet when a second click fires
+        if (isProcessingRef.current) return;
+        isProcessingRef.current = true;
+
         setIsLoading(true);
         setError(null);
         setLastFailedAction(null);
-        setAwaitingNumberInputForOption(null); // Clear this state universally when any user input is processed
-        // Removed setAwaitingVideoQuestion(false)
+        setAwaitingNumberInputForOption(null);
 
         let actualUserTextToSend = userText;
         // Removed videoAnalysisResult and associated logic
@@ -453,16 +474,18 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             userParts.push(...imageParts);
         }
 
+        // Use apiHistoryRef.current (always latest) instead of apiHistory (stale closure)
         const currentApiHistoryWithUser = [
-            ...apiHistory,
+            ...apiHistoryRef.current,
             { role: 'user', parts: userParts }
         ];
-        const aiResponseText = await generateResponse(currentApiHistoryWithUser, actualUserTextToSend, imageFiles, getSystemInstruction(language)); // Pass system instruction
+        const aiResponseText = await generateResponse(currentApiHistoryWithUser, actualUserTextToSend, imageFiles, getSystemInstruction(languageRef.current));
 
-        if (aiResponseText.startsWith("API_ERROR:")) {
-            setError(aiResponseText.replace("API_ERROR:", "").trim());
-            setLastFailedAction({ userText: actualUserTextToSend, imageFiles: imageFiles }); // Removed videoFile
+        if (aiResponseText.startsWith("API_ERROR:") || aiResponseText.startsWith("SERVICE_ERROR:")) {
+            setError(aiResponseText.replace(/^(API_ERROR:|SERVICE_ERROR:)/, '').trim());
+            setLastFailedAction({ userText: actualUserTextToSend, imageFiles: imageFiles });
             setIsLoading(false);
+            isProcessingRef.current = false;
             return;
         }
 
@@ -517,7 +540,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         setApiHistory(finalHistory);
         setCurrentAssistantMessage(newAiMessage);
         setIsLoading(false);
-    }, [apiHistory, parseAiResponse, currentAssistantMessage, consultationType, setConsultationType, generateResponse]); // Removed uploadedVideoFile, analyzeVideo
+        isProcessingRef.current = false;
+    }, [parseAiResponse, currentAssistantMessage, consultationType, setConsultationType, generateResponse]); // removed apiHistory — using apiHistoryRef.current instead
 
     const retryLastAction = useCallback(() => {
         if (lastFailedAction) {
@@ -528,7 +552,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
 
     const handleOptionSelect = (option: string) => {
-        if (isLoading) return;
+        if (isLoading || isProcessingRef.current) return;
 
         // This is where "Depuis combien de temps" leads to a number input.
         // The text prompt in constants.ts says: "Depuis combien de temps la lésion est apparue ?" [CHOIX]Moins de deux jours[CHOIX]Quelques jours[CHOIX]Quelques semaines[CHOIX]Quelques mois[CHOIX]Plus d’un an
@@ -557,12 +581,12 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     };
 
     const handleMultiChoiceSubmit = (selectedOptions: string[]) => {
-        if (isLoading || selectedOptions.length === 0) return;
+        if (isLoading || isProcessingRef.current || selectedOptions.length === 0) return;
         processUserAction(selectedOptions.join(', '));
     };
 
     const handleTextSubmit = (text: string) => {
-        if (isLoading) return;
+        if (isLoading || isProcessingRef.current) return;
         if (awaitingNumberInputForOption) {
             const number = parseInt(text, 10);
             if (isNaN(number) || number <= 0) {
@@ -577,18 +601,18 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     };
 
     const handleNoneSubmit = (noneText: string) => {
-        if (isLoading) return;
+        if (isLoading || isProcessingRef.current) return;
         processUserAction(noneText);
     };
 
-    const handleFileSelect = (files: File[]) => { // Removed isVideo parameter
-        if (isLoading) return;
+    const handleFileSelect = (files: File[]) => {
+        if (isLoading || isProcessingRef.current) return;
         // It's always an image upload now
         processUserAction("Voici une ou plusieurs photos de la lésion.", files);
     };
 
-    const handleSkipMedia = () => { // Renamed from handleSkipPhoto to handleSkipMedia
-        if (isLoading) return;
+    const handleSkipMedia = () => {
+        if (isLoading || isProcessingRef.current) return;
         processUserAction("Je ne peux pas envoyer de média pour le moment.");
     };
 
