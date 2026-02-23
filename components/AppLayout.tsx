@@ -38,7 +38,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     return (
-        <div className="min-h-screen text-slate-100 font-sans selection:bg-brand-primary selection:text-brand-deep relative">
+        <div className="min-h-screen text-slate-100 font-sans selection:bg-brand-primary selection:text-brand-deep relative overflow-x-hidden">
             {/* Ambient Background */}
             <AuroraBackground />
 
