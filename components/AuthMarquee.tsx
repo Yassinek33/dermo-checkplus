@@ -276,38 +276,30 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate, user }) => {
 
             {/* ═══ MOBILE (<md) ═══ */}
             <div className="flex flex-col md:hidden">
-                <div className="flex" style={{ borderBottom: `1px solid rgba(0,255,200,0.12)` }}>
-
-                    {/* Left button */}
-                    <motion.div
-                        onClick={() => onNavigate(isLoggedIn ? 'questionnaire' : 'auth')}
-                        className="flex-1 flex flex-col items-center justify-center py-3.5 gap-0.5 cursor-pointer"
-                        style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
-                        whileTap={{ backgroundColor: 'rgba(0,255,200,0.07)' }}
-                    >
-                        <span className="text-[13.5px] font-bold tracking-[0.01em] whitespace-nowrap" style={{ color: NEON }}>
-                            {isLoggedIn ? logCta.action : cta.action}
-                        </span>
-                        <span className="text-[10px] font-mono tracking-[0.08em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                            {isLoggedIn ? logCta.sub : cta.sub}
-                        </span>
-                    </motion.div>
-
-                    {/* Right button */}
-                    <motion.div
-                        onClick={() => onNavigate(isLoggedIn ? 'profile' : 'auth')}
-                        className="flex-1 flex flex-col items-center justify-center py-3.5 gap-1 cursor-pointer"
-                        whileTap={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
-                    >
-                        <span className="text-[13.5px] font-semibold tracking-[0.01em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.72)' }}>
-                            {isLoggedIn ? logCta.dashboard : cta.login}
-                        </span>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
-                            style={{ color: NEON_DIM }}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />
-                        </svg>
-                    </motion.div>
-                </div>
+                {/* Mobile: show action buttons only if NOT logged in */}
+                {!isLoggedIn && (
+                    <div className="flex" style={{ borderBottom: `1px solid rgba(0,255,200,0.12)` }}>
+                        <motion.div
+                            onClick={() => onNavigate('auth')}
+                            className="flex-1 flex flex-col items-center justify-center py-3.5 gap-0.5 cursor-pointer"
+                            style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
+                            whileTap={{ backgroundColor: 'rgba(0,255,200,0.07)' }}
+                        >
+                            <span className="text-[13.5px] font-bold tracking-[0.01em] whitespace-nowrap" style={{ color: NEON }}>{cta.action}</span>
+                            <span className="text-[10px] font-mono tracking-[0.08em]" style={{ color: 'rgba(255,255,255,0.35)' }}>{cta.sub}</span>
+                        </motion.div>
+                        <motion.div
+                            onClick={() => onNavigate('auth')}
+                            className="flex-1 flex flex-col items-center justify-center py-3.5 gap-1 cursor-pointer"
+                            whileTap={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
+                        >
+                            <span className="text-[13.5px] font-semibold tracking-[0.01em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.72)' }}>{cta.login}</span>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ color: NEON_DIM }}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3" />
+                            </svg>
+                        </motion.div>
+                    </div>
+                )}
 
                 <div className="overflow-hidden py-2.5 relative">
                     <div className="absolute left-0 top-0 bottom-0 w-6 z-10 pointer-events-none"
@@ -321,38 +313,31 @@ const AuthMarquee: React.FC<AuthMarqueeProps> = ({ onNavigate, user }) => {
             {/* ═══ DESKTOP (md+) ═══ */}
             <div className="hidden md:flex items-stretch">
 
-                {/* LEFT CTA */}
-                <motion.div
-                    onClick={() => onNavigate(isLoggedIn ? 'questionnaire' : 'auth')}
-                    className="relative flex-shrink-0 flex flex-col items-start justify-center px-7 py-4 cursor-pointer z-20 gap-2"
-                    style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
-                    whileHover={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
-                    transition={{ duration: 0.2 }}
-                >
-                    {isLoggedIn && firstName && (
-                        <span className="text-[10px] font-mono tracking-[0.08em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                            {lang === 'fr' ? `Bienvenue, ${firstName} !` : lang === 'nl' ? `Welkom, ${firstName}!` : lang === 'es' ? `Hola, ${firstName}!` : `Welcome, ${firstName}!`}
-                        </span>
-                    )}
-                    <span className="text-[15px] font-semibold whitespace-nowrap tracking-[0.02em]" style={{ color: '#fff' }}>
-                        {isLoggedIn ? logCta.action : cta.action}
-                    </span>
-                    <motion.div className="flex items-center gap-2" whileHover={{ gap: '10px' }}>
-                        <span className="text-[11px] font-mono tracking-[0.1em]" style={{ color: NEON_DIM }}>
-                            {isLoggedIn ? logCta.sub : cta.sub}
-                        </span>
-                        <motion.div
-                            className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ border: `1px solid ${NEON_DIM}`, color: NEON, boxShadow: `0 0 8px rgba(0,255,200,0.3)` }}
-                            animate={{ boxShadow: ['0 0 6px rgba(0,255,200,0.2)', '0 0 14px rgba(0,255,200,0.6)', '0 0 6px rgba(0,255,200,0.2)'] }}
-                            transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
-                        >
-                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
+                {/* LEFT CTA — only shown when NOT logged in */}
+                {!isLoggedIn && (
+                    <motion.div
+                        onClick={() => onNavigate('auth')}
+                        className="relative flex-shrink-0 flex flex-col items-start justify-center px-7 py-4 cursor-pointer z-20 gap-2"
+                        style={{ borderRight: `1px solid rgba(0,255,200,0.12)` }}
+                        whileHover={{ backgroundColor: 'rgba(0,255,200,0.04)' }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <span className="text-[15px] font-semibold whitespace-nowrap tracking-[0.02em]" style={{ color: '#fff' }}>{cta.action}</span>
+                        <motion.div className="flex items-center gap-2" whileHover={{ gap: '10px' }}>
+                            <span className="text-[11px] font-mono tracking-[0.1em]" style={{ color: NEON_DIM }}>{cta.sub}</span>
+                            <motion.div
+                                className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ border: `1px solid ${NEON_DIM}`, color: NEON, boxShadow: `0 0 8px rgba(0,255,200,0.3)` }}
+                                animate={{ boxShadow: ['0 0 6px rgba(0,255,200,0.2)', '0 0 14px rgba(0,255,200,0.6)', '0 0 6px rgba(0,255,200,0.2)'] }}
+                                transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
+                            >
+                                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </motion.div>
                         </motion.div>
                     </motion.div>
-                </motion.div>
+                )}
 
                 {/* CENTER — 2 marquee rows */}
                 <div className="flex-1 overflow-hidden flex flex-col justify-center gap-2 py-3 relative">

@@ -143,15 +143,21 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                 onClick={() => user ? onNavigate('profile') : onNavigate('auth')}
                                 className={clsx(
                                     "rounded-full transition-all duration-300 flex items-center justify-center",
-                                    activePage === 'auth' || activePage === 'profile'
-                                        ? "bg-brand-primary text-brand-deep"
-                                        : "text-brand-secondary hover:text-white hover:bg-white/10",
-                                    user ? "w-9 h-9 border border-brand-primary/50 bg-brand-primary/10 text-brand-primary" : "p-2"
+                                    user
+                                        // Logged in: solid teal bg + dark text = initials always visible
+                                        ? "w-9 h-9 bg-brand-primary text-brand-deep font-bold border border-brand-primary/30"
+                                        // Not logged in: standard icon button
+                                        : clsx(
+                                            "p-2",
+                                            activePage === 'auth' || activePage === 'profile'
+                                                ? "bg-brand-primary text-brand-deep"
+                                                : "text-brand-secondary hover:text-white hover:bg-white/10"
+                                        )
                                 )}
                                 title={user ? "Mon Profil" : t('auth.tab_login')}
                             >
                                 {user ? (
-                                    <span className="text-xs font-bold">
+                                    <span className="text-xs font-bold leading-none">
                                         {user.user_metadata?.full_name
                                             ? user.user_metadata.full_name.split(' ').map((n: any) => n[0]).join('').substring(0, 2).toUpperCase()
                                             : user.email?.substring(0, 2).toUpperCase()}
@@ -164,6 +170,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                 )}
                             </button>
                         )}
+
                     </div>
                 </div>
             </motion.nav>
