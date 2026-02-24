@@ -135,7 +135,7 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
             </div>
 
             {/* BRAND SHOWCASE - Clinical Style */}
-            <section className="relative h-[60vh] md:h-[80vh] w-full overflow-hidden rounded-3xl md:rounded-[3rem] border border-white/10 shadow-3xl bg-[#080809]">
+            <section className="hidden md:block relative h-[60vh] md:h-[80vh] w-full overflow-hidden rounded-[3rem] border border-white/10 shadow-3xl bg-[#080809]">
                 <div className="absolute inset-0 z-0">
                     <img
                         src={language === 'fr' ? '/clinical-expertise-fr.png' : '/clinical-expertise-en.png'}
