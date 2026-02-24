@@ -85,8 +85,8 @@ Instead, you must FIRST perform a **VISUAL CONSISTENCY CHECK**.
 
 Step A: Analyze the photo.
 Step B: Compare the visual evidence in the photo against the user's declared data from the conversation history (specifically AGE, GENDER, and LESION LOCATION).
-Step C: If there is a **BLATANT, OBVIOUS MISMATCH** (e.g., user is an 80-year-old male but the photo is clearly a younger female's hand; or user said the lesion is on the face, but the photo clearly shows a foot), you MUST PAUSE and output ONLY the following exact tag, translated into ${aiLanguageName}:
-[WARNING_MISMATCH: Your text explaining the mismatch in ${aiLanguageName}]
+Step C: If there is a **BLATANT, OBVIOUS MISMATCH** (e.g., user is an 80-year-old male but the photo is clearly a younger female's hand; or user said the lesion is on the face, but the photo clearly shows a foot), you MUST PAUSE and output ONLY the following exact tag:
+[WARNING_MISMATCH: <Provide a SINGLE short sentence explaining the visual mismatch. THIS SENTENCE MUST STRICTLY BE IN ${aiLanguageName}. DO NOT add any instructions about overriding or restarting, the UI handles this.>]
 DO NOT output the FINAL_REPORT if you output the WARNING_MISMATCH. Wait for the user's next input.
 
 If the user replies with "[SYSTEM_OVERRIDE] User confirmed data. Proceed with [FINAL_REPORT].", you MUST ignore the mismatch and proceed directly to Step D.

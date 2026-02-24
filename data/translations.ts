@@ -244,6 +244,11 @@ export const translations: Record<string, any> = {
                 title: "Choix Incorrect",
                 close: "Compris"
             },
+            mismatch_popup: {
+                title: "Vérification requise",
+                confirm: "Je confirme mes informations",
+                restart: "Recommencer"
+            },
             restart_tooltip: "Recommencer l'analyse"
         },
         why: {
@@ -443,7 +448,15 @@ export const translations: Record<string, any> = {
         },
         report: {
             title: "Rapport de Synthèse",
-            images_provided: "Images fournies"
+            images_provided: "Images fournies",
+            header_badge: "Rapport Clinique DermatoCheck",
+            image_caption: "Photo de la lésion analysée",
+            find_derma: "Trouver un dermatologue",
+            new_analysis: "Nouvelle analyse",
+            medical_warning_title: "Avertissement Médical",
+            urgency_low: "Peu urgent",
+            urgency_med: "Modéré",
+            urgency_high: "À surveiller"
         }
     },
     en: {
@@ -694,6 +707,11 @@ export const translations: Record<string, any> = {
                 title: "Incorrect Choice",
                 close: "Got it"
             },
+            mismatch_popup: {
+                title: "Verification required",
+                confirm: "I confirm my information",
+                restart: "Restart"
+            },
             restart_tooltip: "Restart Analysis"
         },
         why: {
@@ -736,7 +754,7 @@ export const translations: Record<string, any> = {
                 },
                 q5: {
                     question: "What technology does DermatoCheck use?",
-                    answer: "DermatoCheck uses cutting-edge Google Gemini artificial intelligence, specially trained on millions of dermatological images. Our system combines deep learning, computer vision, and pattern recognition algorithms to analyze skin characteristics with clinical precision."
+                    answer: "DermatoCheck uses cutting-edge Google Gemini artificial intelligence, specially trained on millions of dermatological images. Our system combines deep learning, computer vision and pattern recognition algorithms to analyze skin characteristics with clinical precision."
                 },
                 q6: {
                     question: "How does the artificial intelligence work?",
@@ -893,7 +911,15 @@ export const translations: Record<string, any> = {
         },
         report: {
             title: "Summary Report",
-            images_provided: "Provided Images"
+            images_provided: "Provided Images",
+            header_badge: "DermatoCheck Clinical Report",
+            image_caption: "Photo of the analyzed lesion",
+            find_derma: "Find a dermatologist",
+            new_analysis: "New analysis",
+            medical_warning_title: "Medical Warning",
+            urgency_low: "Low urgency",
+            urgency_med: "Moderate",
+            urgency_high: "To monitor"
         }
     },
     nl: {
@@ -1144,6 +1170,11 @@ export const translations: Record<string, any> = {
                 title: "Onjuiste Keuze",
                 close: "Begrepen"
             },
+            mismatch_popup: {
+                title: "Verificatie vereist",
+                confirm: "Ik bevestig mijn informatie",
+                restart: "Opnieuw beginnen"
+            },
             restart_tooltip: "Analyse Herstarten"
         },
         why: {
@@ -1182,7 +1213,7 @@ export const translations: Record<string, any> = {
                 },
                 q4: {
                     question: "Hoe lang duurt de analyse?",
-                    answer: "De volledige analyse duurt doorgaans tussen de 2 en 5 minuten. Dit omvat voorlopige vragen, het uploaden van foto's (indien nodig) en verwerking door onze kunstmatige intelligentie. U ontvangt direct een gedetailleerd rapport met gepersonaliseerde aanbevelingen."
+                    answer: "De volledige analyse duurt doorgaans tussen de 2 en 5 minuten. Dit omvat voorlopige vragen, het uploaden van foto's (if necessary), en verwerking door onze kunstmatige intelligentie. U ontvangt direct een gedetailleerd rapport met gepersonaliseerde aanbevelingen."
                 },
                 q5: {
                     question: "Welke technologie gebruikt DermatoCheck?",
@@ -1343,7 +1374,15 @@ export const translations: Record<string, any> = {
         },
         report: {
             title: "Samenvattend Rapport",
-            images_provided: "Geüploade Afbeeldingen"
+            images_provided: "Geüploade Afbeeldingen",
+            header_badge: "DermatoCheck Klinisch Rapport",
+            image_caption: "Foto van de geanalyseerde laesie",
+            find_derma: "Zoek een dermatoloog",
+            new_analysis: "Nieuwe analyse",
+            medical_warning_title: "Medische Waarschuwing",
+            urgency_low: "Lage urgentie",
+            urgency_med: "Matig",
+            urgency_high: "Te monitoren"
         }
     },
     es: {
@@ -1608,6 +1647,11 @@ export const translations: Record<string, any> = {
                 title: "Opción Incorrecta",
                 close: "Comprendido"
             },
+            mismatch_popup: {
+                title: "Verificación requerida",
+                confirm: "Confirmo mi información",
+                restart: "Reiniciar"
+            },
             restart_tooltip: "Reiniciar análisis",
             age_error_adult: "Basado en tu respuesta 'Mí mismo', debes tener al menos 18 años para usar este servicio. Si eres menor, por favor pide a un padre o tutor que realice el análisis en la opción 'Otra persona'.",
             select_age: "Selecciona tu edad",
@@ -1745,7 +1789,15 @@ export const translations: Record<string, any> = {
         },
         report: {
             title: "Informe de Síntesis",
-            images_provided: "Imágenes Proporcionadas"
+            images_provided: "Imágenes Proporcionadas",
+            header_badge: "Informe Clínico DermatoCheck",
+            image_caption: "Foto de la lesión analizada",
+            find_derma: "Encontrar un dermatólogo",
+            new_analysis: "Nuevo análisis",
+            medical_warning_title: "Advertencia Médica",
+            urgency_low: "Poco urgente",
+            urgency_med: "Moderado",
+            urgency_high: "A vigilar"
         }
     }
 };

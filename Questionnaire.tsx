@@ -157,7 +157,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                 elementToFocus = optionButtonsRef.current[0];
             } else if (currentAssistantMessage.options && !currentAssistantMessage.isMultiChoice) {
                 elementToFocus = optionButtonsRef.current[0];
-            } else if (currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_SELF' || currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_OTHER') {
+            } else if (
+                currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_SELF' ||
+                currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_OTHER' ||
+                /pays|country|país|land/i.test(currentAssistantMessage.text)
+            ) {
                 elementToFocus = countryDropdownRef.current;
             }
 
@@ -173,8 +177,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const parseAiResponse = useCallback((text: string, id: string): Message => {
         const photoRequestMatch = text.includes('[PHOTO_REQUEST]');
         const finalReportMatch = text.includes('[FINAL_REPORT]');
-        const mismatchMatch = text.match(/\[WARNING_MISMATCH:\s*([\s\S]*?)\]/); // New: match mismatch warning
-        const trackIdMatch = text.match(/\[TRACKID:\s*([A-Z_0-9]+)\s*\]/); // New: Match step tracking ID
+        const mismatchMatch = text.match(/\[WARNING_MISMATCH:\s*([\s\S]*?)\]/i); // Case-insensitive
+        const trackIdMatch = text.match(/\[TRACKID:\s*([A-Z_0-9]+)\s*\]/i); // Case-insensitive and robust
         // Updated regex to capture optional none button text
         const textInputMatch = text.match(/\[TEXT_INPUT(_WITH_NONE)?(?::([^:]+?))?(?::([^\]]+?))?\]/);
         const comboInputMatch = text.match(/\[COMBO_INPUT(?::([^\]]+?))?\]/); // New: Capture placeholder for combo input, non-greedy
@@ -220,7 +224,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             cleanText = cleanText.replace(/\[WARNING_MISMATCH:[\s\S]*?\]/g, '').trim();
         }
         if (trackIdMatch) {
-            cleanText = cleanText.replace(/\[TRACKID:\s*[A-Z_0-9]+\s*\]/g, '').trim();
+            cleanText = cleanText.replace(/\[TRACKID:\s*[A-Z_0-9]+\s*\]/ig, '').trim();
         }
         if (textInputMatch) {
             // Updated to match the new regex for cleaning
@@ -1002,7 +1006,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                                     yearsRef={ageMonthYearDropdownYearsRef}
                                     language={language}
                                 />
-                            ) : (currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_SELF' || currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_OTHER') ? ( // Conditional rendering for country dropdown
+                            ) : (
+                                currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_SELF' ||
+                                currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_OTHER' ||
+                                /pays|country|país|land/i.test(currentAssistantMessage.text)
+                            ) ? ( // Conditional rendering for country dropdown
                                 <CountryDropdown onSubmit={handleTextSubmit} ref={countryDropdownRef} language={language} />
                             ) : currentAssistantMessage.isTextInputRequest || awaitingNumberInputForOption ? ( // Removed currentAssistantMessage.isQuestionForVideoAnalysis
                                 <TextInput
@@ -1135,7 +1143,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                         <div className="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-6 ring-1 ring-orange-500/40">
                             <svg className="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                         </div>
-                        <h3 className="text-2xl font-display font-bold text-white mb-4">Vérification requise</h3>
+                        <h3 className="text-2xl font-display font-bold text-white mb-4">{t('analysis.mismatch_popup.title')}</h3>
                         <p className="text-brand-secondary/90 text-lg font-light mb-8 leading-relaxed">
                             {mismatchWarning}
                         </p>
@@ -1144,13 +1152,13 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                                 onClick={handleConfirmMismatch}
                                 className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-bold transition-colors shadow-lg active:scale-95"
                             >
-                                Je confirme mes informations
+                                {t('analysis.mismatch_popup.confirm')}
                             </button>
                             <button
                                 onClick={handleRestartForMismatch}
                                 className="px-6 py-3 bg-transparent border border-white/20 text-white rounded-full font-bold hover:bg-white/10 transition-colors shadow-lg active:scale-95"
                             >
-                                Recommencer
+                                {t('analysis.mismatch_popup.restart')}
                             </button>
                         </div>
                     </div>
