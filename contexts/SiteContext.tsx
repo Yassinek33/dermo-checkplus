@@ -34,22 +34,8 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const applySettings = (data: SiteSettings) => {
-        // Apply Global SEO
-        if (data.seo) {
-            if (data.seo.title) document.title = data.seo.title;
-
-            const metaDescription = document.querySelector('meta[name="description"]');
-            if (metaDescription) {
-                metaDescription.setAttribute('content', data.seo.description || '');
-            } else if (data.seo.description) {
-                const meta = document.createElement('meta');
-                meta.name = 'description';
-                meta.content = data.seo.description;
-                document.head.appendChild(meta);
-            }
-
-            // We can also inject keywords if needed
-        }
+        // Global SEO is now handled by components/SEOManager.tsx based on active page route.
+        // We no longer set document.title or meta tags here to avoid conflicts.
 
         // Apply Theme Colors
         if (data.theme) {

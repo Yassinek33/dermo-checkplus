@@ -40,6 +40,7 @@ import { AdminMedia } from './components/admin/AdminMedia';
 import { AdminAppearance } from './components/admin/AdminAppearance';
 import { AdminSettings } from './components/admin/AdminSettings';
 import { AdminSEO } from './components/admin/AdminSEO';
+import { SEOManager } from './components/SEOManager';
 
 // --- Icons for Menu ---
 const MenuIcon = () => (
@@ -454,6 +455,7 @@ const App: React.FC = () => {
             }}
             showLogo={isConsentGiven && isLanguageSelected}
         >
+            <SEOManager currentPageId={currentPageId} />
             {!isConsentGiven && (
                 <ConsentPopup onAccept={handleConsent} />
             )}
