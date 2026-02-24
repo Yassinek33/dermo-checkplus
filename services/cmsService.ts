@@ -106,23 +106,7 @@ export const cmsService = {
 
         // If Supabase returns empty, fall back to local data
         if (!data || data.length === 0) {
-            console.info('Supabase posts table is empty, using local blog data as fallback');
-            return blogArticlesFR.map(a => ({
-                id: a.id,
-                title: a.title,
-                slug: a.slug,
-                content: a.content,
-                excerpt: a.excerpt,
-                status: 'published' as const,
-                author_id: '',
-                seo_title: a.title,
-                seo_description: a.excerpt,
-                featured_image_url: '',
-                tags: a.tags,
-                created_at: a.date + 'T00:00:00Z',
-                updated_at: a.date + 'T00:00:00Z',
-                author_name: a.author
-            }));
+            return [];
         }
 
         return (data || []).map((row: any) => ({

@@ -649,6 +649,131 @@ Une consultation dermatologique s'impose en cas d'acné persistante, de rosacée
 
 Une routine de soins efficace repose sur la régularité, la simplicité et l'adaptation à votre peau. Les trois gestes non négociables demeurent le nettoyage doux, l'hydratation adaptée et la protection solaire quotidienne. Le reste peut être ajusté selon vos besoins et votre temps disponible. Écoutez votre peau, faites preuve de patience et les résultats suivront naturellement. La meilleure routine reste celle que vous suivez régulièrement. Commencez simplement, puis ajustez progressivement selon vos observations et vos besoins évolutifs.
 `
+    },
+    {
+        id: "8",
+        slug: "maladies-de-peau-rares-hereditaires",
+        title: "Maladies de peau rares et héréditaires : le guide dermatologique",
+        excerpt: "Découvrez les maladies dermatologiques rares (épidermolyse bulleuse, ichtyose, neurofibromatose). Symptômes, diagnostic génétique de la peau et prise en charge spécialisée.",
+        author: "Dr. Thomas Dubois, Dermatologue",
+        date: "2026-02-25",
+        readTime: 7,
+        category: "conditions",
+        tags: ["Maladie Rare", "Génétique", "Dermatologie"],
+        expertQuote: {
+            text: "Les maladies dermatologiques rares nécessitent une approche multidisciplinaire. Un diagnostic génétique précoce peut radicalement changer la trajectoire de soin du patient.",
+            author: "Dr. Thomas Dubois",
+            credentials: "Dermatologue"
+        },
+        content: `
+## Comprendre les maladies dermatologiques rares
+
+Les maladies de peau rares et héréditaires (aussi appelées génodermatoses) touchent une faible proportion de la population, mais ont un impact majeur sur la qualité de vie des patients. Ces conditions sont souvent causées par des mutations génétiques altérant la structure, la fonction ou le développement de l'épiderme et du derme. Contrairement aux affections cutanées communes comme l'acné ou l'eczéma, la *génétique de la peau* joue ici un rôle central, rendant le diagnostic complexe et nécessitant l'intervention d'un **dermatologue spécialiste** et parfois d'un généticien.
+
+## L'Épidermolyse Bulleuse : la peau papillon
+
+L'une des maladies dermatologiques rares les plus connues est l'épidermolyse bulleuse (EB). Chez ces patients, familièrement appelés « enfants papillons », la peau est d'une extrême fragilité. Le moindre frottement ou traumatisme provoque la formation de bulles douloureuses et de plaies ouvertes. 
+Cette fragilité extrême est due à un défaut génétique dans les protéines d'ancrage (comme le collagène VII ou la kératine) qui maintiennent normalement les différentes couches de la peau ensemble. Les *symptômes cutanés* incluent des cloques étendues, un retard de cicatrisation et un risque accru de surinfection. Bien qu'il n'existe pas encore de traitement curatif définitif, les avancées en thérapie génique et cellulaire offrent de réels espoirs pour l'avenir.
+
+## Les Ichtyoses : une barrière cutanée altérée
+
+Le terme ichtyose regroupe plusieurs maladies génétiques rares caractérisées par une peau extrêmement sèche, épaisse, et recouverte de squames ressemblant à des écailles de poisson. Ce trouble de la kératinisation altère fortement la fonction barrière de la peau.
+En plus de l'inconfort esthétique et physique, les patients atteints d'ichtyose souffrent souvent de problèmes de régulation thermique (difficulté à transpirer) et sont plus vulnérables aux infections cutanées. La prise en charge repose sur des soins locaux intensifs : bains prolongés, utilisation quotidienne d'émollients puissants et de kératolytiques (crèmes à base d'urée ou d'acide lactique) prescrits par un dermatologue.
+
+## La Neurofibromatose : quand les nerfs et la peau s'entremêlent
+
+La neurofibromatose de type 1 (NF1), ou maladie de Recklinghausen, est une maladie héréditaire qui affecte principalement le système nerveux et la peau. Les premiers *symptômes cutanés* apparaissent souvent dès l'enfance sous forme de multiples taches planes et marron (les taches "café au lait") et de taches de rousseur dans les plis (aisselles, aines).
+Plus tard, des tumeurs bénignes appelées neurofibromes se développent sous ou sur la peau. Bien que le diagnostic soit clinique, le suivi doit être multidisciplinaire, car cette maladie à transmission autosomique dominante peut entraîner des complications neurologiques, orthopédiques ou ophtalmologiques nécessitant une surveillance régulière.
+
+## Le parcours diagnostique : l'importance du séquençage génétique
+
+Aujourd'hui, le parcours du patient atteint d'une maladie dermatologique rare s'est grandement amélioré grâce aux avancées technologiques. Devant un tableau clinique atypique, la réalisation de biopsies cutanées et, surtout, de *tests génétiques* (séquençage de l'exome ou du génome) permet d'identifier la mutation exacte responsable de la maladie. Ce diagnostic précis est crucial : il permet d'adapter la prise en charge, d'éviter des examens inutiles, de fournir un conseil génétique à la famille et d'orienter vers des essais cliniques si disponibles.
+`
+    },
+    {
+        id: "9",
+        slug: "dangers-botox-injections-esthetiques",
+        title: "Les dangers du Botox et des injections esthétiques : ce que l'on vous cache",
+        excerpt: "Quels sont les dangers du botox et les risques de l'acide hyaluronique ? Découvrez les effets secondaires, les complications possibles et comment choisir un médecin compétent pour des injections sécurisées.",
+        author: "Dr. Sophie Martin, Dermatologue Esthétique",
+        date: "2026-02-24",
+        readTime: 6,
+        category: "prevention",
+        tags: ["Botox", "Injections", "Dermatologie Esthétique"],
+        expertQuote: {
+            text: "L'esthétique médicale n'est pas sans risque. Une mauvaise injection peut avoir des conséquences irréversibles. Le choix d'un professionnel de santé qualifié est la première barrière contre les complications.",
+            author: "Dr. Sophie Martin",
+            credentials: "Dermatologue Esthétique, Paris"
+        },
+        content: `
+## La banalisation de la médecine esthétique
+
+Aujourd'hui, les injections de toxine botulique (Botox) et de produits de comblement (comme l'acide hyaluronique) sont devenues monnaie courante. Souvent présentées comme des interventions simples, rapides et sans danger, elles connaissent une popularité sans précédent, notamment grâce aux réseaux sociaux. Cependant, cette banalisation tend à faire oublier que ces gestes restent des actes médicaux invasifs. Les *dangers du botox* et de l'acide hyaluronique sont réels, surtout lorsque ces produits sont maniés par des personnes non qualifiées.
+
+## Les risques immédiats des injections : botox et acide hyaluronique
+
+Bien que généralement sûres lorsqu'elles sont réalisées par un **dermatologue esthétique** qualifié ou un chirurgien plasticien, les injections comportent des risques. 
+Pour la toxine botulique, qui agit en paralysant temporairement les muscles responsables des rides d'expression, une erreur de dosage ou de placement peut entraîner une ptôse (chute de la paupière), une asymétrie du visage, ou une difficulté à mastiquer. Ces *effets secondaires des injections visage* sont généralement réversibles après quelques mois, mais causent une détresse esthétique importante.
+
+Concernant l'acide hyaluronique, un produit de comblement volumateur, les risques sont d'une autre nature mais potentiellement plus graves. Des ecchymoses, des gonflements et de petites asymétries sont fréquents. Cependant, des nodules sous-cutanés persistants ou des réactions inflammatoires tardives peuvent également se produire.
+
+## L'urgence médicale ultime : l'ischémie et la nécrose
+
+Le danger majeur et le plus redouté lors d'une injection de produit de comblement est l'injection intravasculaire accidentelle. Si l'acide hyaluronique est par mégarde injecté directement dans un vaisseau sanguin ou vient le comprimer de façon critique, il bloque la circulation sanguine (ischémie). 
+Sans intervention immédiate avec un antidote (la hyaluronidase), les tissus privés d'oxygène meurent, provoquant une *nécrose* cutanée dont les cicatrices peuvent être permanentes. Dans des cas rarissimes mais documentés, si le produit obstrue l'artère centrale de la rétine, l'injection peut provoquer une cécité irréversible. Ces risques soulignent l'importance capitale d'une parfaite connaissance de l'anatomie faciale.
+
+## Le fléau des fausses injectrices et de l'exercice illégal
+
+L'un des plus grands problèmes actuels en esthétique est l'essor des injectrices illégales. Sans aucun diplôme médical, des individus se procurent des produits sur internet (dont la provenance et la stérilité sont douteuses) et pratiquent des injections dans des conditions sanitaires déplorables. 
+Les *complications esthétiques* qui en découlent se multiplient dans les services d'urgence défigurant parfois les victimes à vie. Contrairement à un médecin, un non-professionnel ne sait ni repérer les zones de danger anatomique, ni gérer une complication urgente comme une ischémie.
+
+## Comment réaliser des soins en toute sécurité ?
+
+Avant de franchir le pas de la médecine esthétique, la règle d'or est de bien *choisir un bon médecin*. Assurez-vous que le praticien est inscrit à l'Ordre des Médecins, qu'il est spécialiste certifié (dermatologue, chirurgien maxillo-facial ou chirurgien plastique). 
+Lors de la première consultation, le médecin doit réaliser un interrogatoire médical complet, examiner l'architecture de votre visage, vous expliquer clairement la nature du produit, les résultats attendus et les risques encourus. Fuyez les offres promotionnelles agressives sur les réseaux sociaux et privilégiez la sécurité avant tout pour des soins esthétiques sereins.
+`
+    },
+    {
+        id: "10",
+        slug: "maladies-internes-signes-cutanes-lupus",
+        title: "Quand la peau parle pour le corps : Lupus et maladies internes",
+        excerpt: "Découvrez le lien entre dermatologie et médecine interne. Comment les signes cutanés révèlent des maladies telles que le lupus érythémateux systémique, et l'importance d'un diagnostic médical global.",
+        author: "Prof. Michel Laurent, Médecin Interniste",
+        date: "2026-02-23",
+        readTime: 8,
+        category: "conditions",
+        tags: ["Lupus", "Médecine Interne", "Symptômes Cutanés"],
+        expertQuote: {
+            text: "La peau est la fenêtre de l'organisme. Une éruption cutanée atypique est souvent le premier signe d'alerte d'un désordre immunologique ou inflammatoire profond.",
+            author: "Prof. Michel Laurent",
+            credentials: "Médecin Interniste & Dermatologue"
+        },
+        content: `
+## La peau, miroir de notre santé interne
+
+On dit souvent que la peau est le plus grand organe du corps humain, mais on oublie parfois qu'elle est intimement connectée à tous nos autres systèmes. Le *lien entre dermatologie et médecine interne* est fondamental. Dans de nombreux cas, une pathologie systémique – c'est-à-dire qui affecte tout l'organisme – se manifeste en premier lieu par des *signes cutanés de maladies internes*. Savoir "lire" la peau permet aux médecins de diagnostiquer des affections silencieuses parfois graves, bien avant qu'elles ne touchent des organes vitaux comme les reins ou le cœur.
+
+## Le Lupus : une maladie aux mille visages
+
+Le *lupus érythémateux systémique (LES)* est l'exemple classique de la maladie auto-immune s'exprimant sur la peau. Dans cette pathologie, le système immunitaire se dérègle et attaque les propres tissus du corps. Le signe cutané le plus célèbre du lupus est l'érythème en "ailes de papillon" (ou érythème malaire). Il se caractérise par une rougeur en relief recouvrant l'arête du nez et les pommettes, souvent exacerbée par l'exposition au soleil (photosensibilité).
+
+D'autres lésions peuvent exister, comme le lupus discoïde, qui provoque des plaques squameuses épaisses laissant des cicatrices, souvent sur le cuir chevelu ou le visage. Une *éruption cutanée maladie auto-immune* n'est jamais à prendre à la légère : elle signale que le médecin doit déclencher un bilan immunologique complet (recherche d'anticorps antinucléaires) pour vérifier l'atteinte d'organes internes (néphropathie lupique, atteinte articulaire).
+
+## Les autres maladies systémiques à manifestation cutanée
+
+Le lupus est loin d'être le seul concerné. Plusieurs maladies de médecine interne ont des signatures dermatologiques claires :
+
+- **La sclérodermie** : Cette maladie rhumatologique provoque un épaississement et un durcissement de la peau, causés par une surproduction de collagène. Les doigts peuvent devenir boudinés, raides et changer de couleur au froid (Phénomène de Raynaud).
+- **La dermatomyosite** : Rare, elle allie une faiblesse musculaire importante à des éruptions cutanées très spécifiques, comme des plaques violacées autour des yeux (érythème lila) ou sur les articulations des mains (papules de Gottron).
+- **Le diabète** : Le diabète chronique peut modifier l'aspect de la peau. L'acanthosis nigricans, qui se traduit par des plaques épaisses et sombres au niveau des plis du cou ou des aisselles, est un signe fort de résistance à l'insuline qu'un dermatologue repérera rapidement.
+
+## L'importance d'une approche pluridisciplinaire
+
+Dès lors que des *symptômes cutanés* atypiques, persistants ou accompagnés de fièvre, de fatigue intense ou de douleurs articulaires apparaissent, la consultation d'un spécialiste est indispensable. Le diagnostic différentiel est souvent complexe.
+La prise en charge moderne de ces pathologies nécessite une collaboration étroite entre le dermatologue, qui identifie la lésion et prescrit parfois des traitements locaux ou des biopsies, et le médecin interniste ou rhumatologue, qui gère le traitement systémique immunosuppresseur ou ciblé. 
+
+Écouter sa peau, c'est protéger sa santé globale. Toute modification cutanée inexpliquée ne doit pas être traitée uniquement avec une crème hydratante, mais doit toujours faire l'objet d'un *diagnostic cutané* clinique poussé.
+`
     }
 ];
 
@@ -889,7 +1014,7 @@ Natural acne management is entirely possible for mild to moderate forms through 
         author: "Dr. Marie Laurent, Dermatologist",
         date: "2026-01-28",
         readTime: 7,
-        category: "Anti-Aging",
+        category: "skincare",
         tags: ["Wrinkles", "Prevention", "Anti-aging"],
         expertQuote: {
             text: "80% of visible skin aging is due to sun exposure. Daily sun protection is the most effective anti-aging gesture, far ahead of any cream or treatment.",
@@ -964,7 +1089,7 @@ Preventing and slowing skin aging relies primarily on daily sun protection, the 
         author: "Dr. Jean Moreau, Vascular Physician",
         date: "2026-01-25",
         readTime: 6,
-        category: "Vascular Health",
+        category: "prevention",
         tags: ["Varicose Veins", "Prevention", "Circulation"],
         expertQuote: {
             text: "Varicose veins are not just an aesthetic problem. They reflect venous insufficiency that can lead to serious complications if not properly managed.",
@@ -1185,6 +1310,131 @@ Dermatological consultation is required in case of persistent acne, rosacea, ecz
 ## In Conclusion
 
 An effective skincare routine rests on regularity, simplicity, and adaptation to your skin. Three non-negotiable gestures remain gentle cleansing, adapted hydration, and daily sun protection. The rest can be adjusted according to your needs and available time. Listen to your skin, be patient, and results will naturally follow. The best routine remains the one you follow regularly. Start simply, then progressively adjust according to your observations and evolving needs.
+`
+    },
+    {
+        id: "8",
+        slug: "rare-hereditary-skin-diseases",
+        title: "Rare and Hereditary Skin Diseases: The Dermatological Guide",
+        excerpt: "Discover rare dermatological diseases (epidermolysis bullosa, ichthyosis, neurofibromatosis). Symptoms, genetic skin diagnosis, and specialized care.",
+        author: "Dr. Thomas Dubois, Dermatologist",
+        date: "2026-02-25",
+        readTime: 7,
+        category: "conditions",
+        tags: ["Rare Disease", "Genetics", "Dermatology"],
+        expertQuote: {
+            text: "Rare dermatological diseases require a multidisciplinary approach. An early genetic diagnosis can radically change the patient's care trajectory.",
+            author: "Dr. Thomas Dubois",
+            credentials: "Dermatologist"
+        },
+        content: `
+## Understanding Rare Dermatological Diseases
+
+Rare and hereditary skin diseases (also called genodermatoses) affect a small proportion of the population but have a major impact on patients' quality of life. These conditions are often caused by genetic mutations altering the structure, function, or development of the epidermis and dermis. Unlike common skin conditions like acne or eczema, *skin genetics* plays a central role here, making diagnosis complex and requiring the intervention of a **specialist dermatologist** and sometimes a geneticist.
+
+## Epidermolysis Bullosa: Butterfly Skin
+
+One of the most well-known rare dermatological diseases is Epidermolysis Bullosa (EB). In these patients, colloquially called "butterfly children", the skin is extremely fragile. The slightest friction or trauma causes the formation of painful blisters and open wounds. 
+This extreme fragility is due to a genetic defect in the anchoring proteins (like collagen VII or keratin) that normally hold the different layers of the skin together. *Skin symptoms* include extensive blistering, delayed healing, and an increased risk of superinfection. Although there is no definitive curative treatment yet, advances in gene and cellular therapy offer real hope for the future.
+
+## Ichthyoses: An Altered Skin Barrier
+
+The term ichthyosis groups together several rare genetic diseases characterized by extremely dry, thick skin covered in scales resembling fish scales. This keratinization disorder severely alters the skin's barrier function.
+In addition to aesthetic and physical discomfort, patients with ichthyosis often suffer from thermal regulation problems (difficulty sweating) and are more vulnerable to skin infections. Management relies on intensive local care: prolonged baths, daily use of powerful emollients, and keratolytics (urea or lactic acid-based creams) prescribed by a dermatologist.
+
+## Neurofibromatosis: When Nerves and Skin Intertwine
+
+Neurofibromatosis type 1 (NF1), or von Recklinghausen's disease, is a hereditary disease that primarily affects the nervous system and the skin. The first *skin symptoms* often appear in childhood as multiple flat, brown spots ("café au lait" spots) and freckles in the folds (armpits, groins).
+Later, benign tumors called neurofibromas develop under or on the skin. Although the diagnosis is clinical, follow-up must be multidisciplinary, as this autosomal dominant disease can lead to neurological, orthopedic, or ophthalmological complications requiring regular monitoring.
+
+## The Diagnostic Journey: The Importance of Genetic Sequencing
+
+Today, the patient journey for rare dermatological diseases has vastly improved thanks to technological advances. Faced with an atypical clinical picture, performing skin biopsies and, above all, *genetic tests* (exome or genome sequencing) makes it possible to identify the exact mutation responsible for the disease. This precise diagnosis is crucial: it allows care to be adapted, unnecessary examinations to be avoided, genetic counseling to be provided to the family, and guidance towards clinical trials if available.
+`
+    },
+    {
+        id: "9",
+        slug: "dangers-botox-aesthetic-injections",
+        title: "The Dangers of Botox and Aesthetic Injections: What They Hide From You",
+        excerpt: "What are the dangers of botox and the risks of hyaluronic acid? Discover the side effects, possible complications, and how to choose a competent doctor for safe injections.",
+        author: "Dr. Sophie Martin, Aesthetic Dermatologist",
+        date: "2026-02-24",
+        readTime: 6,
+        category: "prevention",
+        tags: ["Botox", "Injections", "Aesthetic Dermatology"],
+        expertQuote: {
+            text: "Medical aesthetics is not without risks. A bad injection can have irreversible consequences. Choosing a qualified healthcare professional is the first barrier against complications.",
+            author: "Dr. Sophie Martin",
+            credentials: "Aesthetic Dermatologist, Paris"
+        },
+        content: `
+## The Normalization of Aesthetic Medicine
+
+Today, botulinum toxin (Botox) and dermal filler (such as hyaluronic acid) injections have become commonplace. Often presented as simple, quick, and safe procedures, they are experiencing unprecedented popularity, largely thanks to social media. However, this normalization tends to obscure the fact that these procedures remain invasive medical acts. The *dangers of botox* and hyaluronic acid are real, especially when these products are handled by unqualified individuals.
+
+## Immediate Risks of Injections: Botox and Hyaluronic Acid
+
+Although generally safe when performed by a qualified **aesthetic dermatologist** or plastic surgeon, injections carry risks. 
+For botulinum toxin, which works by temporarily paralyzing the muscles responsible for expression lines, a dosage or placement error can lead to ptosis (drooping eyelid), facial asymmetry, or difficulty chewing. These *facial injection side effects* are generally reversible after a few months but cause significant aesthetic distress.
+
+Regarding hyaluronic acid, a volumizing dermal filler, the risks are different but potentially more serious. Bruising, swelling, and minor asymmetries are common. However, persistent subcutaneous nodules or late inflammatory reactions can also occur.
+
+## The Ultimate Medical Emergency: Ischemia and Necrosis
+
+The major and most feared danger during a filler injection is accidental intravascular injection. If hyaluronic acid is inadvertently injected directly into a blood vessel or critically compresses it, it blocks blood circulation (ischemia). 
+Without immediate intervention using an antidote (hyaluronidase), oxygen-deprived tissues die, causing skin *necrosis* resulting in potentially permanent scars. In extremely rare but documented cases, if the product obstructs the central retinal artery, the injection can cause irreversible blindness. These risks underscore the paramount importance of perfectly knowing facial anatomy.
+
+## The Scourge of Fake Injectors and Illegal Practice
+
+One of the biggest problems in aesthetics today is the rise of illegal injectors. Without any medical degree, individuals procure products on the internet (whose origin and sterility are doubtful) and perform injections in deplorable sanitary conditions. 
+The resulting *aesthetic complications* multiply in emergency rooms, sometimes disfiguring victims for life. Unlike a doctor, a non-professional cannot identify anatomical danger zones nor manage an urgent complication like ischemia.
+
+## How to Get Treatments Safely?
+
+Before taking the leap into aesthetic medicine, the golden rule is to completely *choose a good doctor*. Ensure the practitioner is registered with the Medical Board, and is a certified specialist (dermatologist, maxillofacial surgeon, or plastic surgeon). 
+During the first consultation, the doctor must perform a complete medical history, examine your facial architecture, and clearly explain the nature of the product, expected results, and involved risks. Flee from aggressive promotional offers on social networks and prioritize safety above all for serene aesthetic care.
+`
+    },
+    {
+        id: "10",
+        slug: "internal-diseases-skin-signs-lupus",
+        title: "When the Skin Speaks for the Body: Lupus and Internal Diseases",
+        excerpt: "Discover the link between dermatology and internal medicine. How skin signs reveal diseases such as systemic lupus erythematosus, and the importance of a global medical diagnosis.",
+        author: "Prof. Michel Laurent, Internist",
+        date: "2026-02-23",
+        readTime: 8,
+        category: "conditions",
+        tags: ["Lupus", "Internal Medicine", "Skin Symptoms"],
+        expertQuote: {
+            text: "The skin is the window to the organism. An atypical skin rash is often the first warning sign of a deep immunological or inflammatory disorder.",
+            author: "Prof. Michel Laurent",
+            credentials: "Internist & Dermatologist"
+        },
+        content: `
+## The Skin, Mirror of Our Internal Health
+
+It is often said that the skin is the largest organ in the human body, but we sometimes forget that it is intimately connected to all our other systems. The *link between dermatology and internal medicine* is fundamental. In many cases, a systemic pathology – meaning it affects the whole organism – manifests primarily through *skin signs of internal diseases*. Knowing how to "read" the skin allows doctors to diagnose silent and sometimes severe conditions long before they affect vital organs like the kidneys or heart.
+
+## Lupus: A Disease with a Thousand Faces
+
+*Systemic lupus erythematosus (SLE)* is the classic example of an autoimmune disease expressing itself on the skin. In this pathology, the immune system deregulates and attacks the body's own tissues. The most famous skin sign of lupus is the "butterfly" rash (or malar rash). It is characterized by raised redness covering the bridge of the nose and cheekbones, often exacerbated by sun exposure (photosensitivity).
+
+Other lesions can exist, such as discoid lupus, which causes thick scaly plaques leaving scars, often on the scalp or face. An *autoimmune disease skin rash* is never to be taken lightly: it signals that the doctor must trigger a complete immunological assessment (testing for antinuclear antibodies) to check for internal organ involvement (lupus nephritis, joint involvement).
+
+## Other Systemic Diseases with Skin Manifestations
+
+Lupus is far from being the only one concerned. Several diseases in internal medicine have clear dermatological signatures:
+
+- **Scleroderma**: This rheumatological disease causes thickening and hardening of the skin, caused by collagen overproduction. Fingers can become puffy, stiff, and change color in the cold (Raynaud's phenomenon).
+- **Dermatomyositis**: Rare, it combines significant muscle weakness with very specific skin rashes, such as purplish plaques around the eyes (heliotrope rash) or on the hand joints (Gottron's papules).
+- **Diabetes**: Chronic diabetes can alter the skin's appearance. Acanthosis nigricans, which translates to thick, dark plaques in the neck folds or armpits, is a strong sign of insulin resistance that a dermatologist will quickly spot.
+
+## The Importance of a Multidisciplinary Approach
+
+Whenever atypical, persistent *skin symptoms* or those accompanied by fever, intense fatigue, or joint pain appear, consulting a specialist is essential. The differential diagnosis is often complex.
+Modern management of these pathologies requires close collaboration between the dermatologist, who identifies the lesion and sometimes prescribes local treatments or biopsies, and the internist or rheumatologist, who manages systemic immunosuppressive or targeted treatment. 
+
+Listening to your skin means protecting your overall health. Any unexplained skin modification should not be treated merely with a moisturizer but must always be the subject of thorough clinical *skin diagnosis*.
 `
     }
 ];
