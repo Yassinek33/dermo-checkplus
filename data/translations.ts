@@ -246,6 +246,18 @@ export const translations: Record<string, any> = {
             },
             restart_tooltip: "Recommencer l'analyse"
         },
+        why: {
+            title: "Pourquoi DermatoCheck ?",
+            subtitle: "LA RÉFÉRENCE DU DIAGNOSTIC DERMATOLOGIQUE EN LIGNE",
+            cards: [
+                { title: "Diagnostic dermato par photo", desc: "Uploadez une photo nette de votre lésion pour une analyse visuelle instantanée par IA" },
+                { title: "Dermatologue virtuel en ligne", desc: "Accessible depuis n'importe où, 24h/24, sans rendez-vous ni ordonnance" },
+                { title: "IA dermatologie gratuite", desc: "Notre algorithme combine 15 critères cliniques pour un diagnostic différentiel précis" },
+                { title: "Diagnostic dermatologique sécurisé", desc: "Chiffrement RGPD, vos données médicales restent privées et ne sont jamais vendues" },
+                { title: "Analyse cutanée multilingue", desc: "Interface disponible en français, néerlandais, anglais et espagnol" },
+                { title: "Résultat en moins de 5 minutes", desc: "Du questionnaire au rapport clinique complet, analyse rapide et personnalisée" }
+            ]
+        },
         faq: {
             title: "Foire aux Questions",
             subtitle: "Trouvez des réponses à vos questions sur DermatoCheck",
@@ -679,6 +691,18 @@ export const translations: Record<string, any> = {
                 close: "Got it"
             },
             restart_tooltip: "Restart Analysis"
+        },
+        why: {
+            title: "Why DermatoCheck?",
+            subtitle: "THE GOLD STANDARD IN ONLINE DERMATOLOGY DIAGNOSIS",
+            cards: [
+                { title: "Photo Dermatology Diagnosis", desc: "Upload a clear photo of your skin condition for instant visual AI analysis" },
+                { title: "Online Virtual Dermatologist", desc: "Accessible from anywhere, 24/7, with no appointment or prescription needed" },
+                { title: "Free Dermatology AI", desc: "Our algorithm combines 15 clinical criteria for an accurate differential diagnosis" },
+                { title: "Secure Dermatological Diagnosis", desc: "GDPR encrypted, your medical data remains completely private and is never sold" },
+                { title: "Multilingual Skin Analysis", desc: "Interface available in English, French, Dutch, and Spanish" },
+                { title: "Results In Less Than 5 Min", desc: "From the questionnaire to the complete clinical report, fast and personalized analysis" }
+            ]
         },
         faq: {
             title: "Frequently Asked Questions",
@@ -1114,6 +1138,18 @@ export const translations: Record<string, any> = {
             },
             restart_tooltip: "Analyse Herstarten"
         },
+        why: {
+            title: "¿Por qué DermatoCheck?",
+            subtitle: "LA REFERENCIA DEL DIAGNÓSTICO DERMATOLÓGICO EN LÍNEA",
+            cards: [
+                { title: "Diagnóstico dermatológico por foto", desc: "Sube una foto clara de tu lesión para un análisis visual instantáneo por IA." },
+                { title: "Dermatólogo virtual en línea", desc: "Accesible desde cualquier lugar, 24/7, sin cita previa ni receta médica." },
+                { title: "IA dermatológica gratuita", desc: "Nuestro algoritmo combina 15 criterios clínicos para un diagnóstico diferencial preciso." },
+                { title: "Diagnóstico dermatológico seguro", desc: "Cifrado RGPD, tus datos médicos permanecen privados y nunca se venden." },
+                { title: "Análisis de piel multilingüe", desc: "Interfaz disponible en español, inglés, francés y holandés." },
+                { title: "Resultados en menos de 5 Minutos", desc: "Desde el cuestionario hasta el informe clínico completo, análisis rápido y personalizado." }
+            ]
+        },
         faq: {
             title: "Veelgestelde Vragen",
             subtitle: "Vind antwoorden op uw vragen over DermatoCheck",
@@ -1447,6 +1483,18 @@ export const translations: Record<string, any> = {
                 }
             ],
             warning: "AVISO MÉDICO IMPORTANTE: DermatoCheck no es un médico. No reemplaza a una cita profesional. Consulta a un médico ante cualquier dolor, cambio o duda."
+        },
+        why: {
+            title: "Waarom DermatoCheck?",
+            subtitle: "DE REFERENTIE VOOR ONLINE DERMATOLOGIE DIAGNOSTIEK",
+            cards: [
+                { title: "Dermatologische Diagnose via Foto", desc: "Upload een duidelijke foto van uw huidaandoening voor directe visuele AI-analyse" },
+                { title: "Online Virtuele Dermatoloog", desc: "Overal toegankelijk, 24/7, zonder afspraak of voorschrift" },
+                { title: "Gratis Dermatologie AI", desc: "Ons algoritme combineert 15 klinische criteria voor een nauwkeurige differentiële diagnose" },
+                { title: "Veilige Dermatologische Diagnose", desc: "AVG-versleuteld, uw medische gegevens blijven volledig privé en worden nooit verkocht" },
+                { title: "Meertalige Huidanalyse", desc: "Interface beschikbaar in het Nederlands, Engels, Frans en Spaans" },
+                { title: "Resultaten in Minder Dan 5 Minuten", desc: "Van de vragenlijst tot het volledige klinische rapport, snelle en gepersonaliseerde analyse" }
+            ]
         },
         faq: {
             title: "Preguntas Frecuentes",

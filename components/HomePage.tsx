@@ -8,6 +8,7 @@ import AuthMarquee from './AuthMarquee';
 import { FAQSection } from './FAQSection';
 import { TestimonialSection } from './TestimonialSection';
 import { StatsSection } from './StatsSection';
+import { WhyChooseUsSection } from './WhyChooseUsSection';
 
 interface HomePageProps {
     config?: PageConfig;
@@ -360,6 +361,9 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
 
             {/* USER TESTIMONIALS SECTION */}
             <TestimonialSection />
+
+            {/* WHY CHOOSE US SECTION */}
+            <WhyChooseUsSection />
 
             {/* FAQ SECTION — Visible content + SEO rich snippets */}
             <FAQSection />
