@@ -157,7 +157,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                 elementToFocus = optionButtonsRef.current[0];
             } else if (currentAssistantMessage.options && !currentAssistantMessage.isMultiChoice) {
                 elementToFocus = optionButtonsRef.current[0];
-            } else if (currentAssistantMessage.text.includes("Dans quel pays résidez-vous ?")) {
+            } else if (currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_SELF' || currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_OTHER') {
                 elementToFocus = countryDropdownRef.current;
             }
 
@@ -1002,8 +1002,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                                     yearsRef={ageMonthYearDropdownYearsRef}
                                     language={language}
                                 />
-                            ) : currentAssistantMessage.text.includes("Dans quel pays résidez-vous ?") ? ( // Conditional rendering for country dropdown
-                                <CountryDropdown onSubmit={handleTextSubmit} ref={countryDropdownRef} />
+                            ) : (currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_SELF' || currentAssistantMessage.trackId === 'IDENTITY_COUNTRY_OTHER') ? ( // Conditional rendering for country dropdown
+                                <CountryDropdown onSubmit={handleTextSubmit} ref={countryDropdownRef} language={language} />
                             ) : currentAssistantMessage.isTextInputRequest || awaitingNumberInputForOption ? ( // Removed currentAssistantMessage.isQuestionForVideoAnalysis
                                 <TextInput
                                     onSubmit={handleTextSubmit}
