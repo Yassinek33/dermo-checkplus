@@ -33,18 +33,32 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
     // Use specific articles based on language (Fallback)
     const localArticles = language === 'fr' ? blogArticlesFR : language === 'nl' ? blogArticlesNL : language === 'es' ? blogArticlesES : blogArticlesEN;
 
-    // If we have DB posts, we map them to the same structure (or close to it)
-    const activeArticles = dbPosts.length > 0 ? dbPosts.map(p => ({
-        id: p.id,
-        title: p.title,
-        slug: p.slug,
-        excerpt: p.excerpt,
-        category: p.tags?.[0] || 'skincare', // fallback category
-        author: p.author_name || 'Admin',
-        date: p.created_at,
-        readTime: 5, // mock read time
-        tags: p.tags || []
-    })) : localArticles;
+    // Merge DB posts into local articles instead of overriding them completely
+    const activeArticles = [...localArticles];
+    dbPosts.forEach(p => {
+        const existingIdx = activeArticles.findIndex(a => a.slug === p.slug);
+
+        const mapped = {
+            id: p.id,
+            title: p.title,
+            slug: p.slug,
+            content: p.content || '',
+            excerpt: p.excerpt,
+            category: (existingIdx >= 0 && activeArticles[existingIdx]?.category) ? activeArticles[existingIdx].category : (['skincare', 'conditions', 'prevention'].includes(p.tags?.[0]) ? p.tags[0] : 'skincare'),
+            author: p.author_name || 'Admin',
+            date: p.created_at,
+            readTime: 5, // mock read time
+            tags: p.tags || []
+        };
+
+        if (existingIdx >= 0) {
+            // Override local details with DB details (e.g. if edited in Admin panel)
+            activeArticles[existingIdx] = { ...activeArticles[existingIdx], ...mapped };
+        } else {
+            // New post from DB
+            activeArticles.unshift(mapped);
+        }
+    });
 
     // Use specific articles based on language
     const articles = language === 'fr' ? blogArticlesFR : language === 'nl' ? blogArticlesNL : language === 'es' ? blogArticlesES : blogArticlesEN;

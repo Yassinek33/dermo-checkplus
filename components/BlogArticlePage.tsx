@@ -40,14 +40,15 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
         id: dbPost.id,
         title: dbPost.title,
         slug: dbPost.slug,
-        content: dbPost.content,
+        // Fallback to local rich content if the DB post has very little content (e.g. a test/placeholder post from Admin panel)
+        content: (dbPost.content && dbPost.content.length > 50) ? dbPost.content : (localArticle?.content || dbPost.content),
         excerpt: dbPost.excerpt,
         category: dbPost.tags?.[0] || 'skincare',
         author: dbPost.author_name || 'Admin',
         date: dbPost.created_at,
         readTime: 5,
         tags: dbPost.tags || [],
-        expertQuote: null // DB posts don't have expertQuote inherently unless modeled in JSON
+        expertQuote: localArticle?.expertQuote || null // Keep local expert quote if available
     } : localArticle;
 
     if (loading) {
