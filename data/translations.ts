@@ -440,6 +440,10 @@ export const translations: Record<string, any> = {
             empty_desc: "Vos futures analyses apparaîtront ici. Commencez par effectuer votre première analyse.",
             start: "Démarrer une analyse",
             loading: "Chargement..."
+        },
+        report: {
+            title: "Rapport de Synthèse",
+            images_provided: "Images fournies"
         }
     },
     en: {
@@ -886,6 +890,10 @@ export const translations: Record<string, any> = {
             empty_desc: "Your future analyses will appear here. Start by performing your first analysis.",
             start: "Start Analysis",
             loading: "Loading..."
+        },
+        report: {
+            title: "Summary Report",
+            images_provided: "Provided Images"
         }
     },
     nl: {
@@ -1332,6 +1340,10 @@ export const translations: Record<string, any> = {
             empty_desc: "Uw toekomstige analyses verschijnen hier. Begin met het uitvoeren van uw eerste analyse.",
             start: "Start Analyse",
             loading: "Laden..."
+        },
+        report: {
+            title: "Samenvattend Rapport",
+            images_provided: "Geüploade Afbeeldingen"
         }
     },
     es: {
@@ -1730,6 +1742,10 @@ export const translations: Record<string, any> = {
             empty_desc: "Tus futuros análisis aparecerán aquí. Empieza realizando tu primer análisis.",
             start: "Iniciar Análisis",
             loading: "Cargando..."
+        },
+        report: {
+            title: "Informe de Síntesis",
+            images_provided: "Imágenes Proporcionadas"
         }
     }
 };

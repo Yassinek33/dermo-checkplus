@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Message } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ChatMessageProps {
     message: Message;
@@ -8,6 +9,7 @@ interface ChatMessageProps {
 
 // A markdown parser for the final report
 const FinalReportRenderer: React.FC<{ text: string; userUploadedImageUrls?: string[] }> = ({ text, userUploadedImageUrls }) => {
+    const { t } = useLanguage();
     const content = text.replace('[FINAL_REPORT]', '').trim();
 
     const renderContent = () => {
@@ -62,7 +64,7 @@ const FinalReportRenderer: React.FC<{ text: string; userUploadedImageUrls?: stri
 
         // If 'Analyse visuelle' section wasn't explicitly present but images exist, add them at the end.
         if (userUploadedImageUrls && userUploadedImageUrls.length > 0 && !imageSectionHandled) {
-            parts.push(<h3 key="h3-images-fallback" className="text-xl md:text-2xl font-display font-bold text-white mt-10 mb-4 pb-2 border-b border-white/10 leading-tight">Images fournies</h3>);
+            parts.push(<h3 key="h3-images-fallback" className="text-xl md:text-2xl font-display font-bold text-white mt-10 mb-4 pb-2 border-b border-white/10 leading-tight">{t('report.images_provided')}</h3>);
             parts.push(
                 <div key="user-images-fallback" className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
                     {userUploadedImageUrls.map((url, imgIndex) => (
@@ -86,7 +88,7 @@ const FinalReportRenderer: React.FC<{ text: string; userUploadedImageUrls?: stri
                 <div className="w-12 h-12 rounded-2xl bg-brand-primary/20 flex items-center justify-center text-brand-primary">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
-                <h2 className="text-3xl font-display font-bold text-white tracking-tight">Rapport de Synthèse</h2>
+                <h2 className="text-3xl font-display font-bold text-white tracking-tight">{t('report.title')}</h2>
             </div>
             {renderContent()}
         </div>
