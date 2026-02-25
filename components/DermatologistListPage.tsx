@@ -1,7 +1,6 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { sortedCountries } from './CountryDropdown';
+import { getSortedCountriesByLanguage, getTranslatedCountryName } from './CountryDropdown';
 import { GenerateContentResponse, GroundingChunk, LatLng } from '@google/genai';
 import { CITY_DATA, DEFAULT_CITIES } from '../data/cities';
 import { fetchPlaceDetails } from '../services/placesService';
@@ -76,7 +75,7 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
     onSearch,
     lastSearchLocation
 }) => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
 
     // --- Input State ---
     const [selectedCountry, setSelectedCountry] = useState<string>('');
@@ -436,7 +435,7 @@ const DermatologistListPage: React.FC<DermatologistListPageProps> = ({
                                 className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl text-white focus:ring-2 focus:ring-brand-primary/40 outline-none transition-all placeholder-white/20 backdrop-blur-md appearance-none cursor-pointer hover:bg-white/10"
                             >
                                 <option value="" disabled className="bg-brand-deep">{t('dermatologist.by_city.country_placeholder')}</option>
-                                {sortedCountries.map((c) => <option key={c.name} value={c.name} className="bg-brand-deep">{c.name}</option>)}
+                                {getSortedCountriesByLanguage(language).map((c) => <option key={c.name} value={c.name} className="bg-brand-deep">{c.flag} {getTranslatedCountryName(c, language)}</option>)}
                             </select>
 
                             <select

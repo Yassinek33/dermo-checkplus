@@ -456,7 +456,8 @@ export const translations: Record<string, any> = {
             medical_warning_title: "Avertissement Médical",
             urgency_low: "Peu urgent",
             urgency_med: "Modéré",
-            urgency_high: "À surveiller"
+            urgency_high: "À surveiller",
+            home_button: "Retour à l'accueil"
         }
     },
     en: {
@@ -919,7 +920,8 @@ export const translations: Record<string, any> = {
             medical_warning_title: "Medical Warning",
             urgency_low: "Low urgency",
             urgency_med: "Moderate",
-            urgency_high: "To monitor"
+            urgency_high: "To monitor",
+            home_button: "Return to home"
         }
     },
     nl: {
@@ -1382,7 +1384,8 @@ export const translations: Record<string, any> = {
             medical_warning_title: "Medische Waarschuwing",
             urgency_low: "Lage urgentie",
             urgency_med: "Matig",
-            urgency_high: "Te monitoren"
+            urgency_high: "Te monitoren",
+            home_button: "Terug naar startpagina"
         }
     },
     es: {
@@ -1797,7 +1800,8 @@ export const translations: Record<string, any> = {
             medical_warning_title: "Advertencia Médica",
             urgency_low: "Poco urgente",
             urgency_med: "Moderado",
-            urgency_high: "A vigilar"
+            urgency_high: "A vigilar",
+            home_button: "Volver al inicio"
         }
     }
 };

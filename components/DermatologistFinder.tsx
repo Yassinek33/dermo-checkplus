@@ -1,9 +1,7 @@
-
 import React, { useState, useMemo } from 'react';
-import { sortedCountries } from './CountryDropdown'; // Import sortedCountries
+import { getSortedCountriesByLanguage, getTranslatedCountryName } from './CountryDropdown';
 import { BackArrowIcon } from './icons';
-import { LatLng } from '@google/genai'; // Import LatLng type
-
+import { LatLng } from '@google/genai';
 import { CITY_DATA, DEFAULT_CITIES } from '../data/cities'; // Import from centralized file
 import { useLanguage } from '../context/LanguageContext';
 
@@ -169,9 +167,9 @@ const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSea
                             disabled={isLoading}
                         >
                             <option value="" disabled>{t('dermatologist.by_city.country_placeholder')}</option>
-                            {sortedCountries.map((country) => (
+                            {getSortedCountriesByLanguage(language).map((country) => (
                                 <option key={country.name} value={country.name}>
-                                    {country.flag} {country.name}
+                                    {country.flag} {getTranslatedCountryName(country, language)}
                                 </option>
                             ))}
                         </select>
