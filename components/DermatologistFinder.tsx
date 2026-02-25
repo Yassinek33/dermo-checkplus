@@ -18,7 +18,7 @@ import LocationRequestPopup from './LocationRequestPopup';
 // ... existing code ...
 
 const DermatologistFinder: React.FC<DermatologistFinderProps> = ({ onBack, onSearch, isLoading }) => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     // Manual Search State
     const [selectedCountry, setSelectedCountry] = useState<string>('');
     const [selectedCityOption, setSelectedCityOption] = useState<string>('');
