@@ -2,6 +2,21 @@
     "framework": "vite",
     "buildCommand": "npm run build",
     "outputDirectory": "dist",
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "Content-Language",
+                    "value": "fr, nl, en, es"
+                },
+                {
+                    "key": "Vary",
+                    "value": "Accept-Language"
+                }
+            ]
+        }
+    ],
     "rewrites": [
         {
             "source": "/(.*)",
