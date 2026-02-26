@@ -1180,15 +1180,15 @@ export const translations: Record<string, any> = {
             restart_tooltip: "Analyse Herstarten"
         },
         why: {
-            title: "¿Por qué DermatoCheck?",
-            subtitle: "LA REFERENCIA DEL DIAGNÓSTICO DERMATOLÓGICO EN LÍNEA",
+            title: "Waarom DermatoCheck?",
+            subtitle: "DE REFERENTIE VOOR ONLINE DERMATOLOGIE DIAGNOSTIEK",
             cards: [
-                { title: "Diagnóstico dermatológico por foto", desc: "Sube una foto clara de tu lesión para un análisis visual instantáneo por IA." },
-                { title: "Dermatólogo virtual en línea", desc: "Accesible desde cualquier lugar, 24/7, sin cita previa ni receta médica." },
-                { title: "IA dermatológica gratuita", desc: "Nuestro algoritmo combina 15 criterios clínicos para un diagnóstico diferencial preciso." },
-                { title: "Diagnóstico dermatológico seguro", desc: "Cifrado RGPD, tus datos médicos permanecen privados y nunca se venden." },
-                { title: "Análisis de piel multilingüe", desc: "Interfaz disponible en español, inglés, francés y holandés." },
-                { title: "Resultados en menos de 5 Minutos", desc: "Desde el cuestionario hasta el informe clínico completo, análisis rápido y personalizado." }
+                { title: "Dermatologische Diagnose via Foto", desc: "Upload een duidelijke foto van uw huidaandoening voor directe visuele AI-analyse" },
+                { title: "Online Virtuele Dermatoloog", desc: "Overal toegankelijk, 24/7, zonder afspraak of voorschrift" },
+                { title: "Gratis Dermatologie AI", desc: "Ons algoritme combineert 15 klinische criteria voor een nauwkeurige differentiële diagnose" },
+                { title: "Veilige Dermatologische Diagnose", desc: "AVG-versleuteld, uw medische gegevens blijven volledig privé en worden nooit verkocht" },
+                { title: "Meertalige Huidanalyse", desc: "Interface beschikbaar in het Nederlands, Engels, Frans en Spaans" },
+                { title: "Resultaten in Minder Dan 5 Minuten", desc: "Van de vragenlijst tot het volledige klinische rapport, snelle en gepersonaliseerde analyse" }
             ]
         },
         faq: {
@@ -1539,15 +1539,15 @@ export const translations: Record<string, any> = {
             warning: "AVISO MÉDICO IMPORTANTE: DermatoCheck no es un médico. No reemplaza a una cita profesional. Consulta a un médico ante cualquier dolor, cambio o duda."
         },
         why: {
-            title: "Waarom DermatoCheck?",
-            subtitle: "DE REFERENTIE VOOR ONLINE DERMATOLOGIE DIAGNOSTIEK",
+            title: "¿Por qué DermatoCheck?",
+            subtitle: "LA REFERENCIA DEL DIAGNÓSTICO DERMATOLÓGICO EN LÍNEA",
             cards: [
-                { title: "Dermatologische Diagnose via Foto", desc: "Upload een duidelijke foto van uw huidaandoening voor directe visuele AI-analyse" },
-                { title: "Online Virtuele Dermatoloog", desc: "Overal toegankelijk, 24/7, zonder afspraak of voorschrift" },
-                { title: "Gratis Dermatologie AI", desc: "Ons algoritme combineert 15 klinische criteria voor een nauwkeurige differentiële diagnose" },
-                { title: "Veilige Dermatologische Diagnose", desc: "AVG-versleuteld, uw medische gegevens blijven volledig privé en worden nooit verkocht" },
-                { title: "Meertalige Huidanalyse", desc: "Interface beschikbaar in het Nederlands, Engels, Frans en Spaans" },
-                { title: "Resultaten in Minder Dan 5 Minuten", desc: "Van de vragenlijst tot het volledige klinische rapport, snelle en gepersonaliseerde analyse" }
+                { title: "Diagnóstico dermatológico por foto", desc: "Sube una foto clara de tu lesión para un análisis visual instantáneo por IA." },
+                { title: "Dermatólogo virtual en línea", desc: "Accesible desde cualquier lugar, 24/7, sin cita previa ni receta médica." },
+                { title: "IA dermatológica gratuita", desc: "Nuestro algoritmo combina 15 criterios clínicos para un diagnóstico diferencial preciso." },
+                { title: "Diagnóstico dermatológico seguro", desc: "Cifrado RGPD, tus datos médicos permanecen privados y nunca se venden." },
+                { title: "Análisis de piel multilingüe", desc: "Interfaz disponible en español, inglés, francés y holandés." },
+                { title: "Resultados en menos de 5 Minutos", desc: "Desde el cuestionario hasta el informe clínico completo, análisis rápido y personalizado." }
             ]
         },
         faq: {
