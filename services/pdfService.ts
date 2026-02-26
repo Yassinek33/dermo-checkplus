@@ -55,181 +55,149 @@ export async function generateAnalysisPDF(
     );
     const idShort = String(item.id).slice(-6).toUpperCase();
 
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    // Dynamically load html2canvas to avoid SSR issues if this were a node env, 
+    // but here it's purely client side. We rely on the module installed earlier.
+    const html2canvas = (await import('html2canvas')).default;
 
-    const W = 210; // A4 width mm
-    const LM = 20;  // left margin
-    const RM = 20;  // right margin
-    const TW = W - LM - RM; // text width
+    // A4 aspect ratio at 96 DPI: 794px width, 1123px height
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0px';
+    container.style.width = '794px';       // Fixed width to simulate A4
+    container.style.minHeight = '1123px';  // Min A4 height
+    container.style.backgroundColor = '#060D0F'; // Dark theme bg
+    container.style.color = '#E8F4F3';
+    container.style.fontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    container.style.padding = '0';
+    container.style.boxSizing = 'border-box';
 
-    let y = 0;
+    // Add custom styled content
+    container.innerHTML = `
+        <div style="padding: 60px 50px; background: radial-gradient(circle at top right, rgba(0, 212, 180, 0.1), transparent 50%), #060D0F; min-height: 1123px; display: flex; flex-direction: column;">
+            
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(0, 212, 180, 0.4); padding-bottom: 25px; margin-bottom: 35px;">
+                <div>
+                    <h1 style="margin: 0; font-size: 38px; font-weight: 800; color: #00D4B4; letter-spacing: -1px; text-transform: uppercase;">DermatoCheck</h1>
+                    <p style="margin: 8px 0 0 0; font-size: 14px; color: #8BA8A5; letter-spacing: 0.5px; text-transform: uppercase;">
+                        ${lang === 'fr' ? 'Rapport Clinique Digital' :
+            lang === 'nl' ? 'Digitaal Klinisch Rapport' :
+                lang === 'es' ? 'Informe Clínico Digital' :
+                    'Digital Clinical Report'
+        }
+                    </p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #E8F4F3;">REF: #${idShort}</p>
+                    <p style="margin: 0; font-size: 14px; color: #8BA8A5;">${date}</p>
+                </div>
+            </div>
 
-    // ── Header background ──────────────────────────────────────────────────────
-    pdf.setFillColor(6, 13, 15);
-    pdf.rect(0, 0, W, 50, 'F');
+            <!-- Warning Badge -->
+            <div style="display: inline-block; padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; background-color: rgba(${sev.color.join(',')}, 0.15); color: rgb(${sev.color.join(',')}); border: 1px solid rgba(${sev.color.join(',')}, 0.4); margin-bottom: 30px; align-self: flex-start;">
+                ${lang === 'fr' ? sev.label.fr : sev.label.en}
+            </div>
 
-    // ── Logo area ──────────────────────────────────────────────────────────────
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(20);
-    pdf.setTextColor(0, 212, 180);
-    pdf.text('DermatoCheck', LM, 20);
+            <!-- Patient Info -->
+            <div style="flex-shrink: 0; display: flex; gap: 40px; background: rgba(0, 212, 180, 0.03); border: 1px solid rgba(0, 212, 180, 0.1); border-radius: 12px; padding: 25px 30px; margin-bottom: 40px;">
+                <div style="flex: 1;">
+                    <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 700; color: #00D4B4; letter-spacing: 1px; text-transform: uppercase;">
+                        ${lang === 'fr' ? 'PATIENT' : 'PATIENT'}
+                    </p>
+                    <p style="margin: 0; font-size: 20px; font-weight: 600; color: #fff;">${userName}</p>
+                </div>
+                <div style="flex: 1;">
+                    <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 700; color: #00D4B4; letter-spacing: 1px; text-transform: uppercase;">
+                        EMAIL
+                    </p>
+                    <p style="margin: 0; font-size: 18px; font-weight: 400; color: #A0C0BD;">${userEmail}</p>
+                </div>
+            </div>
 
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(8);
-    pdf.setTextColor(120, 180, 180);
-    pdf.text(lang === 'fr' ? 'Analyse cutanée par intelligence artificielle'
-        : lang === 'nl' ? 'Huidanalyse door kunstmatige intelligentie'
-            : lang === 'es' ? 'Análisis cutáneo por inteligencia artificial'
-                : 'AI-powered skin analysis', LM, 26);
-
-    // ── Report ID + Date (right side) ──────────────────────────────────────────
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(9);
-    pdf.setTextColor(180, 220, 220);
-    pdf.text(`N° ${idShort}`, W - RM, 18, { align: 'right' });
-
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(8);
-    pdf.setTextColor(120, 160, 160);
-    pdf.text(date, W - RM, 24, { align: 'right' });
-
-    // ── Severity badge ─────────────────────────────────────────────────────────
-    const sevText = lang === 'fr' ? sev.label.fr : sev.label.en;
-    const badgeX = W - RM - 5 - pdf.getStringUnitWidth(sevText) * 8 / pdf.internal.scaleFactor;
-    pdf.setFillColor(...sev.color as [number, number, number]);
-    pdf.setDrawColor(...sev.color as [number, number, number]);
-    pdf.roundedRect(badgeX - 6, 30, pdf.getStringUnitWidth(sevText) * 8 / pdf.internal.scaleFactor + 12, 8, 2, 2, 'F');
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(8);
-    pdf.setTextColor(6, 13, 15);
-    pdf.text(sevText, badgeX, 35.5);
-
-    y = 50;
-
-    // ── Divider ────────────────────────────────────────────────────────────────
-    pdf.setDrawColor(0, 212, 180);
-    pdf.setLineWidth(0.5);
-    pdf.line(LM, y + 8, W - RM, y + 8);
-    y += 18;
-
-    // ── Patient section ────────────────────────────────────────────────────────
-    pdf.setFillColor(13, 26, 30);
-    pdf.roundedRect(LM, y, TW, 24, 3, 3, 'F');
-
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(8);
-    pdf.setTextColor(0, 212, 180);
-    pdf.text(lang === 'fr' ? 'PATIENT' : 'PATIENT', LM + 6, y + 8);
-
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(9);
-    pdf.setTextColor(220, 240, 238);
-    pdf.text(userName, LM + 6, y + 15);
-
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(8);
-    pdf.setTextColor(120, 170, 170);
-    pdf.text(userEmail, LM + 6, y + 21);
-
-    y += 30;
-
-    // ── Analysis section title ─────────────────────────────────────────────────
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(12);
-    pdf.setTextColor(220, 240, 238);
-    pdf.text(
-        lang === 'fr' ? 'Résultat de l\'analyse' :
+            <!-- Analysis Header -->
+            <h2 style="margin: 0 0 20px 0; font-size: 22px; font-weight: 700; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                ${lang === 'fr' ? "Résultat de l'analyse" :
             lang === 'nl' ? 'Resultaat van de analyse' :
                 lang === 'es' ? 'Resultado del análisis' :
-                    'Analysis result',
-        LM, y
-    );
-    y += 8;
+                    'Analysis result'
+        }
+            </h2>
 
-    // Thin accent line under title
-    pdf.setDrawColor(0, 212, 180);
-    pdf.setLineWidth(0.3);
-    pdf.line(LM, y, LM + 60, y);
-    y += 8;
+            <!-- Analysis Body (Auto wrap) -->
+            <div style="flex-grow: 1; font-size: 15px; line-height: 1.7; color: #C8E0DE; white-space: pre-wrap;">${full
+            .replace(/^(\d+\.|[A-Z].*:)(\s.*)?$/gm, '<strong style="color: #00D4B4; font-size: 16px; display: block; margin-top: 15px; margin-bottom: 5px;">$1$2</strong>')
+            .replace(/^•(.*)$/gm, '<div style="display:flex; margin-bottom: 4px;"><span style="color: #00D4B4; margin-right: 8px;">•</span><span>$1</span></div>')
+        }</div>
 
-    // ── Full text ──────────────────────────────────────────────────────────────
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(9);
-    pdf.setTextColor(200, 228, 225);
-    const lineH = 5;
+            <!-- Footer / Disclaimer -->
+            <div style="flex-shrink: 0; margin-top: 40px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 11px; color: #6A8A85; line-height: 1.5; font-style: italic; text-align: justify;">
+                ${lang === 'fr'
+            ? 'Ce rapport de synthèse est généré par un système automatisé d\'intelligence artificielle à des fins d\'information et de sensibilisation uniquement. Il ne constitue en aucun cas un diagnostic ou un acte médical validé. Seule une consultation physique avec un dermatologue qualifié permet un diagnostic différentiel et la prescription d\'un traitement adapté. Toute décision prise suite à ce rapport relève de la responsabilité du patient.'
+            : lang === 'nl'
+                ? 'Dit rapport wordt gegenereerd door een geautomatiseerd kunstmatig intelligentiesysteem en is uitsluitend bedoeld voor informatief en educatief gebruik. Het vervangt in geen geval een medische diagnose of een raadpleging bij een gekwalificeerde dermatoloog. Alleen een arts kan de juiste klinische procedures uitvoeren. Beslissingen genomen op basis van dit rapport zijn de verantwoordelijkheid van de patiënt.'
+                : lang === 'es'
+                    ? 'Este informe se genera mediante un sistema automatizado de inteligencia artificial con fines estrictamente informativos y educativos. En ningún caso constituye un diagnóstico médico válido ni sustituye una evaluación física por parte de un dermatólogo cualificado. Cualquier decisión médica tomada tras leer este documento es responsabilidad exclusiva del paciente.'
+                    : 'This syntax report is generated by an automated artificial intelligence system for informative and educational purposes only. It does not constitute a certified medical diagnosis nor does it replace a physical consultation with a board-certified dermatologist. Any medical decision downstream of this document is solely the responsibility of the patient.'
+        }
+                <div style="margin-top: 15px; text-align: center; color: #4A6A65; font-family: monospace;">
+                    DERMATOCHECK SYSTEM // V9.0 CLINICAL PROTOCOL // DOCUMENT ID: ${item.id}
+                </div>
+            </div>
+        </div>
+    `;
 
-    // Split full text into paragraphs
-    const paragraphs = full.split('\n').filter(l => l.trim() !== '');
-    for (const para of paragraphs) {
-        // Check for page overflow
-        if (y > 265) {
+    document.body.appendChild(container);
+
+    try {
+        // Wait for fonts to load if any, though system fonts are instantaneous
+        await new Promise(r => setTimeout(r, 100));
+
+        const canvas = await html2canvas(container, {
+            scale: 2, // High resolution
+            useCORS: true,
+            backgroundColor: '#060D0F',
+            logging: false
+        });
+
+        // Calculate aspect ratios for A4 pages
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = pdfWidth / imgWidth;
+        const scaledHeight = imgHeight * ratio;
+
+        let heightLeft = scaledHeight;
+        let position = 0;
+
+        // Add first page
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, scaledHeight, '', 'FAST');
+        heightLeft -= pdfHeight;
+
+        // Add subsequent pages if the content overflows A4
+        while (heightLeft > 0) {
+            position = heightLeft - scaledHeight; // Negative top position shifts image up
             pdf.addPage();
-            pdf.setFillColor(6, 13, 15);
-            pdf.rect(0, 0, W, 297, 'F');
-            y = 20;
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, scaledHeight, '', 'FAST');
+            heightLeft -= pdfHeight;
         }
 
-        // Section headings (lines ending with ':' or all-caps)
-        if (para.endsWith(':') || /^\d+\./.test(para)) {
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(9);
-            pdf.setTextColor(0, 212, 180);
-        } else if (para.startsWith('•')) {
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(9);
-            pdf.setTextColor(200, 228, 225);
-        } else {
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(9);
-            pdf.setTextColor(200, 228, 225);
+        // Trigger download
+        pdf.save(`DermatoCheck_Clinical_Report_${idShort}.pdf`);
+
+    } catch (e) {
+        console.error("Error generating PDF:", e);
+        throw e;
+    } finally {
+        // Always clean up the DOM attached element
+        if (document.body.contains(container)) {
+            document.body.removeChild(container);
         }
-
-        y = wrapText(pdf, para, LM, y, TW, lineH);
-        y += 2; // paragraph gap
     }
-
-    y += 10;
-
-    // ── Disclaimer ─────────────────────────────────────────────────────────────
-    if (y > 255) {
-        pdf.addPage();
-        pdf.setFillColor(6, 13, 15);
-        pdf.rect(0, 0, W, 297, 'F');
-        y = 20;
-    }
-
-    pdf.setFillColor(30, 40, 45);
-    pdf.roundedRect(LM, y, TW, 20, 3, 3, 'F');
-    pdf.setFont('helvetica', 'italic');
-    pdf.setFontSize(7.5);
-    pdf.setTextColor(130, 170, 170);
-    const disclaimer = lang === 'fr'
-        ? 'Ce rapport est fourni à titre informatif uniquement. Il ne constitue pas un diagnostic médical et ne remplace pas une consultation avec un dermatologue qualifié.'
-        : lang === 'nl'
-            ? 'Dit rapport is alleen ter informatie. Het vormt geen medische diagnose en vervangt geen raadpleging met een gekwalificeerde dermatoloog.'
-            : lang === 'es'
-                ? 'Este informe se proporciona únicamente con fines informativos. No constituye un diagnóstico médico ni reemplaza una consulta con un dermatólogo calificado.'
-                : 'This report is provided for informational purposes only. It does not constitute a medical diagnosis and does not replace a consultation with a qualified dermatologist.';
-    y += 5;
-    wrapText(pdf, disclaimer, LM + 4, y, TW - 8, 4.2);
-
-    y += 22;
-
-    // ── Footer ─────────────────────────────────────────────────────────────────
-    const pages = pdf.getNumberOfPages();
-    for (let p = 1; p <= pages; p++) {
-        pdf.setPage(p);
-        pdf.setFillColor(6, 13, 15);
-        pdf.rect(0, 284, W, 13, 'F');
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(7);
-        pdf.setTextColor(80, 120, 120);
-        pdf.text(`www.dermatocheck.com  ·  DermatoCheck © ${new Date().getFullYear()}`, LM, 291);
-        pdf.text(`Page ${p} / ${pages}`, W - RM, 291, { align: 'right' });
-    }
-
-    // ── Save ───────────────────────────────────────────────────────────────────
-    pdf.save(`DermatoCheck_analyse_${idShort}_${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
 // ─── Email share via mailto: ───────────────────────────────────────────────────
