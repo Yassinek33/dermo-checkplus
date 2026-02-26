@@ -1,3 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /profile
+Disallow: /api/
+
+Sitemap: https://www.dermatocheck.com/sitemap.xml
 Sitemap: https://dermatocheck.com/sitemap.xml
