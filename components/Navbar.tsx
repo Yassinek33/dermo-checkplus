@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx } from 'clsx';
-import { DermatoCheckLogo } from './icons';
 
 import { useLanguage } from '../context/LanguageContext';
 
@@ -10,7 +9,7 @@ interface NavbarProps {
     onNavigate: (page: string) => void;
     userProfile: any;
     onLogout: () => void;
-    user?: any; // Add user prop
+    user?: any;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, onLogout, user }) => {
@@ -33,6 +32,22 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
 
     return (
         <>
+            {/* Desktop Logo - Fixed top left, aligné avec le pill navbar */}
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="fixed top-6 left-6 z-50 hidden lg:flex items-center"
+            >
+                <button onClick={() => onNavigate('home')} aria-label="Accueil">
+                    <img
+                        src="/nouveau-logo.png"
+                        alt="DermatoCheck"
+                        className="h-20 w-auto cursor-pointer hover:opacity-90 transition-opacity duration-300"
+                    />
+                </button>
+            </motion.div>
+
             {/* Desktop Navbar */}
             <motion.nav
                 initial={{ y: -100, opacity: 0 }}
@@ -108,7 +123,6 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
 
                     {/* Profile Switch + Sign In Icons */}
                     <div className="ml-2 pl-2 border-l border-white/10 flex items-center gap-1 pr-2">
-                        {/* Profile switch (mineur/majeur) - Only show if NOT logged in */}
                         {!user && (
                             <button
                                 onClick={onLogout}
@@ -135,17 +149,13 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                 )}
                             </button>
                         )}
-                        {/* Sign In (adults only) */}
-                        {/* Sign In / Profile (adults only) */}
                         {userProfile === 'adult' && (
                             <button
                                 onClick={() => user ? onNavigate('profile') : onNavigate('auth')}
                                 className={clsx(
                                     "rounded-full transition-all duration-300 flex items-center justify-center",
                                     user
-                                        // Logged in: solid teal bg + dark text = initials always visible
                                         ? "w-9 h-9 bg-brand-primary text-brand-deep font-bold border border-brand-primary/30"
-                                        // Not logged in: standard icon button
                                         : clsx(
                                             "p-2",
                                             activePage === 'auth' || activePage === 'profile'
@@ -169,7 +179,6 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                 )}
                             </button>
                         )}
-
                     </div>
                 </div>
             </motion.nav>
@@ -181,7 +190,16 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="fixed top-0 left-0 right-0 z-40 lg:hidden"
             >
-                <div className="flex items-center justify-end p-4 pl-40 bg-brand-deep/95 backdrop-blur-xl border-b border-white/10">
+                <div className="flex items-center justify-between py-2 px-4 bg-brand-deep/95 backdrop-blur-xl border-b border-white/10">
+                    {/* Logo à gauche */}
+                    <button onClick={() => handleNavigate('home')} aria-label="Accueil">
+                        <img
+                            src="/nouveau-logo.png"
+                            alt="DermatoCheck"
+                            className="h-16 w-auto cursor-pointer hover:opacity-90 transition-opacity duration-300"
+                        />
+                    </button>
+
                     {/* Hamburger Button */}
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -286,7 +304,6 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
 
                                 {/* Profile Switch + Sign In */}
                                 <div className="pt-6 border-t border-white/10 space-y-3">
-                                    {/* Profile switch (mineur/majeur) - Only show if NOT logged in */}
                                     {!user && (
                                         <button
                                             onClick={() => {
@@ -301,7 +318,6 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                             {userProfile === 'adult' ? t('auth.switch_to_minor') : t('auth.switch_to_adult')}
                                         </button>
                                     )}
-                                    {/* Sign In (adults only) */}
                                     {userProfile === 'adult' && (
                                         <button
                                             onClick={() => {
@@ -340,10 +356,9 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                         </motion.div>
                     </motion.div>
                 )}
-            </AnimatePresence >
+            </AnimatePresence>
         </>
     );
 };
 
 export default Navbar;
-
