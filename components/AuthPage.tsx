@@ -53,6 +53,13 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
 
                 if (error) throw error;
 
+                if (data.user?.identities && data.user.identities.length === 0) {
+                    // Supabase returns fake success if email already exists and "Prevent email enumeration" is enabled.
+                    setError(t('auth.email_already_used'));
+                    setLoading(false);
+                    return;
+                }
+
                 if (data.user && !data.session) {
                     setMessage("Un email de confirmation vous a été envoyé. Vérifiez votre boîte de réception.");
                 } else {
