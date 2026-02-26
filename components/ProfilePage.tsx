@@ -125,9 +125,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigate, onLogout, count, lang }) 
             {nav.map(n => itm(n.label, n.icon, n.page, n.active, n.badge))}
             {section(lang === 'en' ? 'Resources' : lang === 'nl' ? 'Bronnen' : lang === 'es' ? 'Recursos' : 'Ressources')}
             {res.map(r => itm(r.label, r.icon, r.page))}
-            <div style={{ marginTop: 'auto', paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
-                {itm(lang === 'en' ? 'Settings' : lang === 'nl' ? 'Instellingen' : lang === 'es' ? 'Ajustes' : 'Paramètres', <IcoGear />, 'home')}
-            </div>
         </aside>
     );
 };
@@ -139,7 +136,6 @@ const MobileBottomNav: React.FC<MobileNavProps> = ({ onNavigate, lang }) => {
         { icon: <IcoGrid />, label: 'Dashboard', page: 'profile' },
         { icon: <IcoScan />, label: lang === 'en' ? 'Analyse' : 'Analyse', page: 'questionnaire', highlight: true },
         { icon: <IcoDerm />, label: lang === 'en' ? 'Dermato' : 'Dermato', page: 'find-dermatologist' },
-        { icon: <IcoGear />, label: lang === 'en' ? 'Settings' : 'Réglages', page: 'home' },
     ];
     return (
         <nav style={{
@@ -498,21 +494,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
                             <span style={{ width: 14, height: 1, background: C.accent, display: 'inline-block' }} />
                             {GREET[lang] || GREET.fr}
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                            <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 22, fontWeight: 800, letterSpacing: -0.5, margin: 0, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {displayName.split(' ')[0]}&nbsp;
-                                <span style={{ color: C.accent }}>{displayName.split(' ').slice(1).join(' ')}</span>
-                                &nbsp;👋
-                            </h1>
-                            <button onClick={() => onNavigate('questionnaire')} style={{
-                                display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px',
-                                background: C.accent, color: C.bg, border: 'none', borderRadius: 10,
-                                fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 12, cursor: 'pointer',
-                                boxShadow: '0 0 20px rgba(0,212,180,0.22)', flexShrink: 0,
-                            }}>
-                                <IcoScan /> {lang === 'en' ? 'Analyse' : 'Analyser'}
-                            </button>
-                        </div>
+                        <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 22, fontWeight: 800, letterSpacing: -0.5, margin: 0 }}>
+                            {displayName.split(' ')[0]}&nbsp;
+                            <span style={{ color: C.accent }}>{displayName.split(' ').slice(1).join(' ')}</span>
+                            &nbsp;👋
+                        </h1>
                     </motion.div>
 
                     {/* Stats 2x2 */}
@@ -565,28 +551,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
 
                     {/* Header */}
                     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-                        style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 32, position: 'relative', zIndex: 1 }}>
-                        <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: C.muted2, marginBottom: 3 }}>
-                                <span style={{ width: 18, height: 1, background: C.accent, display: 'inline-block' }} />
-                                {GREET[lang] || GREET.fr}
-                            </div>
-                            <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 30, fontWeight: 800, letterSpacing: -0.8, margin: 0 }}>
-                                {displayName.split(' ')[0]}&nbsp;
-                                <span style={{ color: C.accent }}>{displayName.split(' ').slice(1).join(' ')}</span>
-                                &nbsp;👋
-                            </h1>
+                        style={{ marginBottom: 32, position: 'relative', zIndex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: C.muted2, marginBottom: 3 }}>
+                            <span style={{ width: 18, height: 1, background: C.accent, display: 'inline-block' }} />
+                            {GREET[lang] || GREET.fr}
                         </div>
-                        <button onClick={() => onNavigate('questionnaire')} style={{
-                            display: 'flex', alignItems: 'center', gap: 9, padding: '12px 22px',
-                            background: C.accent, color: C.bg, border: 'none', borderRadius: 11,
-                            fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 13.5, cursor: 'pointer',
-                            boxShadow: '0 0 28px rgba(0,212,180,0.22)', transition: 'all .2s',
-                        }}
-                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
-                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; }}>
-                            <IcoScan /> {lang === 'en' ? 'Analyse my skin' : lang === 'nl' ? 'Analyseer huid' : lang === 'es' ? 'Analizar piel' : 'Analyser ma peau'}
-                        </button>
+                        <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 30, fontWeight: 800, letterSpacing: -0.8, margin: 0 }}>
+                            {displayName.split(' ')[0]}&nbsp;
+                            <span style={{ color: C.accent }}>{displayName.split(' ').slice(1).join(' ')}</span>
+                            &nbsp;👋
+                        </h1>
                     </motion.div>
 
                     {/* Stats grid */}
