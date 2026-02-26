@@ -176,6 +176,17 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'all' | 'medium' | 'low'>('all');
     const [pdfLoading, setPdfLoading] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    const handleDelete = async (itemId: string) => {
+        setDeletingId(itemId);
+        try {
+            await supabase.from('analyses').delete().eq('id', itemId);
+            setHistory(prev => prev.filter(h => h.id !== itemId));
+        } finally {
+            setDeletingId(null);
+        }
+    };
 
     useEffect(() => {
         if (!user) return;
@@ -346,12 +357,49 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
                                                 </svg>
                                                 Email
                                             </button>
+                                            <button
+                                                disabled={deletingId === item.id}
+                                                onClick={() => handleDelete(item.id)}
+                                                style={{
+                                                    display: 'flex', alignItems: 'center', gap: 7,
+                                                    padding: '8px 14px', borderRadius: 9,
+                                                    background: deletingId === item.id ? C.surf2 : 'rgba(255,107,107,0.12)',
+                                                    color: deletingId === item.id ? C.muted2 : '#ff6b6b',
+                                                    border: `1px solid ${deletingId === item.id ? C.border : 'rgba(255,107,107,0.25)'}`,
+                                                    cursor: deletingId === item.id ? 'not-allowed' : 'pointer',
+                                                    fontSize: 12, fontWeight: 600, fontFamily: "'Syne',sans-serif", transition: 'all .18s',
+                                                }}>
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                                                </svg>
+                                                {deletingId === item.id ? '...' : (lang === 'en' ? 'Delete' : lang === 'nl' ? 'Verwijderen' : lang === 'es' ? 'Eliminar' : 'Supprimer')}
+                                            </button>
                                         </div>
                                     </motion.div>
                                 ) : (
                                     <div key="closed">
                                         <div style={{ fontSize: 11.5, color: C.muted2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' } as any}>
                                             {full.substring(0, 120)}...
+                                        </div>
+                                        <div onClick={e => e.stopPropagation()} style={{ marginTop: 8 }}>
+                                            <button
+                                                disabled={deletingId === item.id}
+                                                onClick={() => handleDelete(item.id)}
+                                                style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                                                    padding: '5px 10px', borderRadius: 7,
+                                                    background: 'rgba(255,107,107,0.09)',
+                                                    color: '#ff6b6b',
+                                                    border: '1px solid rgba(255,107,107,0.2)',
+                                                    cursor: deletingId === item.id ? 'not-allowed' : 'pointer',
+                                                    fontSize: 11, fontWeight: 600, fontFamily: "'Syne',sans-serif",
+                                                    opacity: deletingId === item.id ? 0.5 : 1,
+                                                }}>
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                                                </svg>
+                                                {deletingId === item.id ? '...' : (lang === 'en' ? 'Delete' : lang === 'nl' ? 'Verwijderen' : lang === 'es' ? 'Eliminar' : 'Supprimer')}
+                                            </button>
                                         </div>
                                     </div>
                                 )}
