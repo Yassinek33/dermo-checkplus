@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>DermatoCheck — Confirmez votre compte</title>
+  <!--[if mso]>
+  <noscript>
+    <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { margin: 0; padding: 0; width: 100%; background-color: #0a0e1c; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+    a { text-decoration: none; }
+    .preheader { display: none !important; visibility: hidden; mso-hide: all; font-size: 1px; color: transparent; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; }
+    @media (max-width: 600px) {
+      .email-wrapper { width: 100% !important; }
+      .email-content { padding: 32px 24px !important; }
+      .otp-box { font-size: 36px !important; letter-spacing: 12px !important; padding: 20px 24px !important; }
+      .logo-text { font-size: 22px !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Preheader text (hidden in email body, shown in inbox preview) -->
+  <span class="preheader">Votre code de vérification DermatoCheck : {{ .Token }} — Ce code expire dans 10 minutes.</span>
+
+  <!-- Email wrapper -->
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #0a0e1c; padding: 40px 16px;">
+    <tr>
+      <td align="center">
+        <table class="email-wrapper" role="presentation" cellspacing="0" cellpadding="0" border="0" width="560" style="max-width: 560px; width: 100%;">
+
+          <!-- ═══ HEADER ═══ -->
+          <tr>
+            <td>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                style="border-radius: 20px 20px 0 0; overflow: hidden; background: linear-gradient(135deg, #0f172a 0%, #0a1628 100%); border: 1px solid rgba(255,255,255,0.08); border-bottom: none;">
+                <tr>
+                  <!-- Gradient top bar -->
+                  <td style="height: 4px; background: linear-gradient(90deg, #2dd4bf 0%, #06b6d4 50%, #2dd4bf 100%); padding: 0;"></td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding: 32px 40px 28px;">
+                    <!-- Logo row -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td align="center">
+                          <!-- Logo icon circle -->
+                          <div style="display: inline-block; background: linear-gradient(135deg, rgba(45,212,191,0.15), rgba(6,182,212,0.15)); border: 1px solid rgba(45,212,191,0.3); border-radius: 16px; padding: 14px; margin-bottom: 16px;">
+                            <img src="https://www.dermatocheck.com/favicon-32x32.png" width="32" height="32" alt="" style="display: block; border-radius: 6px;"
+                              onerror="this.style.display='none'">
+                            <!-- Fallback SVG icon (inline, for clients that support it) -->
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center">
+                          <span class="logo-text" style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #ffffff;">
+                            Dermato<span style="background: linear-gradient(135deg, #2dd4bf, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: #2dd4bf;">Check</span>
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center" style="padding-top: 6px;">
+                          <span style="font-size: 12px; color: rgba(148,163,184,0.6); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;">
+                            Analyse Dermatologique par IA
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ═══ MAIN CONTENT ═══ -->
+          <tr>
+            <td>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                style="background: #111827; border: 1px solid rgba(255,255,255,0.07); border-top: none; border-bottom: none;">
+                <tr>
+                  <td class="email-content" style="padding: 44px 48px 40px;">
+
+                    <!-- Greeting -->
+                    <p style="font-size: 15px; color: rgba(148,163,184,0.8); margin-bottom: 8px; font-weight: 500;">
+                      Bonjour,
+                    </p>
+                    <h1 style="font-size: 24px; font-weight: 800; color: #ffffff; margin-bottom: 16px; line-height: 1.3; letter-spacing: -0.3px;">
+                      Confirmez votre compte DermatoCheck
+                    </h1>
+                    <p style="font-size: 15px; color: rgba(148,163,184,0.75); line-height: 1.7; margin-bottom: 36px;">
+                      Vous venez de créer un compte sur DermatoCheck. Pour activer votre compte et commencer votre analyse dermatologique personnalisée, veuillez entrer le code de vérification ci-dessous dans l'application.
+                    </p>
+
+                    <!-- OTP Code box -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 36px;">
+                      <tr>
+                        <td align="center">
+                          <!-- Label -->
+                          <p style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(45,212,191,0.7); margin-bottom: 14px;">
+                            Votre code de vérification
+                          </p>
+                          <!-- Code box -->
+                          <div class="otp-box" style="display: inline-block; background: linear-gradient(135deg, rgba(45,212,191,0.06), rgba(6,182,212,0.06)); border: 1.5px solid rgba(45,212,191,0.35); border-radius: 18px; padding: 22px 36px;">
+                            <span style="font-size: 44px; font-weight: 900; letter-spacing: 16px; color: #2dd4bf; font-variant-numeric: tabular-nums; font-family: 'Courier New', Courier, monospace;">
+                              {{ .Token }}
+                            </span>
+                          </div>
+                          <!-- Expiry note -->
+                          <p style="font-size: 12px; color: rgba(148,163,184,0.45); margin-top: 12px;">
+                            Ce code expire dans <strong style="color: rgba(148,163,184,0.7);">10 minutes</strong>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Separator -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 32px;">
+                      <tr>
+                        <td style="height: 1px; background: rgba(255,255,255,0.07);"></td>
+                      </tr>
+                    </table>
+
+                    <!-- Steps -->
+                    <p style="font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(148,163,184,0.5); margin-bottom: 18px;">
+                      Comment confirmer votre compte
+                    </p>
+
+                    <!-- Step 1 -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 14px;">
+                      <tr>
+                        <td width="36" valign="top" style="padding-right: 14px; padding-top: 2px;">
+                          <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, rgba(45,212,191,0.2), rgba(6,182,212,0.2)); border: 1px solid rgba(45,212,191,0.3); display: flex; align-items: center; justify-content: center; text-align: center;">
+                            <span style="font-size: 12px; font-weight: 700; color: #2dd4bf; line-height: 28px; display: block;">1</span>
+                          </div>
+                        </td>
+                        <td>
+                          <p style="font-size: 14px; color: rgba(148,163,184,0.8); line-height: 1.5; margin: 0;">
+                            Retournez sur la page d'inscription de <strong style="color: #fff;">DermatoCheck</strong>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Step 2 -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 14px;">
+                      <tr>
+                        <td width="36" valign="top" style="padding-right: 14px; padding-top: 2px;">
+                          <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, rgba(45,212,191,0.2), rgba(6,182,212,0.2)); border: 1px solid rgba(45,212,191,0.3); display: flex; align-items: center; justify-content: center; text-align: center;">
+                            <span style="font-size: 12px; font-weight: 700; color: #2dd4bf; line-height: 28px; display: block;">2</span>
+                          </div>
+                        </td>
+                        <td>
+                          <p style="font-size: 14px; color: rgba(148,163,184,0.8); line-height: 1.5; margin: 0;">
+                            Entrez le code à <strong style="color: #fff;">6 chiffres</strong> dans la fenêtre de vérification
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Step 3 -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 36px;">
+                      <tr>
+                        <td width="36" valign="top" style="padding-right: 14px; padding-top: 2px;">
+                          <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, rgba(45,212,191,0.2), rgba(6,182,212,0.2)); border: 1px solid rgba(45,212,191,0.3); display: flex; align-items: center; justify-content: center; text-align: center;">
+                            <span style="font-size: 12px; font-weight: 700; color: #2dd4bf; line-height: 28px; display: block;">3</span>
+                          </div>
+                        </td>
+                        <td>
+                          <p style="font-size: 14px; color: rgba(148,163,184,0.8); line-height: 1.5; margin: 0;">
+                            Profitez de votre analyse de peau par <strong style="color: #fff;">Intelligence Artificielle</strong> !
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Security note -->
+                    <div style="background: rgba(234,179,8,0.06); border: 1px solid rgba(234,179,8,0.2); border-radius: 14px; padding: 16px 20px;">
+                      <p style="font-size: 12px; color: rgba(234,179,8,0.75); line-height: 1.6; margin: 0;">
+                        🔒 <strong style="color: rgba(234,179,8,0.9);">Sécurité :</strong> Si vous n'avez pas créé de compte sur DermatoCheck, ignorez cet email. Votre adresse email n'a pas été compromise.
+                      </p>
+                    </div>
+
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ═══ FOOTER ═══ -->
+          <tr>
+            <td>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                style="border-radius: 0 0 20px 20px; overflow: hidden; background: #0f172a; border: 1px solid rgba(255,255,255,0.07); border-top: none;">
+                <tr>
+                  <td style="padding: 28px 40px 32px;">
+
+                    <!-- Divider with logo -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 20px;">
+                      <tr>
+                        <td align="center">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                            <tr>
+                              <td align="center">
+                                <span style="font-size: 14px; font-weight: 700; color: rgba(45,212,191,0.5); letter-spacing: -0.2px;">
+                                  Dermato<span style="color: rgba(6,182,212,0.5);">Check</span>
+                                </span>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Links -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 20px;">
+                      <tr>
+                        <td align="center">
+                          <a href="https://www.dermatocheck.com/" style="font-size: 12px; color: rgba(148,163,184,0.5); text-decoration: none; margin: 0 12px;">Accueil</a>
+                          <span style="color: rgba(255,255,255,0.1);">|</span>
+                          <a href="https://www.dermatocheck.com/questionnaire" style="font-size: 12px; color: rgba(148,163,184,0.5); text-decoration: none; margin: 0 12px;">Analyser ma peau</a>
+                          <span style="color: rgba(255,255,255,0.1);">|</span>
+                          <a href="https://www.dermatocheck.com/find-dermatologist" style="font-size: 12px; color: rgba(148,163,184,0.5); text-decoration: none; margin: 0 12px;">Trouver un dermatologue</a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Separator -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 18px;">
+                      <tr>
+                        <td style="height: 1px; background: rgba(255,255,255,0.05);"></td>
+                      </tr>
+                    </table>
+
+                    <!-- Legal -->
+                    <p style="font-size: 11px; color: rgba(148,163,184,0.3); text-align: center; line-height: 1.7; margin: 0;">
+                      Cet email a été envoyé par DermatoCheck · <a href="https://www.dermatocheck.com/" style="color: rgba(45,212,191,0.4); text-decoration: none;">dermatocheck.com</a><br>
+                      DermatoCheck est un outil d'aide à l'information et ne remplace pas un avis médical professionnel.<br>
+                      <span style="color: rgba(148,163,184,0.2);">© 2026 DermatoCheck — Tous droits réservés</span>
+                    </p>
+
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
