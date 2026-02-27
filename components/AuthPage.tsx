@@ -9,7 +9,55 @@ interface AuthPageProps {
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+
+    const otpLabels = {
+        fr: {
+            title: 'Vérification par email',
+            subtitle: 'Un code à 8 chiffres a été envoyé à',
+            verify: 'Confirmer mon compte',
+            verifying: 'Vérification...',
+            noCode: "Vous n'avez pas reçu le code ?",
+            resend: 'Renvoyer',
+            resendIn: (s: number) => `Renvoyer (${s}s)`,
+            spam: "Vérifiez votre dossier spam si vous ne trouvez pas l'email.",
+            expires: 'Le code expire dans 10 minutes.',
+        },
+        nl: {
+            title: 'E-mailverificatie',
+            subtitle: 'Een 8-cijferige code is verzonden naar',
+            verify: 'Mijn account bevestigen',
+            verifying: 'Verifiëren...',
+            noCode: 'Geen code ontvangen?',
+            resend: 'Opnieuw verzenden',
+            resendIn: (s: number) => `Opnieuw (${s}s)`,
+            spam: 'Controleer uw spammap als u de e-mail niet kunt vinden.',
+            expires: 'De code vervalt over 10 minuten.',
+        },
+        en: {
+            title: 'Email verification',
+            subtitle: 'An 8-digit code has been sent to',
+            verify: 'Confirm my account',
+            verifying: 'Verifying...',
+            noCode: "Didn't receive the code?",
+            resend: 'Resend',
+            resendIn: (s: number) => `Resend (${s}s)`,
+            spam: "Check your spam folder if you can't find the email.",
+            expires: 'The code expires in 10 minutes.',
+        },
+        es: {
+            title: 'Verificación por email',
+            subtitle: 'Se ha enviado un código de 8 dígitos a',
+            verify: 'Confirmar mi cuenta',
+            verifying: 'Verificando...',
+            noCode: '¿No recibió el código?',
+            resend: 'Reenviar',
+            resendIn: (s: number) => `Reenviar (${s}s)`,
+            spam: 'Revise su carpeta de spam si no encuentra el email.',
+            expires: 'El código caduca en 10 minutos.',
+        },
+    };
+    const lbl = otpLabels[language] ?? otpLabels.fr;
     const [isSignUp, setIsSignUp] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -504,7 +552,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                 </svg>
                             </button>
 
-                            <div style={{ padding: '40px 36px 36px' }}>
+                            <div style={{ padding: '36px 20px 28px' }}>
                                 {/* Icon */}
                                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
                                     <div style={{
@@ -521,12 +569,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
 
                                 {/* Title */}
                                 <h3 style={{ color: '#fff', fontSize: '22px', fontWeight: 700, textAlign: 'center', marginBottom: '8px' }}>
-                                    Vérification par email
+                                    {lbl.title}
                                 </h3>
 
                                 {/* Subtitle */}
                                 <p style={{ color: 'rgba(148,163,184,0.7)', fontSize: '13px', textAlign: 'center', marginBottom: '4px' }}>
-                                    Un code à 8 chiffres a été envoyé à
+                                    {lbl.subtitle}
                                 </p>
                                 <p style={{ color: '#2dd4bf', fontSize: '14px', fontWeight: 600, textAlign: 'center', marginBottom: '28px' }}>
                                     {pendingEmail}
@@ -555,7 +603,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                 )}
 
                                 {/* OTP Input Boxes */}
-                                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '24px' }}>
+                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginBottom: '24px' }}>
                                     {otpValues.map((val, i) => (
                                         <input
                                             key={i}
@@ -569,10 +617,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                             onPaste={i === 0 ? handleOtpPaste : undefined}
                                             autoFocus={i === 0 && showOtpModal}
                                             style={{
-                                                width: '48px',
-                                                height: '58px',
+                                                width: '34px',
+                                                height: '46px',
                                                 textAlign: 'center',
-                                                fontSize: '22px',
+                                                fontSize: '18px',
                                                 fontWeight: 700,
                                                 borderRadius: '14px',
                                                 background: val ? 'rgba(45,212,191,0.08)' : 'rgba(255,255,255,0.04)',
@@ -623,15 +671,15 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                                 <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.3" />
                                                 <path d="M21 12a9 9 0 00-9-9" />
                                             </svg>
-                                            Vérification...
+                                            {lbl.verifying}
                                         </span>
-                                    ) : 'Confirmer mon compte'}
+                                    ) : lbl.verify}
                                 </button>
 
                                 {/* Resend */}
                                 <div style={{ marginTop: '20px', textAlign: 'center' }}>
                                     <span style={{ color: 'rgba(148,163,184,0.5)', fontSize: '13px' }}>
-                                        Vous n'avez pas reçu le code ?{' '}
+                                        {lbl.noCode}{' '}
                                     </span>
                                     <button
                                         onClick={handleResendOtp}
@@ -646,7 +694,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                             textDecoration: 'underline',
                                         }}
                                     >
-                                        {resendCooldown > 0 ? `Renvoyer (${resendCooldown}s)` : 'Renvoyer'}
+                                        {resendCooldown > 0 ? lbl.resendIn(resendCooldown) : lbl.resend}
                                     </button>
                                 </div>
 
@@ -655,8 +703,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                     marginTop: '16px', color: 'rgba(148,163,184,0.4)',
                                     fontSize: '11px', textAlign: 'center', lineHeight: '1.6',
                                 }}>
-                                    Vérifiez votre dossier spam si vous ne trouvez pas l'email.<br />
-                                    Le code expire dans 10 minutes.
+                                    {lbl.spam}<br />
+                                    {lbl.expires}
                                 </p>
                             </div>
 
