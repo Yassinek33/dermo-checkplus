@@ -131,7 +131,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
     const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
         e.preventDefault();
         const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 8);
-        const newValues = ['', '', '', '', '', ''];
+        const newValues = ['', '', '', '', '', '', '', ''];
         text.split('').forEach((char, i) => { if (i < 8) newValues[i] = char; });
         setOtpValues(newValues);
         const nextEmpty = newValues.findIndex(v => !v);
