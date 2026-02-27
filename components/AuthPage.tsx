@@ -603,7 +603,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                 )}
 
                                 {/* OTP Input Boxes */}
-                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginBottom: '24px' }}>
+                                <div style={{ display: 'flex', gap: '5px', justifyContent: 'center', marginBottom: '24px', width: '100%' }}>
                                     {otpValues.map((val, i) => (
                                         <input
                                             key={i}
@@ -617,12 +617,14 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                             onPaste={i === 0 ? handleOtpPaste : undefined}
                                             autoFocus={i === 0 && showOtpModal}
                                             style={{
-                                                width: '34px',
+                                                flex: '1',
+                                                minWidth: 0,
+                                                maxWidth: '38px',
                                                 height: '46px',
                                                 textAlign: 'center',
                                                 fontSize: '18px',
                                                 fontWeight: 700,
-                                                borderRadius: '14px',
+                                                borderRadius: '10px',
                                                 background: val ? 'rgba(45,212,191,0.08)' : 'rgba(255,255,255,0.04)',
                                                 border: val ? '1.5px solid rgba(45,212,191,0.5)' : '1.5px solid rgba(255,255,255,0.12)',
                                                 color: val ? '#2dd4bf' : '#fff',
