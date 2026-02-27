@@ -14,7 +14,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
     const otpLabels = {
         fr: {
             title: 'Vérification par email',
-            subtitle: 'Un code à 8 chiffres a été envoyé à',
+            subtitle: 'Un code à 6 chiffres a été envoyé à',
             verify: 'Confirmer mon compte',
             verifying: 'Vérification...',
             noCode: "Vous n'avez pas reçu le code ?",
@@ -25,7 +25,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
         },
         nl: {
             title: 'E-mailverificatie',
-            subtitle: 'Een 8-cijferige code is verzonden naar',
+            subtitle: 'Een 6-cijferige code is verzonden naar',
             verify: 'Mijn account bevestigen',
             verifying: 'Verifiëren...',
             noCode: 'Geen code ontvangen?',
@@ -36,7 +36,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
         },
         en: {
             title: 'Email verification',
-            subtitle: 'An 8-digit code has been sent to',
+            subtitle: 'A 6-digit code has been sent to',
             verify: 'Confirm my account',
             verifying: 'Verifying...',
             noCode: "Didn't receive the code?",
@@ -47,7 +47,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
         },
         es: {
             title: 'Verificación por email',
-            subtitle: 'Se ha enviado un código de 8 dígitos a',
+            subtitle: 'Se ha enviado un código de 6 dígitos a',
             verify: 'Confirmar mi cuenta',
             verifying: 'Verificando...',
             noCode: '¿No recibió el código?',
@@ -73,7 +73,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
 
     // OTP modal state
     const [showOtpModal, setShowOtpModal] = useState(false);
-    const [otpValues, setOtpValues] = useState(['', '', '', '', '', '', '', '']);
+    const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
     const [otpLoading, setOtpLoading] = useState(false);
     const [otpError, setOtpError] = useState<string | null>(null);
     const [otpSuccess, setOtpSuccess] = useState<string | null>(null);
@@ -162,7 +162,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
         newValues[index] = digit;
         setOtpValues(newValues);
         setOtpError(null);
-        if (digit && index < 7) {
+        if (digit && index < 5) {
             otpInputsRef.current[index + 1]?.focus();
         }
     };
@@ -178,18 +178,18 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
 
     const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
         e.preventDefault();
-        const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 8);
-        const newValues = ['', '', '', '', '', '', '', ''];
-        text.split('').forEach((char, i) => { if (i < 8) newValues[i] = char; });
+        const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+        const newValues = ['', '', '', '', '', ''];
+        text.split('').forEach((char, i) => { if (i < 6) newValues[i] = char; });
         setOtpValues(newValues);
         const nextEmpty = newValues.findIndex(v => !v);
-        const focusIndex = nextEmpty === -1 ? 7 : nextEmpty;
+        const focusIndex = nextEmpty === -1 ? 5 : nextEmpty;
         setTimeout(() => otpInputsRef.current[focusIndex]?.focus(), 0);
     };
 
     const handleOtpVerify = async () => {
         const token = otpValues.join('');
-        if (token.length !== 8) return;
+        if (token.length !== 6) return;
         setOtpLoading(true);
         setOtpError(null);
         try {
@@ -647,12 +647,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                 {/* Verify Button */}
                                 <button
                                     onClick={handleOtpVerify}
-                                    disabled={otpLoading || otpValues.join('').length < 8}
+                                    disabled={otpLoading || otpValues.join('').length < 6}
                                     style={{
                                         width: '100%',
                                         padding: '14px',
                                         borderRadius: '14px',
-                                        background: otpValues.join('').length < 8
+                                        background: otpValues.join('').length < 6
                                             ? 'rgba(45,212,191,0.3)'
                                             : 'linear-gradient(135deg, #2dd4bf, #06b6d4)',
                                         border: 'none',
@@ -661,10 +661,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                                         fontSize: '14px',
                                         letterSpacing: '0.06em',
                                         textTransform: 'uppercase',
-                                        cursor: otpLoading || otpValues.join('').length < 8 ? 'not-allowed' : 'pointer',
+                                        cursor: otpLoading || otpValues.join('').length < 6 ? 'not-allowed' : 'pointer',
                                         opacity: otpLoading ? 0.7 : 1,
                                         transition: 'all 0.2s',
-                                        boxShadow: otpValues.join('').length >= 8 ? '0 8px 24px rgba(45,212,191,0.3)' : 'none',
+                                        boxShadow: otpValues.join('').length >= 6 ? '0 8px 24px rgba(45,212,191,0.3)' : 'none',
                                     }}
                                 >
                                     {otpLoading ? (
