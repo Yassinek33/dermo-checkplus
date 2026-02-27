@@ -174,6 +174,50 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
     const [pdfLoading, setPdfLoading] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
+    // Change password modal
+    const [showChangePw, setShowChangePw] = useState(false);
+    const [changePwValues, setChangePwValues] = useState({ newPw: '', confirmPw: '' });
+    const [changePwLoading, setChangePwLoading] = useState(false);
+    const [changePwError, setChangePwError] = useState<string | null>(null);
+    const [changePwSuccess, setChangePwSuccess] = useState(false);
+
+    // Delete account modal
+    const [showDeleteAccount, setShowDeleteAccount] = useState(false);
+    const [deletingAccount, setDeletingAccount] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
+
+    const handleChangePassword = async () => {
+        const L = {
+            fr: { mismatch: 'Les mots de passe ne correspondent pas.', short: 'Minimum 6 caractères.' },
+            en: { mismatch: 'Passwords do not match.', short: 'Minimum 6 characters.' },
+            nl: { mismatch: 'Wachtwoorden komen niet overeen.', short: 'Minimaal 6 tekens.' },
+            es: { mismatch: 'Las contraseñas no coinciden.', short: 'Mínimo 6 caracteres.' },
+        }[lang] || { mismatch: 'Les mots de passe ne correspondent pas.', short: 'Minimum 6 caractères.' };
+        if (changePwValues.newPw !== changePwValues.confirmPw) { setChangePwError(L.mismatch); return; }
+        if (changePwValues.newPw.length < 6) { setChangePwError(L.short); return; }
+        setChangePwLoading(true); setChangePwError(null);
+        try {
+            const { error } = await supabase.auth.updateUser({ password: changePwValues.newPw });
+            if (error) throw error;
+            setChangePwSuccess(true);
+            setTimeout(() => { setShowChangePw(false); setChangePwSuccess(false); setChangePwValues({ newPw: '', confirmPw: '' }); }, 1800);
+        } catch (err: any) {
+            setChangePwError(err.message);
+        } finally { setChangePwLoading(false); }
+    };
+
+    const handleDeleteAccount = async () => {
+        setDeletingAccount(true); setDeleteError(null);
+        try {
+            await supabase.from('analyses').delete().eq('user_id', user.id);
+            await supabase.auth.signOut();
+            onLogout();
+        } catch (err: any) {
+            setDeleteError(err.message);
+            setDeletingAccount(false);
+        }
+    };
+
     const handleDelete = async (itemId: string) => {
         setDeletingId(itemId);
         try {
@@ -441,6 +485,22 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = C.border; (e.currentTarget as HTMLElement).style.color = C.muted2; }}>
                 <IcoOut /> {lang === 'en' ? 'Sign out' : lang === 'nl' ? 'Uitloggen' : lang === 'es' ? 'Cerrar sesión' : 'Se déconnecter'}
             </button>
+
+            {/* Account actions */}
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                <button onClick={() => { setShowChangePw(true); setChangePwError(null); setChangePwSuccess(false); setChangePwValues({ newPw: '', confirmPw: '' }); }}
+                    style={{ flex: 1, padding: '8px 0', background: 'transparent', border: `1px solid ${C.border}`, borderRadius: 9, color: C.muted2, fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'all .18s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(0,212,180,0.07)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,212,180,0.3)'; (e.currentTarget as HTMLElement).style.color = C.accent; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = C.border; (e.currentTarget as HTMLElement).style.color = C.muted2; }}>
+                    🔑 {lang === 'en' ? 'Change password' : lang === 'nl' ? 'Wachtwoord' : lang === 'es' ? 'Contraseña' : 'Mot de passe'}
+                </button>
+                <button onClick={() => { setShowDeleteAccount(true); setDeleteError(null); }}
+                    style={{ flex: 1, padding: '8px 0', background: 'transparent', border: `1px solid ${C.border}`, borderRadius: 9, color: C.muted2, fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'all .18s' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,107,0.07)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,107,107,0.3)'; (e.currentTarget as HTMLElement).style.color = C.warn; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = C.border; (e.currentTarget as HTMLElement).style.color = C.muted2; }}>
+                    🗑️ {lang === 'en' ? 'Delete account' : lang === 'nl' ? 'Account' : lang === 'es' ? 'Eliminar cuenta' : 'Supprimer compte'}
+                </button>
+            </div>
         </div>
     );
 
@@ -594,6 +654,102 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
                     </motion.div>
                 </main>
             </div>
+
+            {/* ═══ CHANGE PASSWORD MODAL ═══ */}
+            <AnimatePresence>
+                {showChangePw && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(8px)' }}
+                        onClick={e => { if (e.target === e.currentTarget) setShowChangePw(false); }}>
+                        <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                            style={{ position: 'relative', width: '100%', maxWidth: '380px', borderRadius: 22, overflow: 'hidden', border: `1px solid ${C.border}`, background: 'rgba(10,14,28,0.97)', boxShadow: '0 32px 80px rgba(0,0,0,0.7)' }}>
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.accent}, #06b6d4, ${C.accent})` }} />
+                            <button onClick={() => setShowChangePw(false)} style={{ position: 'absolute', top: 14, right: 14, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                            </button>
+                            <div style={{ padding: '36px 28px 28px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+                                    <div style={{ width: 56, height: 56, borderRadius: 16, background: `linear-gradient(135deg, rgba(0,212,180,0.15), rgba(6,182,212,0.15))`, border: `1px solid rgba(0,212,180,0.25)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🔑</div>
+                                </div>
+                                <h3 style={{ color: '#fff', fontSize: 19, fontWeight: 700, textAlign: 'center', marginBottom: 6 }}>
+                                    {lang === 'en' ? 'Change password' : lang === 'nl' ? 'Wachtwoord wijzigen' : lang === 'es' ? 'Cambiar contraseña' : 'Changer le mot de passe'}
+                                </h3>
+                                <p style={{ color: 'rgba(148,163,184,0.6)', fontSize: 12, textAlign: 'center', marginBottom: 22 }}>
+                                    {lang === 'en' ? 'Enter your new password below' : lang === 'nl' ? 'Voer uw nieuw wachtwoord in' : lang === 'es' ? 'Ingrese su nueva contraseña' : 'Entrez votre nouveau mot de passe'}
+                                </p>
+
+                                {changePwError && <div style={{ marginBottom: 14, padding: '10px 14px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', fontSize: 12, textAlign: 'center' }}>{changePwError}</div>}
+                                {changePwSuccess && <div style={{ marginBottom: 14, padding: '10px 14px', borderRadius: 10, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#4ade80', fontSize: 12, textAlign: 'center' }}>✓ {lang === 'en' ? 'Password changed!' : lang === 'nl' ? 'Wachtwoord gewijzigd!' : lang === 'es' ? '¡Contraseña cambiada!' : 'Mot de passe changé !'}</div>}
+
+                                <div style={{ marginBottom: 12 }}>
+                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'rgba(148,163,184,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                                        {lang === 'en' ? 'New password' : lang === 'nl' ? 'Nieuw wachtwoord' : lang === 'es' ? 'Nueva contraseña' : 'Nouveau mot de passe'}
+                                    </label>
+                                    <input type="password" value={changePwValues.newPw} onChange={e => { setChangePwValues(v => ({ ...v, newPw: e.target.value })); setChangePwError(null); }}
+                                        style={{ width: '100%', padding: '11px 14px', borderRadius: 11, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                                        onFocus={e => { e.currentTarget.style.borderColor = C.accent; }} onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }} />
+                                </div>
+                                <div style={{ marginBottom: 20 }}>
+                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'rgba(148,163,184,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                                        {lang === 'en' ? 'Confirm new password' : lang === 'nl' ? 'Bevestig wachtwoord' : lang === 'es' ? 'Confirmar contraseña' : 'Confirmer le mot de passe'}
+                                    </label>
+                                    <input type="password" value={changePwValues.confirmPw} onChange={e => { setChangePwValues(v => ({ ...v, confirmPw: e.target.value })); setChangePwError(null); }}
+                                        onKeyDown={e => { if (e.key === 'Enter') handleChangePassword(); }}
+                                        style={{ width: '100%', padding: '11px 14px', borderRadius: 11, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                                        onFocus={e => { e.currentTarget.style.borderColor = C.accent; }} onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }} />
+                                </div>
+                                <button onClick={handleChangePassword} disabled={changePwLoading || changePwSuccess}
+                                    style={{ width: '100%', padding: '13px', borderRadius: 12, background: `linear-gradient(135deg, ${C.accent}, #06b6d4)`, border: 'none', color: C.bg, fontWeight: 700, fontSize: 13, letterSpacing: '0.05em', textTransform: 'uppercase', cursor: changePwLoading ? 'not-allowed' : 'pointer', opacity: changePwLoading ? 0.7 : 1 }}>
+                                    {changePwLoading ? '...' : (lang === 'en' ? 'Save new password' : lang === 'nl' ? 'Opslaan' : lang === 'es' ? 'Guardar' : 'Enregistrer')}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ═══ DELETE ACCOUNT MODAL ═══ */}
+            <AnimatePresence>
+                {showDeleteAccount && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(0,0,0,0.78)', backdropFilter: 'blur(8px)' }}
+                        onClick={e => { if (e.target === e.currentTarget) setShowDeleteAccount(false); }}>
+                        <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                            style={{ position: 'relative', width: '100%', maxWidth: '380px', borderRadius: 22, overflow: 'hidden', border: '1px solid rgba(255,107,107,0.2)', background: 'rgba(10,14,28,0.97)', boxShadow: '0 32px 80px rgba(0,0,0,0.7)' }}>
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #ff6b6b, #ff4444, #ff6b6b)' }} />
+                            <button onClick={() => setShowDeleteAccount(false)} style={{ position: 'absolute', top: 14, right: 14, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                            </button>
+                            <div style={{ padding: '36px 28px 28px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+                                    <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(255,107,107,0.12)', border: '1px solid rgba(255,107,107,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>⚠️</div>
+                                </div>
+                                <h3 style={{ color: '#ff6b6b', fontSize: 19, fontWeight: 700, textAlign: 'center', marginBottom: 8 }}>
+                                    {lang === 'en' ? 'Delete account' : lang === 'nl' ? 'Account verwijderen' : lang === 'es' ? 'Eliminar cuenta' : 'Supprimer le compte'}
+                                </h3>
+                                <p style={{ color: 'rgba(148,163,184,0.7)', fontSize: 13, textAlign: 'center', lineHeight: 1.6, marginBottom: 22 }}>
+                                    {lang === 'en' ? 'This will permanently delete all your analyses and sign you out. This action cannot be undone.' : lang === 'nl' ? 'Dit verwijdert al uw analyses permanent en logt u uit. Deze actie kan niet ongedaan worden gemaakt.' : lang === 'es' ? 'Esto eliminará permanentemente todos sus análisis y cerrará su sesión. Esta acción no se puede deshacer.' : 'Cela supprimera définitivement toutes vos analyses et vous déconnectera. Cette action est irréversible.'}
+                                </p>
+
+                                {deleteError && <div style={{ marginBottom: 14, padding: '10px 14px', borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', fontSize: 12, textAlign: 'center' }}>{deleteError}</div>}
+
+                                <div style={{ display: 'flex', gap: 10 }}>
+                                    <button onClick={() => setShowDeleteAccount(false)}
+                                        style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'transparent', border: `1px solid ${C.border}`, color: C.muted2, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
+                                        {lang === 'en' ? 'Cancel' : lang === 'nl' ? 'Annuleren' : lang === 'es' ? 'Cancelar' : 'Annuler'}
+                                    </button>
+                                    <button onClick={handleDeleteAccount} disabled={deletingAccount}
+                                        style={{ flex: 1, padding: '12px', borderRadius: 12, background: 'rgba(255,107,107,0.15)', border: '1px solid rgba(255,107,107,0.35)', color: '#ff6b6b', fontWeight: 700, fontSize: 13, cursor: deletingAccount ? 'not-allowed' : 'pointer', opacity: deletingAccount ? 0.7 : 1 }}>
+                                        {deletingAccount ? '...' : (lang === 'en' ? 'Yes, delete' : lang === 'nl' ? 'Ja, verwijderen' : lang === 'es' ? 'Sí, eliminar' : 'Oui, supprimer')}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 };
