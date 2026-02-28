@@ -12,6 +12,7 @@ interface FileUploadProps {
 const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(({ onFileSelect, onSkip }, ref) => {
     const { t } = useLanguage();
     const [selectedFilePreviews, setSelectedFilePreviews] = useState<SelectedFilePreview[]>([]);
+    const [showSkipModal, setShowSkipModal] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
     const fileObjectUrlsRef = useRef<string[]>([]);
@@ -171,11 +172,105 @@ const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(({ onFileSelect, 
                     </button>
                 ) : (
                     <button
-                        onClick={onSkip}
+                        onClick={() => setShowSkipModal(true)}
                         className="w-full px-7 py-4 bg-white border-2 border-emerald-500 text-emerald-600 text-lg rounded-full hover:bg-emerald-50 transition-all duration-300 font-bold shadow-xl active:scale-95"
                     >
                         {t('questionnaire_ui.skip_step')}
                     </button>
+                )}
+
+                {showSkipModal && (
+                    <div
+                        style={{
+                            position: 'fixed', inset: 0, zIndex: 9999,
+                            background: 'rgba(3,3,5,0.82)',
+                            backdropFilter: 'blur(8px)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            padding: '16px',
+                            animation: 'fade-in 0.2s ease-out',
+                        }}
+                        onClick={() => setShowSkipModal(false)}
+                    >
+                        <div
+                            style={{
+                                background: 'linear-gradient(135deg, #0f172a, #0a1628)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '24px',
+                                padding: '32px 28px 28px',
+                                maxWidth: '420px',
+                                width: '100%',
+                                boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+                                animation: 'popup-scale-in-animation 0.25s ease-out',
+                            }}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            {/* Icon */}
+                            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '18px' }}>
+                                <div style={{
+                                    width: '56px', height: '56px', borderRadius: '50%',
+                                    background: 'rgba(234,179,8,0.12)',
+                                    border: '2px solid rgba(234,179,8,0.35)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                }}>
+                                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                                        <line x1="12" y1="9" x2="12" y2="13"/>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {/* Title */}
+                            <h3 style={{
+                                color: '#ffffff', fontWeight: 700, fontSize: '18px',
+                                textAlign: 'center', marginBottom: '12px',
+                            }}>
+                                {t('questionnaire_ui.skip_photo_modal_title')}
+                            </h3>
+
+                            {/* Message */}
+                            <p style={{
+                                color: 'rgba(148,163,184,0.85)', fontSize: '14px',
+                                lineHeight: '1.65', textAlign: 'center', marginBottom: '24px',
+                            }}>
+                                {t('questionnaire_ui.skip_photo_modal_message')}
+                            </p>
+
+                            {/* Buttons */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <button
+                                    onClick={() => setShowSkipModal(false)}
+                                    style={{
+                                        width: '100%', padding: '13px 20px',
+                                        background: 'linear-gradient(135deg, #2dd4bf, #06b6d4)',
+                                        color: '#030305', fontWeight: 700, fontSize: '15px',
+                                        borderRadius: '999px', border: 'none', cursor: 'pointer',
+                                        boxShadow: '0 0 20px rgba(45,212,191,0.25)',
+                                        transition: 'opacity 0.2s',
+                                    }}
+                                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                                >
+                                    📷 {t('questionnaire_ui.skip_photo_modal_add_btn')}
+                                </button>
+                                <button
+                                    onClick={() => { setShowSkipModal(false); onSkip(); }}
+                                    style={{
+                                        width: '100%', padding: '13px 20px',
+                                        background: 'transparent',
+                                        color: 'rgba(148,163,184,0.7)', fontWeight: 600, fontSize: '14px',
+                                        borderRadius: '999px',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        cursor: 'pointer', transition: 'all 0.2s',
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(148,163,184,0.95)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(148,163,184,0.7)'; }}
+                                >
+                                    {t('questionnaire_ui.skip_photo_modal_continue_btn')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
 
