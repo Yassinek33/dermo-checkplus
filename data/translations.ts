@@ -117,6 +117,27 @@ export const translations: Record<string, any> = {
                 analyses: { value: "5 000+", label: "Analyses réalisées" },
                 languages: { value: "4", label: "Langues disponibles" },
                 satisfaction: { value: "96%", label: "Taux de satisfaction" }
+            },
+            reviews: {
+                title: "Ce que disent nos utilisateurs",
+                subtitle: "Des vraies personnes, de vraies expériences. Votre avis aide la communauté.",
+                badge: "Avis Vérifiés",
+                cta: "Laisser mon avis",
+                signin_prompt: "Connectez-vous pour partager votre expérience",
+                signin_btn: "Se connecter",
+                empty: "Soyez le premier à partager votre expérience !",
+                total_label: "avis",
+                form: {
+                    title: "Votre avis",
+                    name_label: "Votre prénom",
+                    rating_label: "Note globale",
+                    comment_label: "Votre expérience",
+                    comment_placeholder: "Décrivez votre expérience avec DermatoCheck… Qu'est-ce qui vous a plu ? Qu'est-ce qui pourrait être amélioré ?",
+                    submit: "Publier mon avis",
+                    submitting: "Publication…",
+                    success: "Merci ! Votre avis a bien été publié.",
+                    error: "Une erreur s'est produite. Veuillez réessayer."
+                }
             }
         },
         about: {
@@ -583,6 +604,27 @@ export const translations: Record<string, any> = {
                 analyses: { value: "5,000+", label: "Analyses performed" },
                 languages: { value: "4", label: "Available languages" },
                 satisfaction: { value: "96%", label: "Satisfaction rate" }
+            },
+            reviews: {
+                title: "What our users say",
+                subtitle: "Real people, real experiences. Your feedback helps the community.",
+                badge: "Verified Reviews",
+                cta: "Leave my review",
+                signin_prompt: "Sign in to share your experience",
+                signin_btn: "Sign in",
+                empty: "Be the first to share your experience!",
+                total_label: "reviews",
+                form: {
+                    title: "Your review",
+                    name_label: "Your first name",
+                    rating_label: "Overall rating",
+                    comment_label: "Your experience",
+                    comment_placeholder: "Describe your experience with DermatoCheck… What did you like? What could be improved?",
+                    submit: "Publish my review",
+                    submitting: "Publishing…",
+                    success: "Thank you! Your review has been published.",
+                    error: "An error occurred. Please try again."
+                }
             }
         },
         about: {
@@ -1052,6 +1094,27 @@ export const translations: Record<string, any> = {
                 analyses: { value: "5.000+", label: "Uitgevoerde analyses" },
                 languages: { value: "4", label: "Beschikbare talen" },
                 satisfaction: { value: "96%", label: "Klanttevredenheid" }
+            },
+            reviews: {
+                title: "Wat onze gebruikers zeggen",
+                subtitle: "Echte mensen, echte ervaringen. Uw mening helpt de gemeenschap.",
+                badge: "Geverifieerde Beoordelingen",
+                cta: "Mijn beoordeling achterlaten",
+                signin_prompt: "Meld u aan om uw ervaring te delen",
+                signin_btn: "Inloggen",
+                empty: "Wees de eerste om uw ervaring te delen!",
+                total_label: "beoordelingen",
+                form: {
+                    title: "Uw beoordeling",
+                    name_label: "Uw voornaam",
+                    rating_label: "Algemene beoordeling",
+                    comment_label: "Uw ervaring",
+                    comment_placeholder: "Beschrijf uw ervaring met DermatoCheck… Wat vond u goed? Wat kan beter?",
+                    submit: "Mijn beoordeling publiceren",
+                    submitting: "Publiceren…",
+                    success: "Dank u! Uw beoordeling is gepubliceerd.",
+                    error: "Er is een fout opgetreden. Probeer het opnieuw."
+                }
             }
         },
         about: {
@@ -1520,6 +1583,27 @@ export const translations: Record<string, any> = {
                 analyses: { value: "5.000+", label: "Análisis realizados" },
                 languages: { value: "4", label: "Idiomas disponibles" },
                 satisfaction: { value: "96%", label: "Tasa de satisfacción" }
+            },
+            reviews: {
+                title: "Lo que dicen nuestros usuarios",
+                subtitle: "Personas reales, experiencias reales. Tu opinión ayuda a la comunidad.",
+                badge: "Opiniones Verificadas",
+                cta: "Dejar mi opinión",
+                signin_prompt: "Inicia sesión para compartir tu experiencia",
+                signin_btn: "Iniciar sesión",
+                empty: "¡Sé el primero en compartir tu experiencia!",
+                total_label: "opiniones",
+                form: {
+                    title: "Tu opinión",
+                    name_label: "Tu nombre",
+                    rating_label: "Valoración general",
+                    comment_label: "Tu experiencia",
+                    comment_placeholder: "Describe tu experiencia con DermatoCheck… ¿Qué te gustó? ¿Qué podría mejorar?",
+                    submit: "Publicar mi opinión",
+                    submitting: "Publicando…",
+                    success: "¡Gracias! Tu opinión ha sido publicada.",
+                    error: "Ha ocurrido un error. Por favor, inténtalo de nuevo."
+                }
             }
         },
         about: {

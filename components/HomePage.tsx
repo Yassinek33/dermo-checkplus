@@ -9,6 +9,7 @@ import { FAQSection } from './FAQSection';
 import { TestimonialSection } from './TestimonialSection';
 import { StatsSection } from './StatsSection';
 import { WhyChooseUsSection } from './WhyChooseUsSection';
+import { ReviewSection } from './ReviewSection';
 
 interface HomePageProps {
     config?: PageConfig;
@@ -361,6 +362,9 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
 
             {/* USER TESTIMONIALS SECTION */}
             <TestimonialSection />
+
+            {/* LIVE USER REVIEWS SECTION */}
+            <ReviewSection onNavigateToAuth={() => onNavigate('auth')} />
 
             {/* WHY CHOOSE US SECTION */}
             <WhyChooseUsSection />

@@ -78,6 +78,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
     const [otpError, setOtpError] = useState<string | null>(null);
     const [otpSuccess, setOtpSuccess] = useState<string | null>(null);
     const [pendingEmail, setPendingEmail] = useState('');
+    const [pendingName, setPendingName] = useState('');
     const [resendCooldown, setResendCooldown] = useState(0);
     const otpInputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -119,6 +120,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                 if (data.user && !data.session) {
                     // Show OTP modal for email verification
                     setPendingEmail(formData.email);
+                    setPendingName(formData.name || '');
                     setOtpValues(['', '', '', '', '', '']);
                     setOtpError(null);
                     setOtpSuccess(null);
@@ -187,6 +189,17 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
         setTimeout(() => otpInputsRef.current[focusIndex]?.focus(), 0);
     };
 
+    // Fire-and-forget: send welcome/satisfaction email via Edge Function
+    const sendWelcomeEmail = async (email: string, name: string) => {
+        try {
+            await supabase.functions.invoke('send-welcome-email', {
+                body: { email, name, language },
+            });
+        } catch {
+            // Non-blocking — don't block user navigation if email fails
+        }
+    };
+
     const handleOtpVerify = async () => {
         const token = otpValues.join('');
         if (token.length !== 6) return;
@@ -201,6 +214,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                 type: 'email',
             });
             if (error) throw error;
+            sendWelcomeEmail(pendingEmail, pendingName);
             onNavigate('home');
         } catch (err: any) {
             // If 'email' type failed, try 'signup' type
@@ -211,6 +225,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onNavigate }) => {
                     type: 'signup',
                 });
                 if (err2) throw err2;
+                sendWelcomeEmail(pendingEmail, pendingName);
                 onNavigate('home');
             } catch (err3: any) {
                 setOtpError(
