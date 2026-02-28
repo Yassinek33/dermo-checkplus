@@ -171,6 +171,32 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
         ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
         : 0;
 
+    // Inject dynamic AggregateRating schema so Google sees real numbers
+    useEffect(() => {
+        if (reviews.length === 0) return;
+        const existing = document.getElementById('schema-aggregate-rating');
+        if (existing) existing.remove();
+        const script = document.createElement('script');
+        script.id = 'schema-aggregate-rating';
+        script.type = 'application/ld+json';
+        script.text = JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebApplication',
+            name: 'DermatoCheck',
+            url: 'https://www.dermatocheck.com',
+            applicationCategory: 'HealthApplication',
+            aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: avgRating.toFixed(1),
+                bestRating: '5',
+                worstRating: '1',
+                ratingCount: String(reviews.length),
+            },
+        });
+        document.head.appendChild(script);
+        return () => { document.getElementById('schema-aggregate-rating')?.remove(); };
+    }, [reviews, avgRating]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim() || rating === 0) return;
