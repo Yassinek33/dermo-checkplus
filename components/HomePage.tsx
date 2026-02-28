@@ -6,7 +6,6 @@ import { BentoGrid, BentoGridItem } from './BentoGrid';
 import { useLanguage } from '../context/LanguageContext';
 import AuthMarquee from './AuthMarquee';
 import { FAQSection } from './FAQSection';
-import { TestimonialSection } from './TestimonialSection';
 import { StatsSection } from './StatsSection';
 import { WhyChooseUsSection } from './WhyChooseUsSection';
 import { ReviewSection } from './ReviewSection';
@@ -360,10 +359,7 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
                 </div>
             </section>
 
-            {/* USER TESTIMONIALS SECTION */}
-            <TestimonialSection />
-
-            {/* LIVE USER REVIEWS SECTION */}
+            {/* USER REVIEWS SECTION */}
             <ReviewSection onNavigateToAuth={() => onNavigate('auth')} />
 
             {/* WHY CHOOSE US SECTION */}

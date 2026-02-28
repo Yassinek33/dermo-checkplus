@@ -19,7 +19,7 @@ const StarRating: React.FC<{ rating: number; interactive?: boolean; onRate?: (r:
     const display = hovered || rating;
 
     return (
-        <div style={{ display: 'flex', gap: '4px' }}>
+        <div style={{ display: 'flex', gap: '3px' }}>
             {[1, 2, 3, 4, 5].map(i => (
                 <button
                     key={i}
@@ -36,8 +36,10 @@ const StarRating: React.FC<{ rating: number; interactive?: boolean; onRate?: (r:
                     }}
                     aria-label={`${i} star${i > 1 ? 's' : ''}`}
                 >
-                    <svg width={size} height={size} viewBox="0 0 24 24" fill={display >= i ? '#f59e0b' : 'none'}
-                        stroke={display >= i ? '#f59e0b' : 'rgba(148,163,184,0.3)'} strokeWidth="1.5">
+                    <svg width={size} height={size} viewBox="0 0 24 24"
+                        fill={display >= i ? '#f59e0b' : 'none'}
+                        stroke={display >= i ? '#f59e0b' : 'rgba(148,163,184,0.3)'}
+                        strokeWidth="1.5">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                 </button>
@@ -46,65 +48,59 @@ const StarRating: React.FC<{ rating: number; interactive?: boolean; onRate?: (r:
     );
 };
 
+const AVATAR_COLORS = ['#2dd4bf', '#06b6d4', '#818cf8', '#f472b6', '#34d399'];
+
 const ReviewCard: React.FC<{ review: Review; index: number }> = ({ review, index }) => {
-    const colors = ['#2dd4bf', '#06b6d4', '#818cf8', '#f472b6', '#34d399'];
-    const color = colors[index % colors.length];
+    const color = AVATAR_COLORS[index % AVATAR_COLORS.length];
     const initial = review.author_name.charAt(0).toUpperCase();
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.45, delay: index * 0.1 }}
-            style={{
-                background: 'rgba(255,255,255,0.028)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderRadius: '20px',
-                padding: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '14px',
-                transition: 'border-color 0.25s, background 0.25s',
-            }}
-            onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = `${color}40`;
-                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)';
-            }}
-            onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)';
-                (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.028)';
-            }}
+            transition={{ duration: 0.5, delay: index * 0.12 }}
+            className="p-8 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.06] transition-all duration-300 group flex flex-col h-full"
+            style={{ borderColor: 'rgba(255,255,255,0.05)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = `${color}35`; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.05)'; }}
         >
+            {/* Quote icon */}
+            <div className="mb-4 transition-all duration-300" style={{ color, opacity: 0.25 }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14.017 21L16.41 12H9.006L9.006 3H21.01L21.01 12.01L14.017 21Z" />
+                    <path d="M5.013 21L7.406 12H0.002L0.002 3H12.006L12.006 12.01L5.013 21Z" />
+                </svg>
+            </div>
+
             {/* Stars */}
-            <StarRating rating={review.rating} size={18} />
+            <div className="mb-4">
+                <StarRating rating={review.rating} size={17} />
+            </div>
 
             {/* Comment */}
             {review.comment && (
-                <p style={{
-                    color: 'rgba(226,232,240,0.82)', fontSize: '14px',
-                    lineHeight: '1.7', fontWeight: 300, flexGrow: 1,
-                }}>
+                <p className="text-white/75 font-light leading-relaxed mb-8 flex-grow" style={{ fontSize: '14px', lineHeight: '1.75' }}>
                     "{review.comment}"
                 </p>
             )}
 
             {/* Author */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: 'auto' }}>
+            <div className="flex items-center gap-3 mt-auto">
                 <div style={{
-                    width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0,
+                    width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0,
                     background: `linear-gradient(135deg, ${color}25, ${color}10)`,
                     border: `1px solid ${color}35`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color, fontWeight: 700, fontSize: '15px',
+                    color, fontWeight: 700, fontSize: '16px',
                 }}>
                     {initial}
                 </div>
                 <div>
-                    <p style={{ color: '#ffffff', fontWeight: 600, fontSize: '14px', margin: 0 }}>
+                    <p className="text-white font-medium" style={{ fontSize: '14px', margin: 0 }}>
                         {review.author_name}
                     </p>
-                    <p style={{ color: 'rgba(148,163,184,0.45)', fontSize: '12px', margin: 0 }}>
+                    <p style={{ color: 'rgba(148,163,184,0.4)', fontSize: '12px', margin: 0 }}>
                         {new Date(review.created_at).toLocaleDateString('fr-BE', { month: 'long', year: 'numeric' })}
                     </p>
                 </div>
@@ -130,7 +126,7 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [submitSuccess, setSubmitSuccess] = useState(false);
 
-    // Handle ?review=X URL param from email link
+    // Handle ?review=X URL param from email star links
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const reviewParam = params.get('review');
@@ -140,14 +136,13 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                 setRating(val);
                 setShowModal(true);
             }
-            // Clean URL
             const url = new URL(window.location.href);
             url.searchParams.delete('review');
             window.history.replaceState({}, '', url.toString());
         }
     }, []);
 
-    // Fetch user
+    // Fetch current user
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => {
             setCurrentUser(data.user);
@@ -157,7 +152,7 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
         });
     }, []);
 
-    // Fetch reviews
+    // Fetch reviews from Supabase
     const fetchReviews = useCallback(async () => {
         setLoadingReviews(true);
         const { data } = await supabase
@@ -207,32 +202,19 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
     };
 
     const openModal = () => {
-        if (!currentUser) {
-            onNavigateToAuth?.();
-            return;
-        }
+        if (!currentUser) { onNavigateToAuth?.(); return; }
         setShowModal(true);
         setSubmitError(null);
         setSubmitSuccess(false);
     };
 
     return (
-        <section style={{ padding: '80px 0', position: 'relative', overflow: 'hidden' }}>
+        <section className="py-20 relative w-full overflow-hidden">
             {/* Background glows */}
-            <div style={{
-                position: 'absolute', top: '20%', right: '-10%',
-                width: '400px', height: '400px', borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(45,212,191,0.07) 0%, transparent 70%)',
-                pointerEvents: 'none',
-            }} />
-            <div style={{
-                position: 'absolute', bottom: '10%', left: '-5%',
-                width: '350px', height: '350px', borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(129,140,248,0.06) 0%, transparent 70%)',
-                pointerEvents: 'none',
-            }} />
+            <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-brand-primary/10 rounded-full blur-3xl -z-10 transform -translate-x-1/2 -translate-y-1/2 opacity-50 pointer-events-none" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl -z-10 opacity-50 pointer-events-none" />
 
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+            <div className="max-w-6xl mx-auto px-4">
 
                 {/* Header */}
                 <motion.div
@@ -240,10 +222,10 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
-                    style={{ textAlign: 'center', marginBottom: '56px' }}
+                    className="text-center mb-14"
                 >
                     {/* Badge */}
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                    <div className="flex justify-center mb-5">
                         <span style={{
                             display: 'inline-flex', alignItems: 'center', gap: '6px',
                             padding: '6px 16px',
@@ -253,38 +235,34 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                             letterSpacing: '0.1em', textTransform: 'uppercase',
                             color: '#2dd4bf',
                         }}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#2dd4bf">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="#2dd4bf">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
-                            {tr.badge || 'Verified Reviews'}
+                            {tr.badge || 'Avis vérifiés'}
                         </span>
                     </div>
 
-                    <h2 style={{
-                        fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800,
-                        color: '#ffffff', marginBottom: '14px',
-                        fontFamily: "'Syne', sans-serif", letterSpacing: '-0.5px',
-                    }}>
-                        {tr.title || 'What our users say'}
+                    <p className="text-brand-secondary/40 font-mono text-xs uppercase tracking-[0.4em] mb-4">
+                        {t('home.testimonials.subtitle', 'Avis Utilisateurs')}
+                    </p>
+                    <h2 className="text-3xl md:text-5xl font-display font-bold tracking-tight text-white mb-4">
+                        {tr.title || t('home.testimonials.title', 'Ils nous font confiance')}
                     </h2>
-                    <p style={{
-                        color: 'rgba(148,163,184,0.65)', fontSize: '16px',
-                        maxWidth: '500px', margin: '0 auto 28px', lineHeight: '1.6',
-                    }}>
+                    <p style={{ color: 'rgba(148,163,184,0.6)', fontSize: '16px', maxWidth: '480px', margin: '0 auto 24px', lineHeight: '1.6' }}>
                         {tr.subtitle}
                     </p>
 
-                    {/* Avg rating + CTA row */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', flexWrap: 'wrap' }}>
+                    {/* Avg rating + CTA */}
+                    <div className="flex items-center justify-center gap-6 flex-wrap">
                         {reviews.length > 0 && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div className="flex items-center gap-3">
                                 <span style={{ fontSize: '28px', fontWeight: 800, color: '#f59e0b' }}>
                                     {avgRating.toFixed(1)}
                                 </span>
                                 <div>
                                     <StarRating rating={Math.round(avgRating)} size={16} />
-                                    <p style={{ color: 'rgba(148,163,184,0.5)', fontSize: '12px', margin: '2px 0 0' }}>
-                                        {reviews.length} {tr.total_label || 'reviews'}
+                                    <p style={{ color: 'rgba(148,163,184,0.45)', fontSize: '12px', margin: '3px 0 0' }}>
+                                        {reviews.length} {tr.total_label || 'avis'}
                                     </p>
                                 </div>
                             </div>
@@ -310,20 +288,20 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                                 (e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(45,212,191,0.25)';
                             }}
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
-                            {!currentUser ? (tr.signin_prompt || 'Sign in to review') : (tr.cta || 'Leave my review')}
+                            {!currentUser ? (tr.signin_prompt || 'Se connecter pour noter') : (tr.cta || 'Laisser mon avis')}
                         </button>
                     </div>
                 </motion.div>
 
                 {/* Reviews grid */}
                 {loadingReviews ? (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+                    <div className="flex justify-center py-16">
                         <div style={{
                             width: '40px', height: '40px', borderRadius: '50%',
-                            border: '3px solid rgba(45,212,191,0.2)',
+                            border: '3px solid rgba(45,212,191,0.15)',
                             borderTopColor: '#2dd4bf',
                             animation: 'spin 0.8s linear infinite',
                         }} />
@@ -333,19 +311,15 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        style={{ textAlign: 'center', padding: '60px 20px' }}
+                        className="text-center py-16"
                     >
                         <div style={{ fontSize: '48px', marginBottom: '16px' }}>⭐</div>
                         <p style={{ color: 'rgba(148,163,184,0.5)', fontSize: '16px' }}>
-                            {tr.empty || 'Be the first to share your experience!'}
+                            {tr.empty || 'Soyez le premier à partager votre expérience !'}
                         </p>
                     </motion.div>
                 ) : (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                        gap: '20px',
-                    }}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {reviews.map((review, i) => (
                             <ReviewCard key={review.id} review={review} index={i} />
                         ))}
@@ -411,7 +385,6 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                             </button>
 
                             {submitSuccess ? (
-                                // Success state
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -422,20 +395,16 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                                         background: 'rgba(45,212,191,0.1)',
                                         border: '2px solid rgba(45,212,191,0.3)',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        margin: '0 auto 20px', fontSize: '28px',
+                                        margin: '0 auto 20px', fontSize: '28px', color: '#2dd4bf',
                                     }}>✓</div>
                                     <h3 style={{ color: '#2dd4bf', fontWeight: 700, fontSize: '20px', marginBottom: '10px' }}>
-                                        {form.success || 'Thank you!'}
+                                        {form.success || 'Merci !'}
                                     </h3>
                                 </motion.div>
                             ) : (
                                 <form onSubmit={handleSubmit}>
-                                    {/* Title */}
-                                    <h3 style={{
-                                        color: '#ffffff', fontWeight: 700, fontSize: '20px',
-                                        marginBottom: '24px', paddingRight: '32px',
-                                    }}>
-                                        {form.title || 'Your review'}
+                                    <h3 style={{ color: '#ffffff', fontWeight: 700, fontSize: '20px', marginBottom: '24px', paddingRight: '32px' }}>
+                                        {form.title || 'Votre avis'}
                                     </h3>
 
                                     {/* Name */}
@@ -443,25 +412,22 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                                         <label style={{
                                             display: 'block', color: 'rgba(148,163,184,0.7)',
                                             fontSize: '12px', fontWeight: 600,
-                                            letterSpacing: '0.06em', textTransform: 'uppercase',
-                                            marginBottom: '8px',
+                                            letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '8px',
                                         }}>
-                                            {form.name_label || 'Your first name'} *
+                                            {form.name_label || 'Votre prénom'} *
                                         </label>
                                         <input
                                             type="text"
                                             value={name}
                                             onChange={e => setName(e.target.value)}
-                                            required
-                                            maxLength={40}
+                                            required maxLength={40}
                                             style={{
                                                 width: '100%', padding: '12px 16px',
                                                 background: 'rgba(255,255,255,0.05)',
                                                 border: '1px solid rgba(255,255,255,0.1)',
                                                 borderRadius: '12px', color: '#ffffff',
                                                 fontSize: '14px', outline: 'none',
-                                                transition: 'border-color 0.2s',
-                                                boxSizing: 'border-box',
+                                                transition: 'border-color 0.2s', boxSizing: 'border-box',
                                             }}
                                             onFocus={e => (e.currentTarget.style.borderColor = 'rgba(45,212,191,0.4)')}
                                             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
@@ -469,27 +435,24 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                                         />
                                     </div>
 
-                                    {/* Star rating */}
+                                    {/* Stars */}
                                     <div style={{ marginBottom: '20px' }}>
                                         <label style={{
                                             display: 'block', color: 'rgba(148,163,184,0.7)',
                                             fontSize: '12px', fontWeight: 600,
-                                            letterSpacing: '0.06em', textTransform: 'uppercase',
-                                            marginBottom: '10px',
+                                            letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '10px',
                                         }}>
-                                            {form.rating_label || 'Overall rating'} *
+                                            {form.rating_label || 'Note globale'} *
                                         </label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                             <StarRating rating={rating} interactive onRate={setRating} size={32} />
                                             {rating > 0 && (
-                                                <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '16px' }}>
-                                                    {rating}/5
-                                                </span>
+                                                <span style={{ color: '#f59e0b', fontWeight: 700, fontSize: '16px' }}>{rating}/5</span>
                                             )}
                                         </div>
                                         {rating === 0 && (
                                             <p style={{ color: 'rgba(148,163,184,0.35)', fontSize: '12px', marginTop: '6px' }}>
-                                                Click on a star to rate
+                                                Cliquez sur une étoile pour noter
                                             </p>
                                         )}
                                     </div>
@@ -499,16 +462,14 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                                         <label style={{
                                             display: 'block', color: 'rgba(148,163,184,0.7)',
                                             fontSize: '12px', fontWeight: 600,
-                                            letterSpacing: '0.06em', textTransform: 'uppercase',
-                                            marginBottom: '8px',
+                                            letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '8px',
                                         }}>
-                                            {form.comment_label || 'Your experience'}
+                                            {form.comment_label || 'Votre expérience'}
                                         </label>
                                         <textarea
                                             value={comment}
                                             onChange={e => setComment(e.target.value)}
-                                            rows={4}
-                                            maxLength={500}
+                                            rows={4} maxLength={500}
                                             style={{
                                                 width: '100%', padding: '12px 16px',
                                                 background: 'rgba(255,255,255,0.05)',
@@ -516,22 +477,17 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                                                 borderRadius: '12px', color: '#ffffff',
                                                 fontSize: '14px', outline: 'none', resize: 'vertical',
                                                 lineHeight: '1.6', fontFamily: 'inherit',
-                                                transition: 'border-color 0.2s',
-                                                boxSizing: 'border-box',
+                                                transition: 'border-color 0.2s', boxSizing: 'border-box',
                                             }}
                                             onFocus={e => (e.currentTarget.style.borderColor = 'rgba(45,212,191,0.4)')}
                                             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
-                                            placeholder={form.comment_placeholder || 'Share your experience…'}
+                                            placeholder={form.comment_placeholder || 'Partagez votre expérience…'}
                                         />
-                                        <p style={{
-                                            textAlign: 'right', color: 'rgba(148,163,184,0.25)',
-                                            fontSize: '11px', marginTop: '4px',
-                                        }}>
+                                        <p style={{ textAlign: 'right', color: 'rgba(148,163,184,0.25)', fontSize: '11px', marginTop: '4px' }}>
                                             {comment.length}/500
                                         </p>
                                     </div>
 
-                                    {/* Error */}
                                     {submitError && (
                                         <div style={{
                                             padding: '10px 14px', borderRadius: '10px',
@@ -543,7 +499,6 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                                         </div>
                                     )}
 
-                                    {/* Submit */}
                                     <button
                                         type="submit"
                                         disabled={submitting || rating === 0 || !name.trim()}
@@ -555,11 +510,10 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
                                             color: '#030305', fontWeight: 700, fontSize: '15px',
                                             borderRadius: '999px', border: 'none',
                                             cursor: (submitting || rating === 0 || !name.trim()) ? 'not-allowed' : 'pointer',
-                                            transition: 'opacity 0.2s',
                                             boxShadow: '0 0 20px rgba(45,212,191,0.2)',
                                         }}
                                     >
-                                        {submitting ? (form.submitting || 'Publishing…') : (form.submit || 'Publish my review')}
+                                        {submitting ? (form.submitting || 'Publication…') : (form.submit || 'Publier mon avis')}
                                     </button>
                                 </form>
                             )}
