@@ -1,0 +1,22 @@
+{
+  "name": "DermatoCheck",
+  "short_name": "DermatoCheck",
+  "description": "Analyse dermatologique par IA — Gratis AI huidanalyse — Free AI skin check",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e1c",
+  "theme_color": "#2DD4BF",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
