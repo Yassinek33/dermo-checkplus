@@ -1873,6 +1873,12 @@ export const translations: Record<string, any> = {
                 no_results_desc: "Intenta otra ciudad.",
                 interrupted: "Búsqueda Interrumpida",
                 traffic_overload: "Servicio sobrecargado. Intenta de nuevo."
+            },
+            popup: {
+                title: "Optimizar la búsqueda",
+                description: "¿Deseas usar tu ubicación actual para encontrar dermatólogos <bold>exactamente en tu ciudad</bold>?",
+                allow: "Sí, usar mi ubicación",
+                deny: "No, escribiré mi ciudad"
             }
         },
         footer: {
