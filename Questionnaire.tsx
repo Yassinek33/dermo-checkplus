@@ -493,15 +493,26 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         }
         // --- End client-side interception ---
 
-        // Track profile data for future reuse (save to refs, persisted to localStorage at final report)
+        // Track profile data for future reuse — save immediately to localStorage (no login required)
         if (consultationType === 'self') {
-            if (currentAssistantMessage?.isAgeDropdownRequest) {
-                analysisAgeRef.current = userText;
-            } else if (currentAssistantMessage?.trackId === 'IDENTITY_GENDER_SELF') {
-                analysisGenderRef.current = userText;
-            } else if (currentAssistantMessage?.trackId === 'IDENTITY_COUNTRY_SELF') {
-                analysisCountryRef.current = userText;
-            }
+            try {
+                const existingProfile = JSON.parse(localStorage.getItem('dermatocheck_last_profile') || '{}');
+                if (currentAssistantMessage?.isAgeDropdownRequest) {
+                    analysisAgeRef.current = userText;
+                    localStorage.setItem('dermatocheck_last_profile', JSON.stringify({ ...existingProfile, age: userText }));
+                } else if (currentAssistantMessage?.trackId === 'IDENTITY_GENDER_SELF') {
+                    analysisGenderRef.current = userText;
+                    localStorage.setItem('dermatocheck_last_profile', JSON.stringify({ ...existingProfile, gender: userText }));
+                } else if (currentAssistantMessage?.trackId === 'IDENTITY_COUNTRY_SELF') {
+                    analysisCountryRef.current = userText;
+                    const updated = { ...existingProfile, country: userText };
+                    localStorage.setItem('dermatocheck_last_profile', JSON.stringify(updated));
+                    // All three collected — update state so popup works immediately in the same session
+                    if (updated.age && updated.gender && updated.country) {
+                        setSavedProfile(updated);
+                    }
+                }
+            } catch { /* localStorage not available */ }
         }
 
         // Clear current AI message options/inputs to prevent re-submitting
