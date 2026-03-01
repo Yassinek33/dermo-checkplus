@@ -80,6 +80,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     // Sequence flags: detect gender/country by question order, not AI trackId
     const awaitingGenderRef = useRef(false);
     const awaitingCountryRef = useRef(false);
+    // User ID ref — profile stored per user so multiple accounts on same device don't share data
+    const userIdRef = useRef<string | null>(null);
 
     // Removed uploadedVideoFile and awaitingVideoQuestion states
 
@@ -104,15 +106,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const tRef = useRef(t);
     useEffect(() => { languageRef.current = language; tRef.current = t; }, [language, t]);
 
-    // Load saved profile — only for logged-in users
+    // Load saved profile — only for logged-in users, keyed by user ID
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
-            if (!session?.user) return; // Popup only for authenticated users
-            const saved = localStorage.getItem('dermatocheck_last_profile');
+            if (!session?.user) return;
+            userIdRef.current = session.user.id;
+            const key = `dermatocheck_profile_${session.user.id}`;
+            const saved = localStorage.getItem(key);
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
-                    // Only show popup if all three fields are present
                     if (parsed.age && parsed.gender && parsed.country) {
                         setSavedProfile(parsed);
                     }
@@ -507,34 +510,31 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         }
         // --- End client-side interception ---
 
-        // Track profile data using question SEQUENCE (not AI trackId, which is unreliable)
-        // Age → awaiting gender → gender → awaiting country → country text input
-        if (consultationType === 'self') {
+        // Track profile data using question SEQUENCE — keyed per user ID
+        if (consultationType === 'self' && userIdRef.current) {
             try {
-                const existingProfile = JSON.parse(localStorage.getItem('dermatocheck_last_profile') || '{}');
+                const storageKey = `dermatocheck_profile_${userIdRef.current}`;
+                const existingProfile = JSON.parse(localStorage.getItem(storageKey) || '{}');
 
                 if (currentAssistantMessage?.isAgeDropdownRequest) {
-                    // AGE answered — next [CHOIX] is gender
                     analysisAgeRef.current = userText;
                     awaitingGenderRef.current = true;
                     awaitingCountryRef.current = false;
-                    localStorage.setItem('dermatocheck_last_profile', JSON.stringify({ age: userText })); // fresh profile
+                    localStorage.setItem(storageKey, JSON.stringify({ age: userText })); // fresh profile
 
                 } else if (awaitingGenderRef.current && currentAssistantMessage?.options && currentAssistantMessage.options.length > 0) {
-                    // GENDER answered — next text input (after optional pregnancy questions) is country
                     analysisGenderRef.current = userText;
                     awaitingGenderRef.current = false;
                     awaitingCountryRef.current = true;
-                    localStorage.setItem('dermatocheck_last_profile', JSON.stringify({ ...existingProfile, gender: userText }));
+                    localStorage.setItem(storageKey, JSON.stringify({ ...existingProfile, gender: userText }));
 
                 } else if (awaitingCountryRef.current && (currentAssistantMessage?.isTextInputRequest || currentAssistantMessage?.trackId === 'IDENTITY_COUNTRY_SELF')) {
-                    // COUNTRY answered — profile complete
                     analysisCountryRef.current = userText;
                     awaitingCountryRef.current = false;
                     const updated = { ...existingProfile, country: userText };
-                    localStorage.setItem('dermatocheck_last_profile', JSON.stringify(updated));
+                    localStorage.setItem(storageKey, JSON.stringify(updated));
                     if (updated.age && updated.gender && updated.country) {
-                        setSavedProfile(updated); // Update state so popup works immediately
+                        setSavedProfile(updated);
                     }
                 }
             } catch { /* localStorage not available */ }
@@ -673,15 +673,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                         });
                         if (error) console.error("Error saving analysis:", error);
 
-                        // Save profile for next analysis reuse
+                        // Save profile for next analysis reuse (fallback, keyed by user ID)
                         if (analysisAgeRef.current && analysisGenderRef.current && analysisCountryRef.current) {
                             const profileToSave = {
                                 age: analysisAgeRef.current,
                                 gender: analysisGenderRef.current,
                                 country: analysisCountryRef.current,
                             };
-                            localStorage.setItem('dermatocheck_last_profile', JSON.stringify(profileToSave));
-                            setSavedProfile(profileToSave); // Update React state so popup works immediately without page reload
+                            const storageKey = `dermatocheck_profile_${session.user.id}`;
+                            localStorage.setItem(storageKey, JSON.stringify(profileToSave));
+                            setSavedProfile(profileToSave);
                         }
                     } catch (err) {
                         console.error("Failed to save analysis:", err);
