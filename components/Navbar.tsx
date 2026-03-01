@@ -179,6 +179,19 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                 )}
                             </button>
                         )}
+                        {user && (
+                            <button
+                                onClick={onLogout}
+                                className="p-2 rounded-full text-rose-400/70 hover:text-rose-400 hover:bg-rose-400/10 transition-all duration-300"
+                                title="Se déconnecter"
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                </svg>
+                            </button>
+                        )}
                     </div>
                 </div>
             </motion.nav>
@@ -349,6 +362,22 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                                     {t('auth.tab_login')} / {t('auth.tab_signup')}
                                                 </>
                                             )}
+                                        </button>
+                                    )}
+                                    {user && (
+                                        <button
+                                            onClick={() => {
+                                                onLogout();
+                                                setIsMobileMenuOpen(false);
+                                            }}
+                                            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium text-rose-400 bg-rose-400/10 hover:bg-rose-400/20 transition-all duration-300"
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                                <polyline points="16 17 21 12 16 7" />
+                                                <line x1="21" y1="12" x2="9" y2="12" />
+                                            </svg>
+                                            Se déconnecter
                                         </button>
                                     )}
                                 </div>
