@@ -92,7 +92,7 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
     const { t, language } = useLanguage();
 
     return (
-        <div className="min-h-screen bg-brand-deep text-white px-4 md:px-8 lg:px-12 py-12 md:py-24 space-y-24 md:space-y-32">
+        <div className="min-h-screen text-white px-4 md:px-8 lg:px-12 py-12 md:py-24 space-y-24 md:space-y-32">
 
             {/* HERO SECTION */}
             <section className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 pt-8 md:pt-16">

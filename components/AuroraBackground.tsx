@@ -12,6 +12,10 @@ const AuroraBackground: React.FC = () => {
             {/* Mesh Gradient 3 - Deep Purple Bottom */}
             <div className="absolute bottom-[-10%] left-[20%] w-[60%] h-[40%] bg-[#818CF8] rounded-full blur-[100px] opacity-5" />
 
+            {/* Mesh Gradient Center - Teal + Indigo blend */}
+            <div className="absolute top-[20%] left-[20%] w-[60%] h-[60%] bg-[#2DD4BF] rounded-full blur-[100px] opacity-[0.08] animate-[float_12s_ease-in-out_infinite]" />
+            <div className="absolute top-[25%] left-[30%] w-[40%] h-[55%] bg-[#6366F1] rounded-full blur-[90px] opacity-[0.07] animate-[float_18s_ease-in-out_infinite_reverse]" />
+
             {/* Grid Overlay for Tech Feel */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)] pointer-events-none" />
         </div>

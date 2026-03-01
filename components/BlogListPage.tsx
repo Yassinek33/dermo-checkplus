@@ -79,7 +79,7 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-brand-deep via-[#0d1117] to-black py-20">
+        <div className="min-h-screen py-20">
             <div className="max-w-7xl mx-auto px-6">
                 {/* Header */}
                 <motion.div
