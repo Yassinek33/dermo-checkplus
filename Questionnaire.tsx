@@ -589,7 +589,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             }
             newAiMessage.userUploadedImageUrls = allUploadedImageUrls;
 
-            // Save to Supabase History if user is logged in
+            // Save to Supabase History + send rating email if user is logged in
             supabase.auth.getSession().then(async ({ data: { session } }) => {
                 if (session?.user) {
                     try {
@@ -612,6 +612,15 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                     } catch (err) {
                         console.error("Failed to save analysis:", err);
                     }
+
+                    // Send satisfaction/rating email after each analysis (fire-and-forget)
+                    supabase.functions.invoke('send-welcome-email', {
+                        body: {
+                            email: session.user.email,
+                            name: session.user.user_metadata?.full_name || '',
+                            language,
+                        },
+                    }).catch(() => {});
                 }
             });
         }
