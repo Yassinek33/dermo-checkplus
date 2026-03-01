@@ -72,6 +72,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const [mismatchWarning, setMismatchWarning] = useState<string | null>(null); // New state for AI visual inconsistency warning
     const [completedTrackIds, setCompletedTrackIds] = useState<Record<string, boolean>>({}); // Tracks answered steps
     const [currentTrackId, setCurrentTrackId] = useState<string | null>(null); // Tracks the current active step
+    const [showProfileReusePopup, setShowProfileReusePopup] = useState(false);
+    const [savedProfile, setSavedProfile] = useState<{ age: string; gender: string; country: string } | null>(null);
+    const analysisAgeRef = useRef('');
+    const analysisGenderRef = useRef('');
+    const analysisCountryRef = useRef('');
 
     // Removed uploadedVideoFile and awaitingVideoQuestion states
 
@@ -95,6 +100,14 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const languageRef = useRef(language);
     const tRef = useRef(t);
     useEffect(() => { languageRef.current = language; tRef.current = t; }, [language, t]);
+
+    // Load saved profile from previous analysis
+    useEffect(() => {
+        const saved = localStorage.getItem('dermatocheck_last_profile');
+        if (saved) {
+            try { setSavedProfile(JSON.parse(saved)); } catch {}
+        }
+    }, []);
 
     // Tracking refs to access latest state in processUserAction without stale closures
     const completedTrackIdsRef = useRef(completedTrackIds);
@@ -477,6 +490,17 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         }
         // --- End client-side interception ---
 
+        // Track profile data for future reuse (save to refs, persisted to localStorage at final report)
+        if (consultationType === 'self') {
+            if (currentAssistantMessage?.isAgeDropdownRequest) {
+                analysisAgeRef.current = userText;
+            } else if (currentAssistantMessage?.trackId === 'IDENTITY_GENDER_SELF') {
+                analysisGenderRef.current = userText;
+            } else if (currentAssistantMessage?.trackId === 'IDENTITY_COUNTRY_SELF') {
+                analysisCountryRef.current = userText;
+            }
+        }
+
         // Clear current AI message options/inputs to prevent re-submitting
         setCurrentAssistantMessage(prev => prev ? {
             ...prev,
@@ -609,6 +633,15 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                             // image_url: allUploadedImageUrls.length > 0 ? allUploadedImageUrls[0] : null
                         });
                         if (error) console.error("Error saving analysis:", error);
+
+                        // Save profile for next analysis reuse
+                        if (analysisAgeRef.current && analysisGenderRef.current && analysisCountryRef.current) {
+                            localStorage.setItem('dermatocheck_last_profile', JSON.stringify({
+                                age: analysisAgeRef.current,
+                                gender: analysisGenderRef.current,
+                                country: analysisCountryRef.current,
+                            }));
+                        }
                     } catch (err) {
                         console.error("Failed to save analysis:", err);
                     }
@@ -644,8 +677,57 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     }, [lastFailedAction, processUserAction]);
 
 
+    // Popup i18n texts
+    const profilePopupTexts: Record<string, { title: string; subtitle: string; age: string; gender: string; country: string; yes: string; no: string }> = {
+        fr: { title: 'Reutiliser votre profil ?', subtitle: 'Nous avons retrouvé vos informations de la dernière analyse.', age: 'Âge', gender: 'Sexe', country: 'Pays', yes: 'Oui, continuer', no: 'Non, recommencer' },
+        en: { title: 'Reuse your profile?', subtitle: 'We found your information from the last analysis.', age: 'Age', gender: 'Gender', country: 'Country', yes: 'Yes, continue', no: 'No, start fresh' },
+        nl: { title: 'Profiel hergebruiken?', subtitle: 'We hebben uw gegevens van de laatste analyse gevonden.', age: 'Leeftijd', gender: 'Geslacht', country: 'Land', yes: 'Ja, doorgaan', no: 'Nee, opnieuw' },
+        es: { title: '¿Reutilizar su perfil?', subtitle: 'Encontramos su información del último análisis.', age: 'Edad', gender: 'Sexo', country: 'País', yes: 'Sí, continuar', no: 'No, empezar de nuevo' },
+    };
+    const popupTxt = profilePopupTexts[language] ?? profilePopupTexts.fr;
+
+    const handleProfileReuseYes = () => {
+        if (!savedProfile) return;
+        setShowProfileReusePopup(false);
+        setConsultationType('self');
+        // Pre-fill refs so profile is saved again at end
+        analysisAgeRef.current = savedProfile.age;
+        analysisGenderRef.current = savedProfile.gender;
+        analysisCountryRef.current = savedProfile.country;
+        // Pre-mark all identity track IDs as done so AI won't repeat them
+        setCompletedTrackIds(prev => ({
+            ...prev,
+            IDENTITY_CONCERN: true,
+            IDENTITY_AGE_SELF: true,
+            IDENTITY_GENDER_SELF: true,
+            IDENTITY_PREGNANT_SELF: true,
+            IDENTITY_BREASTFEEDING_SELF: true,
+            IDENTITY_COUNTRY_SELF: true,
+        }));
+        const overrideMsg = `${t('analysis.myself')}. [SYSTEM_OVERRIDE] User confirmed their profile from a previous analysis. Age: ${savedProfile.age}, Gender: ${savedProfile.gender}, Country: ${savedProfile.country}. All identity questions are answered. Proceed directly to [TRACKID:LOCATION].`;
+        processUserAction(overrideMsg);
+    };
+
+    const handleProfileReuseNo = () => {
+        setShowProfileReusePopup(false);
+        processUserAction(t('analysis.myself'));
+    };
+
     const handleOptionSelect = (option: string) => {
         if (isLoading || isProcessingRef.current) return;
+
+        // Intercept "myself" to offer profile reuse if previous data exists
+        const isMyselfOption = option === t('analysis.myself');
+        const isIdentityQuestion = consultationType === null && (
+            currentAssistantMessage?.text.includes("Cette auto-analyse concerne :") ||
+            currentAssistantMessage?.text.includes("This self-analysis concerns:") ||
+            currentAssistantMessage?.text.includes("Deze zelfanalyse betreft:") ||
+            currentAssistantMessage?.text.includes("Este autoanálisis es para:")
+        );
+        if (isMyselfOption && isIdentityQuestion && savedProfile) {
+            setShowProfileReusePopup(true);
+            return;
+        }
 
         // This is where "Depuis combien de temps" leads to a number input.
         // The text prompt in constants.ts says: "Depuis combien de temps la lésion est apparue ?" [CHOIX]Moins de deux jours[CHOIX]Quelques jours[CHOIX]Quelques semaines[CHOIX]Quelques mois[CHOIX]Plus d’un an
@@ -1075,6 +1157,47 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                 currentAssistantMessage && currentAssistantMessage.isFinalReport && (
                     <ChatMessage message={currentAssistantMessage} />
                 )
+            )}
+
+            {/* Profile Reuse Popup */}
+            {showProfileReusePopup && savedProfile && ReactDOM.createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+                    <div className="relative bg-gradient-to-b from-[#0a0b0d] to-[#111214] border border-white/10 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-fade-in-scale">
+                        <div className="text-4xl mb-4">⚡</div>
+                        <h2 className="text-xl font-bold text-white mb-2">{popupTxt.title}</h2>
+                        <p className="text-white/50 text-sm mb-6 leading-relaxed">{popupTxt.subtitle}</p>
+                        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 mb-6 text-left space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-white/40 text-xs uppercase tracking-widest">{popupTxt.age}</span>
+                                <span className="text-brand-primary font-bold">{savedProfile.age}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-white/40 text-xs uppercase tracking-widest">{popupTxt.gender}</span>
+                                <span className="text-brand-primary font-bold">{savedProfile.gender}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-white/40 text-xs uppercase tracking-widest">{popupTxt.country}</span>
+                                <span className="text-brand-primary font-bold">{savedProfile.country}</span>
+                            </div>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleProfileReuseYes}
+                                className="flex-1 py-3 bg-gradient-to-r from-brand-primary to-[#06b6d4] text-[#030305] font-bold rounded-full text-sm hover:opacity-90 transition-opacity"
+                            >
+                                {popupTxt.yes}
+                            </button>
+                            <button
+                                onClick={handleProfileReuseNo}
+                                className="flex-1 py-3 border border-white/20 text-white/70 font-medium rounded-full text-sm hover:bg-white/5 transition-colors"
+                            >
+                                {popupTxt.no}
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
             )}
 
             {/* Reset Confirmation Modal */}
