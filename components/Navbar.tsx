@@ -22,6 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
         { id: 'home', label: t('common.nav.home') },
         { id: 'find-dermatologist', label: t('common.nav.find_derm') },
         { id: 'blog', label: t('common.nav.blog') },
+        { id: 'dictionary', label: t('common.nav.dictionary') },
         { id: 'about', label: t('common.nav.about') },
         { id: 'legal', label: t('common.nav.legal') },
         { id: 'contact', label: t('common.nav.contact') },

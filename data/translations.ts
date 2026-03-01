@@ -14,7 +14,8 @@ export const translations: Record<string, any> = {
                 about: "À propos",
                 legal: "Légal",
                 contact: "Contact",
-                clinics: "Cliniques"
+                clinics: "Cliniques",
+                dictionary: "Dictionnaire"
             }
         },
         questionnaire_ui: {
@@ -484,6 +485,19 @@ export const translations: Record<string, any> = {
             urgency_med: "Modéré",
             urgency_high: "À surveiller",
             home_button: "Retour à l'accueil"
+        },
+        dictionary: {
+            title: "Dictionnaire Dermatologique",
+            description: "Trouvez des définitions claires pour les termes médicaux liés à la peau et à la cosmétologie.",
+            search_placeholder: "Rechercher un terme ou une définition…",
+            terms_label: "termes",
+            terms_found_one: "terme trouvé pour",
+            terms_found_many: "termes trouvés pour",
+            no_results: "Aucun terme trouvé pour",
+            clear_search: "Effacer la recherche",
+            terms_count_label: "terme",
+            terms_count_label_plural: "termes",
+            disclaimer: "Ce dictionnaire est à visée éducative et ne constitue pas un avis médical. Consultez un dermatologue pour tout diagnostic."
         }
     },
     en: {
@@ -501,7 +515,8 @@ export const translations: Record<string, any> = {
                 about: "About",
                 legal: "Legal",
                 contact: "Contact",
-                clinics: "Clinics"
+                clinics: "Clinics",
+                dictionary: "Dictionary"
             }
         },
         questionnaire_ui: {
@@ -974,6 +989,19 @@ export const translations: Record<string, any> = {
             urgency_med: "Moderate",
             urgency_high: "To monitor",
             home_button: "Return to home"
+        },
+        dictionary: {
+            title: "Dermatological Dictionary",
+            description: "Find clear definitions for medical terms related to skin and cosmetology.",
+            search_placeholder: "Search for a term or definition…",
+            terms_label: "terms",
+            terms_found_one: "term found for",
+            terms_found_many: "terms found for",
+            no_results: "No terms found for",
+            clear_search: "Clear search",
+            terms_count_label: "term",
+            terms_count_label_plural: "terms",
+            disclaimer: "This dictionary is for educational purposes only and does not constitute medical advice. Consult a dermatologist for any diagnosis."
         }
     },
     nl: {
@@ -991,7 +1019,8 @@ export const translations: Record<string, any> = {
                 about: "Over",
                 legal: "Legaal",
                 contact: "Contact",
-                clinics: "Klinieken"
+                clinics: "Klinieken",
+                dictionary: "Woordenboek"
             }
         },
         questionnaire_ui: {
@@ -1464,6 +1493,19 @@ export const translations: Record<string, any> = {
             urgency_med: "Matig",
             urgency_high: "Te monitoren",
             home_button: "Terug naar startpagina"
+        },
+        dictionary: {
+            title: "Dermatologisch Woordenboek",
+            description: "Vind duidelijke definities van medische termen gerelateerd aan de huid en cosmetologie.",
+            search_placeholder: "Zoek een term of definitie…",
+            terms_label: "termen",
+            terms_found_one: "term gevonden voor",
+            terms_found_many: "termen gevonden voor",
+            no_results: "Geen termen gevonden voor",
+            clear_search: "Zoekopdracht wissen",
+            terms_count_label: "term",
+            terms_count_label_plural: "termen",
+            disclaimer: "Dit woordenboek is uitsluitend bedoeld voor educatieve doeleinden en vormt geen medisch advies. Raadpleeg een dermatoloog voor diagnose."
         }
     },
     es: {
@@ -1481,7 +1523,8 @@ export const translations: Record<string, any> = {
                 about: "Sobre nosotros",
                 legal: "Legal",
                 contact: "Contacto",
-                clinics: "Clínicas"
+                clinics: "Clínicas",
+                dictionary: "Diccionario"
             }
         },
         questionnaire_ui: {
@@ -1906,6 +1949,19 @@ export const translations: Record<string, any> = {
             urgency_med: "Moderado",
             urgency_high: "A vigilar",
             home_button: "Volver al inicio"
+        },
+        dictionary: {
+            title: "Diccionario Dermatológico",
+            description: "Encuentra definiciones claras de los términos médicos relacionados con la piel y la cosmetología.",
+            search_placeholder: "Buscar un término o definición…",
+            terms_label: "términos",
+            terms_found_one: "término encontrado para",
+            terms_found_many: "términos encontrados para",
+            no_results: "Ningún término encontrado para",
+            clear_search: "Borrar búsqueda",
+            terms_count_label: "término",
+            terms_count_label_plural: "términos",
+            disclaimer: "Este diccionario tiene fines educativos y no constituye asesoramiento médico. Consulte a un dermatólogo para cualquier diagnóstico."
         }
     }
 };
