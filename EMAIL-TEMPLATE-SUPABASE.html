@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>DermatoCheck — Code de vérification / Verification code</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { margin: 0; padding: 0; width: 100%; background-color: #0a0e1c; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    a { text-decoration: none; }
+    .preheader { display: none !important; visibility: hidden; mso-hide: all; font-size: 1px; color: transparent; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; }
+    @media (max-width: 600px) {
+      .email-wrapper { width: 100% !important; }
+      .email-content { padding: 28px 20px !important; }
+      .otp-code { font-size: 34px !important; letter-spacing: 10px !important; }
+    }
+  </style>
+</head>
+<body>
+  <span class="preheader">Votre code DermatoCheck : {{ .Token }} · Uw code: {{ .Token }} · Your code: {{ .Token }}</span>
+
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #0a0e1c; padding: 40px 16px;">
+    <tr>
+      <td align="center">
+        <table class="email-wrapper" role="presentation" cellspacing="0" cellpadding="0" border="0" width="560" style="max-width: 560px; width: 100%;">
+
+          <!-- HEADER -->
+          <tr>
+            <td>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                style="border-radius: 20px 20px 0 0; background: linear-gradient(135deg, #0f172a, #0a1628); border: 1px solid rgba(255,255,255,0.08); border-bottom: none;">
+                <tr>
+                  <td style="height: 4px; background: linear-gradient(90deg, #2dd4bf, #06b6d4, #2dd4bf); padding: 0;"></td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding: 28px 40px 24px;">
+                    <span style="font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">
+                      Dermato<span style="color: #2dd4bf;">Check</span>
+                    </span>
+                    <br>
+                    <span style="font-size: 11px; color: rgba(148,163,184,0.5); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;">
+                      Analyse Dermatologique par IA
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- OTP CODE BLOCK (langue-neutre, au centre) -->
+          <tr>
+            <td>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                style="background: #0f172a; border: 1px solid rgba(255,255,255,0.07); border-top: none; border-bottom: none;">
+                <tr>
+                  <td align="center" style="padding: 36px 40px;">
+                    <p style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(45,212,191,0.6); margin-bottom: 14px;">
+                      Code de vérification · Verificatiecode · Verification code · Código de verificación
+                    </p>
+                    <div style="display: inline-block; background: linear-gradient(135deg, rgba(45,212,191,0.06), rgba(6,182,212,0.06)); border: 2px solid rgba(45,212,191,0.4); border-radius: 18px; padding: 22px 40px;">
+                      <span class="otp-code" style="font-size: 42px; font-weight: 900; letter-spacing: 14px; color: #2dd4bf; font-family: 'Courier New', Courier, monospace;">
+                        {{ .Token }}
+                      </span>
+                    </div>
+                    <p style="font-size: 12px; color: rgba(148,163,184,0.4); margin-top: 12px;">
+                      10 min · 10 min · 10 min · 10 min
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- MULTILINGUAL CONTENT -->
+          <tr>
+            <td>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                style="background: #111827; border: 1px solid rgba(255,255,255,0.07); border-top: none; border-bottom: none;">
+                <tr>
+                  <td class="email-content" style="padding: 32px 40px 36px;">
+
+                    <!-- ═══ FRANÇAIS ═══ -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 28px;">
+                      <tr>
+                        <td style="border-left: 3px solid #2dd4bf; padding-left: 14px;">
+                          <p style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #2dd4bf; margin-bottom: 8px;">🇫🇷 Français</p>
+                          <p style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 6px;">Confirmez votre compte DermatoCheck</p>
+                          <p style="font-size: 13px; color: rgba(148,163,184,0.75); line-height: 1.6; margin-bottom: 10px;">
+                            Entrez le code ci-dessus dans la fenêtre de vérification pour activer votre compte.
+                          </p>
+                          <p style="font-size: 12px; color: rgba(234,179,8,0.7);">
+                            🔒 Si vous n'avez pas créé de compte, ignorez cet email.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Separator -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 28px;">
+                      <tr><td style="height: 1px; background: rgba(255,255,255,0.06);"></td></tr>
+                    </table>
+
+                    <!-- ═══ NEDERLANDS ═══ -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 28px;">
+                      <tr>
+                        <td style="border-left: 3px solid #06b6d4; padding-left: 14px;">
+                          <p style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #06b6d4; margin-bottom: 8px;">🇳🇱 Nederlands</p>
+                          <p style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 6px;">Bevestig uw DermatoCheck-account</p>
+                          <p style="font-size: 13px; color: rgba(148,163,184,0.75); line-height: 1.6; margin-bottom: 10px;">
+                            Voer de bovenstaande code in het verificatievenster in om uw account te activeren.
+                          </p>
+                          <p style="font-size: 12px; color: rgba(234,179,8,0.7);">
+                            🔒 Als u geen account heeft aangemaakt, negeer dan deze e-mail.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Separator -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 28px;">
+                      <tr><td style="height: 1px; background: rgba(255,255,255,0.06);"></td></tr>
+                    </table>
+
+                    <!-- ═══ ENGLISH ═══ -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 28px;">
+                      <tr>
+                        <td style="border-left: 3px solid #2dd4bf; padding-left: 14px;">
+                          <p style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #2dd4bf; margin-bottom: 8px;">🇬🇧 English</p>
+                          <p style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 6px;">Confirm your DermatoCheck account</p>
+                          <p style="font-size: 13px; color: rgba(148,163,184,0.75); line-height: 1.6; margin-bottom: 10px;">
+                            Enter the code above in the verification window to activate your account.
+                          </p>
+                          <p style="font-size: 12px; color: rgba(234,179,8,0.7);">
+                            🔒 If you didn't create an account, please ignore this email.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Separator -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 28px;">
+                      <tr><td style="height: 1px; background: rgba(255,255,255,0.06);"></td></tr>
+                    </table>
+
+                    <!-- ═══ ESPAÑOL ═══ -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                      <tr>
+                        <td style="border-left: 3px solid #06b6d4; padding-left: 14px;">
+                          <p style="font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #06b6d4; margin-bottom: 8px;">🇪🇸 Español</p>
+                          <p style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 6px;">Confirme su cuenta DermatoCheck</p>
+                          <p style="font-size: 13px; color: rgba(148,163,184,0.75); line-height: 1.6; margin-bottom: 10px;">
+                            Introduzca el código anterior en la ventana de verificación para activar su cuenta.
+                          </p>
+                          <p style="font-size: 12px; color: rgba(234,179,8,0.7);">
+                            🔒 Si no ha creado una cuenta, ignore este correo.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td>
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                style="border-radius: 0 0 20px 20px; background: #0f172a; border: 1px solid rgba(255,255,255,0.07); border-top: none;">
+                <tr>
+                  <td style="padding: 24px 40px 28px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 16px;">
+                      <tr>
+                        <td align="center">
+                          <a href="https://www.dermatocheck.com/" style="font-size: 12px; color: rgba(148,163,184,0.4); margin: 0 10px;">Accueil / Home</a>
+                          <span style="color: rgba(255,255,255,0.08);">|</span>
+                          <a href="https://www.dermatocheck.com/questionnaire" style="font-size: 12px; color: rgba(148,163,184,0.4); margin: 0 10px;">Analyser / Analyse</a>
+                          <span style="color: rgba(255,255,255,0.08);">|</span>
+                          <a href="https://www.dermatocheck.com/find-dermatologist" style="font-size: 12px; color: rgba(148,163,184,0.4); margin: 0 10px;">Dermatologue</a>
+                        </td>
+                      </tr>
+                    </table>
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 14px;">
+                      <tr><td style="height: 1px; background: rgba(255,255,255,0.05);"></td></tr>
+                    </table>
+                    <p style="font-size: 11px; color: rgba(148,163,184,0.25); text-align: center; line-height: 1.7; margin: 0;">
+                      <a href="https://www.dermatocheck.com/" style="color: rgba(45,212,191,0.35); text-decoration: none;">dermatocheck.com</a>
+                      · DermatoCheck ne remplace pas un avis médical / is geen medisch advies / is not medical advice<br>
+                      <span style="color: rgba(148,163,184,0.15);">© 2026 DermatoCheck</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
