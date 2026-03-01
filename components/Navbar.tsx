@@ -10,10 +10,12 @@ interface NavbarProps {
     userProfile: any;
     onLogout: () => void;
     user?: any;
+    onLanguageChange?: (lang: any) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, onLogout, user }) => {
+const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, onLogout, user, onLanguageChange }) => {
     const { language, setLanguage, t } = useLanguage();
+    const changeLang = (lang: any) => onLanguageChange ? onLanguageChange(lang) : setLanguage(lang);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navItems = [
@@ -60,7 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                     {/* Language Switcher */}
                     <div className="mr-2 flex items-center bg-white/5 rounded-full p-1 border border-white/10">
                         <button
-                            onClick={() => setLanguage('fr')}
+                            onClick={() => changeLang('fr')}
                             className={clsx(
                                 "px-2 py-1 text-[10px] font-bold rounded-full transition-all duration-300",
                                 language === 'fr' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white"
@@ -69,7 +71,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                             FR
                         </button>
                         <button
-                            onClick={() => setLanguage('en')}
+                            onClick={() => changeLang('en')}
                             className={clsx(
                                 "px-2 py-1 text-[10px] font-bold rounded-full transition-all duration-300",
                                 language === 'en' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white"
@@ -78,7 +80,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                             EN
                         </button>
                         <button
-                            onClick={() => setLanguage('nl')}
+                            onClick={() => changeLang('nl')}
                             className={clsx(
                                 "px-2 py-1 text-[10px] font-bold rounded-full transition-all duration-300",
                                 language === 'nl' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white"
@@ -87,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                             NL
                         </button>
                         <button
-                            onClick={() => setLanguage('es')}
+                            onClick={() => changeLang('es')}
                             className={clsx(
                                 "px-2 py-1 text-[10px] font-bold rounded-full transition-all duration-300",
                                 language === 'es' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white"
@@ -260,7 +262,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                 {/* Language Switcher */}
                                 <div className="mb-8 grid grid-cols-2 gap-2 bg-white/5 rounded-2xl p-2 border border-white/10">
                                     <button
-                                        onClick={() => setLanguage('fr')}
+                                        onClick={() => changeLang('fr')}
                                         className={clsx(
                                             "w-full px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300",
                                             language === 'fr' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white hover:bg-white/5"
@@ -269,7 +271,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                         Français
                                     </button>
                                     <button
-                                        onClick={() => setLanguage('en')}
+                                        onClick={() => changeLang('en')}
                                         className={clsx(
                                             "w-full px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300",
                                             language === 'en' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white hover:bg-white/5"
@@ -278,7 +280,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                         English
                                     </button>
                                     <button
-                                        onClick={() => setLanguage('nl')}
+                                        onClick={() => changeLang('nl')}
                                         className={clsx(
                                             "w-full px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300",
                                             language === 'nl' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white hover:bg-white/5"
@@ -287,7 +289,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate, userProfile, on
                                         Nederlands
                                     </button>
                                     <button
-                                        onClick={() => setLanguage('es')}
+                                        onClick={() => changeLang('es')}
                                         className={clsx(
                                             "w-full px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300",
                                             language === 'es' ? "bg-brand-primary text-brand-deep" : "text-white/40 hover:text-white hover:bg-white/5"

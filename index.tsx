@@ -1,6 +1,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import './src/styles.css'; // Import Global Glassmorphism Styles
 import App from './App';
 
@@ -15,10 +16,12 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <LanguageProvider>
-      <SiteProvider>
-        <App />
-      </SiteProvider>
-    </LanguageProvider>
+    <BrowserRouter>
+      <LanguageProvider>
+        <SiteProvider>
+          <App />
+        </SiteProvider>
+      </LanguageProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

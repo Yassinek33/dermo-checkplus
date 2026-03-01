@@ -1,4 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { parsePath, getUrl, detectBrowserLang } from './utils/routes';
+import { Language } from './context/LanguageContext';
 import SplashScreen from './components/SplashScreen';
 import HomePage from './components/HomePage';
 import AboutPage from './components/AboutPage';
@@ -86,7 +89,9 @@ const NavItem: React.FC<{ label: string; active: boolean; onClick: () => void; m
 };
 
 const App: React.FC = () => {
-    const { t, isLanguageSelected } = useLanguage();
+    const { t, language, setLanguage, isLanguageSelected } = useLanguage();
+    const navigate = useNavigate();
+    const location = useLocation();
     const [showSplash, setShowSplash] = useState(() => {
         return !sessionStorage.getItem('dermo_splash_shown');
     });
@@ -95,8 +100,14 @@ const App: React.FC = () => {
         sessionStorage.setItem('dermo_splash_shown', 'true');
         setShowSplash(false);
     }, []);
-    const [currentPageId, setCurrentPageId] = useState<PageId>('home');
-    const [currentArticleSlug, setCurrentArticleSlug] = useState<ArticleSlug>(undefined);
+    const [currentPageId, setCurrentPageId] = useState<PageId>(() => {
+        const { pageId } = parsePath(window.location.pathname);
+        return pageId;
+    });
+    const [currentArticleSlug, setCurrentArticleSlug] = useState<ArticleSlug>(() => {
+        const { articleSlug } = parsePath(window.location.pathname);
+        return articleSlug;
+    });
     const [userProfile, setUserProfile] = useState<UserProfile>(() => {
         return (localStorage.getItem('dermo_user_profile') as UserProfile) || null;
     });
@@ -145,15 +156,28 @@ const App: React.FC = () => {
         }
     }, [userProfile]);
 
-    const navigateTo = useCallback((pageId: PageId, articleSlug?: ArticleSlug) => {
+    // Sync currentPageId + currentArticleSlug from URL on every navigation
+    useEffect(() => {
+        const { lang, pageId, articleSlug } = parsePath(location.pathname);
         setCurrentPageId(pageId);
         setCurrentArticleSlug(articleSlug);
-        setIsMobileMenuOpen(false); // Close menu on navigation
+        if (lang !== language) setLanguage(lang);
+    }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
-        // Scroll to the top of the page smoothly
+    // Redirect bare root "/" to "/{lang}/"
+    useEffect(() => {
+        const p = location.pathname;
+        if (p === '/' || p === '') {
+            const lang = (localStorage.getItem('dermo_lang') as Language) || detectBrowserLang();
+            navigate(`/${lang}/`, { replace: true });
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const navigateTo = useCallback((pageId: PageId, articleSlug?: ArticleSlug) => {
+        const url = getUrl(language, pageId, articleSlug);
+        navigate(url);
+        setIsMobileMenuOpen(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // Reset state for new page if it's the dermatologist finder
         if (pageId === 'find-dermatologist') {
             setDermatologistMapResults(null);
             setIsDermSearchLoading(false);
@@ -161,7 +185,13 @@ const App: React.FC = () => {
             setCurrentSearchQuery({ country: '', city: '' });
             setLastSearchLocation(null);
         }
-    }, []);
+    }, [language, navigate]);
+
+    const handleLanguageChange = useCallback((lang: Language) => {
+        setLanguage(lang);
+        const url = getUrl(lang, currentPageId, currentArticleSlug);
+        navigate(url);
+    }, [currentPageId, currentArticleSlug, navigate, setLanguage]);
 
     const handleProfileSelect = useCallback((profile: 'adult' | 'minor') => {
         setUserProfile(profile);
@@ -434,6 +464,7 @@ const App: React.FC = () => {
                     userProfile={userProfile}
                     onLogout={handleLogout}
                     user={user}
+                    onLanguageChange={handleLanguageChange}
                 />
                 <ProfilePage user={user} onNavigate={navigateTo} onLogout={handleLogout} />
             </div>
@@ -453,9 +484,10 @@ const App: React.FC = () => {
                 setUser(null);
                 navigateTo('home');
             }}
+            onLanguageChange={handleLanguageChange}
             showLogo={isConsentGiven && isLanguageSelected}
         >
-            <SEOManager currentPageId={currentPageId} />
+            <SEOManager currentPageId={currentPageId} language={language} />
             {!isConsentGiven && (
                 <ConsentPopup onAccept={handleConsent} />
             )}

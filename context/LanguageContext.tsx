@@ -13,13 +13,23 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const VALID_LANGS: Language[] = ['fr', 'en', 'nl', 'es'];
+
+function getLangFromUrl(): Language | null {
+    const seg = window.location.pathname.split('/').filter(Boolean)[0] as Language;
+    return VALID_LANGS.includes(seg) ? seg : null;
+}
+
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [language, setLanguageState] = useState<Language>(() => {
+        // URL prefix takes priority over localStorage
+        const urlLang = getLangFromUrl();
+        if (urlLang) return urlLang;
         const saved = localStorage.getItem('dermo_lang');
         return (saved as Language) || 'fr';
     });
     const [isLanguageSelected, setIsLanguageSelected] = useState<boolean>(() => {
-        return !!localStorage.getItem('dermo_lang');
+        return !!(getLangFromUrl() || localStorage.getItem('dermo_lang'));
     });
 
     const setLanguage = (lang: Language) => {
