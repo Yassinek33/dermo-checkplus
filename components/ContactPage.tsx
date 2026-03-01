@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { PageConfig } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../services/supabaseClient';
 
 interface ContactPageProps {
     config: PageConfig;
 }
 
 const ContactPage: React.FC<ContactPageProps> = ({ config }) => {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [formData, setFormData] = useState<Record<string, string>>({
         name: '',
         email: '',
@@ -15,6 +16,7 @@ const ContactPage: React.FC<ContactPageProps> = ({ config }) => {
         message: ''
     });
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -22,7 +24,7 @@ const ContactPage: React.FC<ContactPageProps> = ({ config }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError(null);
 
@@ -32,9 +34,19 @@ const ContactPage: React.FC<ContactPageProps> = ({ config }) => {
             return;
         }
 
-        console.log("Form data submitted:", formData);
-        setIsSubmitted(true);
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setIsLoading(true);
+        try {
+            const { error } = await supabase.functions.invoke('send-contact-email', {
+                body: { ...formData, language },
+            });
+            if (error) throw error;
+            setIsSubmitted(true);
+            setFormData({ name: '', email: '', subject: '', message: '' });
+        } catch {
+            setSubmitError(t('contact.error_send'));
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const fields = [
@@ -101,11 +113,24 @@ const ContactPage: React.FC<ContactPageProps> = ({ config }) => {
 
                 <button
                     type="submit"
-                    className="group relative w-full px-8 py-4 bg-gradient-to-r from-brand-primary to-[#2dd4bf] text-brand-deep text-lg rounded-2xl hover:scale-[1.02] active:scale-95 transition-all font-bold shadow-[0_0_20px_rgba(45,212,191,0.3)] overflow-hidden"
+                    disabled={isLoading}
+                    className="group relative w-full px-8 py-4 bg-gradient-to-r from-brand-primary to-[#2dd4bf] text-brand-deep text-lg rounded-2xl hover:scale-[1.02] active:scale-95 transition-all font-bold shadow-[0_0_20px_rgba(45,212,191,0.3)] overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                     <span className="relative z-10 flex items-center justify-center gap-2">
-                        {t('contact.form.submit')}
-                        <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                        {isLoading ? (
+                            <>
+                                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                                {t('contact.form.sending')}
+                            </>
+                        ) : (
+                            <>
+                                {t('contact.form.submit')}
+                                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                            </>
+                        )}
                     </span>
                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                 </button>

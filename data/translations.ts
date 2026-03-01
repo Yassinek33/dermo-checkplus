@@ -224,6 +224,9 @@ export const translations: Record<string, any> = {
         contact: {
             title: "CONTACTEZ-NOUS",
             description: "Une question, une suggestion ou besoin d'aide ? N'hésitez pas à nous contacter.",
+            error_missing: "Veuillez remplir tous les champs obligatoires.",
+            error_send: "Une erreur est survenue lors de l'envoi. Veuillez réessayer.",
+            success: "Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.",
             form: {
                 name: "Votre Nom",
                 name_placeholder: "Entrez votre nom...",
@@ -233,7 +236,8 @@ export const translations: Record<string, any> = {
                 subject_placeholder: "Sujet de votre message...",
                 message: "Votre Message",
                 message_placeholder: "Entrez votre message (max 500 caractères)...",
-                submit: "Envoyer le Message"
+                submit: "Envoyer le Message",
+                sending: "Envoi en cours..."
             }
         },
         analysis: {
@@ -728,6 +732,7 @@ export const translations: Record<string, any> = {
             title: "CONTACT US",
             description: "A question, a suggestion, or need help? Feel free to contact us.",
             error_missing: "Please fill in all required fields.",
+            error_send: "An error occurred while sending. Please try again.",
             success: "Your message has been sent successfully! We will reply to you soon.",
             form: {
                 name: "Your Name",
@@ -738,7 +743,8 @@ export const translations: Record<string, any> = {
                 subject_placeholder: "Subject of your message...",
                 message: "Your Message",
                 message_placeholder: "Enter your message (max 500 characters)...",
-                submit: "Send Message"
+                submit: "Send Message",
+                sending: "Sending..."
             }
         },
         analysis: {
@@ -1232,6 +1238,7 @@ export const translations: Record<string, any> = {
             title: "NEEM CONTACT OP",
             description: "Een vraag, een suggestie of hulp nodig? Neem gerust contact met ons op.",
             error_missing: "Vul a.u.b. alle verplichte velden in.",
+            error_send: "Er is een fout opgetreden bij het verzenden. Probeer opnieuw.",
             success: "Uw bericht is succesvol verzonden! Wij zullen u spoedig antwoorden.",
             form: {
                 name: "Uw Naam",
@@ -1242,7 +1249,8 @@ export const translations: Record<string, any> = {
                 subject_placeholder: "Onderwerp van uw bericht...",
                 message: "Uw Bericht",
                 message_placeholder: "Voer uw bericht in (max 500 tekens)...",
-                submit: "Verstuur Bericht"
+                submit: "Verstuur Bericht",
+                sending: "Verzenden..."
             }
         },
         analysis: {
@@ -1751,6 +1759,9 @@ export const translations: Record<string, any> = {
         contact: {
             title: "CONTÁCTANOS",
             description: "¿Tienes una pregunta, una sugerencia o necesitas ayuda? No dudes en contactarnos.",
+            error_missing: "Por favor, rellena todos los campos obligatorios.",
+            error_send: "Se produjo un error al enviar. Por favor, inténtalo de nuevo.",
+            success: "¡Tu mensaje ha sido enviado con éxito! Te responderemos lo antes posible.",
             form: {
                 name: "Tu Nombre",
                 name_placeholder: "Ingresa tu nombre...",
@@ -1760,7 +1771,8 @@ export const translations: Record<string, any> = {
                 subject_placeholder: "Asunto de tu mensaje...",
                 message: "Tu Mensaje",
                 message_placeholder: "Ingresa tu mensaje (máx. 500 caracteres)...",
-                submit: "Enviar Mensaje"
+                submit: "Enviar Mensaje",
+                sending: "Enviando..."
             }
         },
         analysis: {
