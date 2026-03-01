@@ -25,7 +25,7 @@ export const BentoGridItem: React.FC<{
     return (
         <motion.div
             className={clsx(
-                "rounded-3xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-0 bg-[#0A0A0B] border border-white/10 justify-between flex flex-col overflow-hidden relative",
+                "rounded-3xl group/bento hover:shadow-xl transition duration-200 shadow-input dark:shadow-none p-0 bg-white/[0.03] border border-white/10 justify-between flex flex-col overflow-hidden relative",
                 cols === 2 ? "md:col-span-2" : "md:col-span-1",
                 rows === 2 ? "md:row-span-2" : "md:row-span-1",
                 className
@@ -36,7 +36,7 @@ export const BentoGridItem: React.FC<{
             <div className="absolute inset-0 bg-brand-primary/5 opacity-0 group-hover/bento:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
             {header}
-            <div className="group-hover/bento:translate-x-2 transition duration-200 relative z-10 p-6 bg-gradient-to-t from-[#0A0A0B] via-[#0A0A0B]/95 to-transparent">
+            <div className="group-hover/bento:translate-x-2 transition duration-200 relative z-10 p-6 bg-gradient-to-t from-black/40 via-black/10 to-transparent">
                 {icon}
                 <div className="font-display font-bold text-neutral-200 mb-3 mt-2 text-xl">
                     {title}

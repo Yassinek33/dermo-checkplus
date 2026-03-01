@@ -127,7 +127,7 @@ export const WhyChooseUsSection = () => {
                         <motion.div
                             key={idx}
                             variants={itemVariants}
-                            className="bg-[#060d0f] border border-white/5 rounded-[2rem] p-8 hover:bg-[#0a1215] transition-colors duration-300 group"
+                            className="bg-white/[0.03] border border-white/5 rounded-[2rem] p-8 hover:bg-white/[0.06] transition-colors duration-300 group"
                         >
                             <div className="w-12 h-12 rounded-xl bg-brand-primary/10 flex items-center justify-center text-[#00d4b4] mb-6 group-hover:scale-110 group-hover:bg-[#00d4b4] group-hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(0,212,180,0.1)]">
                                 {card.icon}
