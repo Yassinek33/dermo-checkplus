@@ -82,6 +82,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const awaitingCountryRef = useRef(false);
     // User ID ref — profile stored per user so multiple accounts on same device don't share data
     const userIdRef = useRef<string | null>(null);
+    // User email + name cached at mount — used for post-analysis email without depending on async getSession()
+    const userEmailRef = useRef<string | null>(null);
+    const userNameRef = useRef<string>('');
 
     // Removed uploadedVideoFile and awaitingVideoQuestion states
 
@@ -106,11 +109,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
     const tRef = useRef(t);
     useEffect(() => { languageRef.current = language; tRef.current = t; }, [language, t]);
 
-    // Load saved profile — only for logged-in users, keyed by user ID
+    // Load saved profile + cache user info — only for logged-in users, keyed by user ID
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (!session?.user) return;
             userIdRef.current = session.user.id;
+            // Cache email and name so post-analysis email doesn't need another async getSession()
+            userEmailRef.current = session.user.email ?? null;
+            userNameRef.current = session.user.user_metadata?.full_name
+                || session.user.email?.split('@')[0]
+                || '';
             const key = `dermatocheck_profile_${session.user.id}`;
             const saved = localStorage.getItem(key);
             if (saved) {
@@ -652,52 +660,52 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
             }
             newAiMessage.userUploadedImageUrls = allUploadedImageUrls;
 
-            // Save to Supabase History + send rating email if user is logged in
-            supabase.auth.getSession().then(async ({ data: { session } }) => {
-                if (session?.user) {
+            // Send post-analysis rating email — use cached refs (no async getSession needed)
+            if (userEmailRef.current) {
+                supabase.functions.invoke('send-welcome-email', {
+                    body: {
+                        email: userEmailRef.current,
+                        name: userNameRef.current,
+                        language: languageRef.current,
+                    },
+                }); // no catch — let any error surface in console
+            }
+
+            // Save to Supabase History if user is logged in
+            if (userIdRef.current) {
+                const userId = userIdRef.current;
+                (async () => {
                     try {
-                        // Create a cleaner summary for notes by removing the warning
                         const cleanSummary = aiResponseText
                             .replace(/\[FINAL_REPORT\]/g, '')
                             .replace(/1\.\s*\*\*⚠️\s*IMPORTANT WARNING:\*\*.*?(?=\n\n|\n2)/s, '')
                             .replace(/1\.\s*\*\*⚠️\s*AVERTISSEMENT MÉDICAL\s*\(.*?\):\*\*.*?(?=\n\n|\n2)/s, '')
-                            .replace(/^\s*[\r\n]/gm, '') // Remove empty lines at start
+                            .replace(/^\s*[\r\n]/gm, '')
                             .trim()
                             .substring(0, 300);
 
                         const { error } = await supabase.from('analyses').insert({
-                            user_id: session.user.id,
+                            user_id: userId,
                             notes: cleanSummary + (cleanSummary.length >= 300 ? '...' : ''),
-                            prediction: { full_text: aiResponseText }, // Store full report
-                            // image_url: allUploadedImageUrls.length > 0 ? allUploadedImageUrls[0] : null
+                            prediction: { full_text: aiResponseText },
                         });
                         if (error) console.error("Error saving analysis:", error);
 
-                        // Save profile for next analysis reuse (fallback, keyed by user ID)
+                        // Save profile for next analysis reuse (fallback)
                         if (analysisAgeRef.current && analysisGenderRef.current && analysisCountryRef.current) {
                             const profileToSave = {
                                 age: analysisAgeRef.current,
                                 gender: analysisGenderRef.current,
                                 country: analysisCountryRef.current,
                             };
-                            const storageKey = `dermatocheck_profile_${session.user.id}`;
-                            localStorage.setItem(storageKey, JSON.stringify(profileToSave));
+                            localStorage.setItem(`dermatocheck_profile_${userId}`, JSON.stringify(profileToSave));
                             setSavedProfile(profileToSave);
                         }
                     } catch (err) {
                         console.error("Failed to save analysis:", err);
                     }
-
-                    // Send satisfaction/rating email after each analysis (fire-and-forget)
-                    supabase.functions.invoke('send-welcome-email', {
-                        body: {
-                            email: session.user.email,
-                            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || '',
-                            language: languageRef.current,
-                        },
-                    }).catch(() => {});
-                }
-            });
+                })();
+            }
         }
 
         const finalHistory = [
