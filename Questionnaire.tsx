@@ -344,7 +344,10 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
         setShowResetConfirmation(false); // Hide reset confirmation
         setCompletedTrackIds({}); // Reset tracking
         setCurrentTrackId(null); // Reset current active trackId
-        // Removed uploadedVideoFile and awaitingVideoQuestion resets
+        // Reset profile tracking refs for new analysis
+        analysisAgeRef.current = '';
+        analysisGenderRef.current = '';
+        analysisCountryRef.current = '';
 
         try {
             // OPTIMIZATION: We no longer fetch the first question from the AI to ensure instant loading.
@@ -636,11 +639,13 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
 
                         // Save profile for next analysis reuse
                         if (analysisAgeRef.current && analysisGenderRef.current && analysisCountryRef.current) {
-                            localStorage.setItem('dermatocheck_last_profile', JSON.stringify({
+                            const profileToSave = {
                                 age: analysisAgeRef.current,
                                 gender: analysisGenderRef.current,
                                 country: analysisCountryRef.current,
-                            }));
+                            };
+                            localStorage.setItem('dermatocheck_last_profile', JSON.stringify(profileToSave));
+                            setSavedProfile(profileToSave); // Update React state so popup works immediately without page reload
                         }
                     } catch (err) {
                         console.error("Failed to save analysis:", err);
@@ -650,8 +655,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ config }) => {
                     supabase.functions.invoke('send-welcome-email', {
                         body: {
                             email: session.user.email,
-                            name: session.user.user_metadata?.full_name || '',
-                            language,
+                            name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || '',
+                            language: languageRef.current,
                         },
                     }).catch(() => {});
                 }
