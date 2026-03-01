@@ -209,8 +209,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user, onNavigate, onLogout })
     const handleDeleteAccount = async () => {
         setDeletingAccount(true); setDeleteError(null);
         try {
+            // Delete all user data first
             await supabase.from('analyses').delete().eq('user_id', user.id);
-            await supabase.auth.signOut();
+            // Delete the auth account (requires SECURITY DEFINER SQL function)
+            const { error } = await supabase.rpc('delete_current_user');
+            if (error) throw error;
             onLogout();
         } catch (err: any) {
             setDeleteError(err.message);
