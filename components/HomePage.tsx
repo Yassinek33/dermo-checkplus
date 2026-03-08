@@ -507,7 +507,7 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
         <div className="min-h-screen text-[#F8FAFC] space-y-0">
 
             {/* ══════════ SECTION 1 — HERO ══════════ */}
-            <section className="relative max-w-7xl mx-auto px-4 md:px-8 pt-8 md:pt-20 pb-16 md:pb-24 flex flex-col items-center text-center">
+            <section className="relative max-w-7xl mx-auto px-4 md:px-8 pt-24 md:pt-36 pb-16 md:pb-24 flex flex-col items-center text-center">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -616,6 +616,37 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
                     >
                         {c.howItWorks.cta}
                     </button>
+                </div>
+            </FadeInSection>
+
+            {/* ══════════ EXPERTISE IMAGE BANNER ══════════ */}
+            <FadeInSection className="max-w-6xl mx-auto px-4 md:px-8 py-12 md:py-20">
+                <div className="relative group">
+                    {/* Outer glow */}
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#2DD4BF]/20 via-[#6366F1]/20 to-[#2DD4BF]/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                    {/* Image container */}
+                    <div className="relative overflow-hidden rounded-3xl border border-white/10 group-hover:border-[#2DD4BF]/30 transition-all duration-700">
+                        {/* Gradient overlay for dark theme blending */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#030305] via-transparent to-[#030305]/40 z-10 pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#030305]/50 via-transparent to-[#030305]/50 z-10 pointer-events-none" />
+
+                        <img
+                            src={lang === 'fr' ? '/clinical-expertise-fr.png' : '/clinical-expertise-en.png'}
+                            alt={lang === 'fr'
+                                ? 'Expertise dermatologique — analyse cutanée avec intelligence artificielle DermatoCheck'
+                                : lang === 'es'
+                                    ? 'Experiencia dermatológica — análisis cutáneo con inteligencia artificial DermatoCheck'
+                                    : lang === 'nl'
+                                        ? 'Dermatologische expertise — huidanalyse met kunstmatige intelligentie DermatoCheck'
+                                        : 'Dermatological expertise — skin analysis with artificial intelligence DermatoCheck'}
+                            className="w-full h-auto object-cover transform group-hover:scale-[1.03] transition-transform duration-1000 ease-out"
+                            loading="lazy"
+                        />
+
+                        {/* Bottom teal accent line */}
+                        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#2DD4BF]/60 to-transparent z-20" />
+                    </div>
                 </div>
             </FadeInSection>
 
