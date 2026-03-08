@@ -179,7 +179,7 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
             items: [
                 { title: 'Sans rendez-vous', desc: 'Accédez à une analyse cutanée quand vous le souhaitez, sans délai d\'attente.' },
                 { title: 'Résultat en quelques minutes', desc: 'Votre évaluation est générée immédiatement après soumission.' },
-                { title: 'Multilingue', desc: 'Disponible en français, anglais, espagnol, néerlandais et arabe.' },
+                { title: 'Multilingue', desc: 'Disponible en français, anglais, espagnol et néerlandais.' },
                 { title: 'Gratuit', desc: 'Aucun frais, aucun abonnement.' },
                 { title: 'Sur tous les appareils', desc: 'Smartphone, tablette, ordinateur.' },
             ],
@@ -264,7 +264,7 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
             items: [
                 { title: 'No appointment needed', desc: 'Access a skin analysis whenever you want, with no waiting time.' },
                 { title: 'Results in minutes', desc: 'Your assessment is generated immediately after submission.' },
-                { title: 'Multilingual', desc: 'Available in English, French, Spanish, Dutch, and Arabic.' },
+                { title: 'Multilingual', desc: 'Available in English, French, Spanish, and Dutch.' },
                 { title: 'Free', desc: 'No fees, no subscription. Analyse your skin freely.' },
                 { title: 'On any device', desc: 'Smartphone, tablet, computer. Your digital skin guide follows you everywhere.' },
             ],
@@ -349,7 +349,7 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
             items: [
                 { title: 'Sin cita previa', desc: 'Accede a un análisis cutáneo cuando quieras, sin tiempo de espera.' },
                 { title: 'Resultado en pocos minutos', desc: 'Tu evaluación se genera de inmediato tras el envío.' },
-                { title: 'Multilingüe', desc: 'Disponible en español, francés, inglés, neerlandés y árabe.' },
+                { title: 'Multilingüe', desc: 'Disponible en español, francés, inglés y neerlandés.' },
                 { title: 'Gratuito', desc: 'Sin costes, sin suscripción. Analiza tu piel con total libertad.' },
                 { title: 'En cualquier dispositivo', desc: 'Smartphone, tablet, ordenador. Tu guía dermatológica digital te acompaña en todo momento.' },
             ],
@@ -434,7 +434,7 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
             items: [
                 { title: 'Zonder afspraak', desc: 'Doe een huidanalyse wanneer je wilt, zonder wachttijd.' },
                 { title: 'Resultaat in enkele minuten', desc: 'Je beoordeling wordt direct na het indienen gegenereerd.' },
-                { title: 'Meertalig', desc: 'Beschikbaar in het Nederlands, Frans, Engels, Spaans en Arabisch.' },
+                { title: 'Meertalig', desc: 'Beschikbaar in het Nederlands, Frans, Engels en Spaans.' },
                 { title: 'Gratis', desc: 'Geen kosten, geen abonnement. Analyseer je huid in alle vrijheid.' },
                 { title: 'Op elk apparaat', desc: 'Smartphone, tablet, computer. Je digitale huidgids gaat overal mee.' },
             ],
