@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { getUrl, LANGS } from '../utils/routes';
+import { useLocation } from 'react-router-dom';
+import { getUrl, LANGS, isRootPath } from '../utils/routes';
 import { Language } from '../context/LanguageContext';
 
 const BASE_URL = 'https://www.dermatocheck.com';
@@ -310,10 +311,16 @@ interface SEOManagerProps {
     language?: Language;
 }
 
-export const SEOManager = ({ currentPageId, language = 'fr' }: SEOManagerProps) => {
+export const SEOManager = ({ currentPageId, language = 'en' }: SEOManagerProps) => {
+    const location = useLocation();
+
     useEffect(() => {
+        const onRoot = isRootPath(location.pathname);
+        // For SEO content, root "/" uses English
+        const effectiveLang = language;
+
         const pageSeo = seoData[currentPageId] || seoData['home'];
-        const seo = pageSeo[language] || pageSeo['fr'];
+        const seo = pageSeo[effectiveLang] || pageSeo['en'];
 
         document.title = seo.title;
 
@@ -328,10 +335,12 @@ export const SEOManager = ({ currentPageId, language = 'fr' }: SEOManagerProps) 
         }
 
         // Update <html lang>
-        document.documentElement.lang = language;
+        document.documentElement.lang = effectiveLang;
 
-        // Update canonical
-        const canonicalHref = `${BASE_URL}${getUrl(language, currentPageId)}`;
+        // Update canonical — root "/" gets bare domain, others get /{lang}/...
+        const canonicalHref = onRoot
+            ? `${BASE_URL}/`
+            : `${BASE_URL}${getUrl(effectiveLang, currentPageId)}`;
         let canonical = document.querySelector('link[rel="canonical"]');
         if (canonical) {
             canonical.setAttribute('href', canonicalHref);
@@ -345,7 +354,7 @@ export const SEOManager = ({ currentPageId, language = 'fr' }: SEOManagerProps) 
         // Remove old hreflang tags
         document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
 
-        // Inject fresh hreflang tags
+        // Inject fresh hreflang tags for each language
         LANGS.forEach(lang => {
             const link = document.createElement('link');
             link.setAttribute('rel', 'alternate');
@@ -354,11 +363,11 @@ export const SEOManager = ({ currentPageId, language = 'fr' }: SEOManagerProps) 
             document.head.appendChild(link);
         });
 
-        // x-default → /fr/
+        // x-default → bare root https://www.dermatocheck.com/
         const xDefault = document.createElement('link');
         xDefault.setAttribute('rel', 'alternate');
         xDefault.setAttribute('hreflang', 'x-default');
-        xDefault.setAttribute('href', `${BASE_URL}${getUrl('fr', currentPageId)}`);
+        xDefault.setAttribute('href', currentPageId === 'home' ? `${BASE_URL}/` : `${BASE_URL}${getUrl('en', currentPageId)}`);
         document.head.appendChild(xDefault);
 
         // ── Dynamic JSON-LD injection for homepage ──

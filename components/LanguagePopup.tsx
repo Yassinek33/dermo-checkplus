@@ -1,10 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguage } from '../context/LanguageContext';
+import { useNavigate } from 'react-router-dom';
+import { useLanguage, Language } from '../context/LanguageContext';
 import { DermatoCheckLogo } from './icons';
 
 const LanguagePopup: React.FC = () => {
-    const { setLanguage, isLanguageSelected, t } = useLanguage();
+    const { setLanguage, isLanguageSelected } = useLanguage();
+    const navigate = useNavigate();
+
+    const handleSelect = useCallback((lang: Language) => {
+        setLanguage(lang);
+        navigate(`/${lang}/`, { replace: true });
+    }, [setLanguage, navigate]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -52,7 +59,7 @@ const LanguagePopup: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                         <button
-                            onClick={() => setLanguage('fr')}
+                            onClick={() => handleSelect('fr')}
                             className="group relative px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all duration-300 overflow-hidden"
                         >
                             <div className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
@@ -61,7 +68,7 @@ const LanguagePopup: React.FC = () => {
                         </button>
 
                         <button
-                            onClick={() => setLanguage('en')}
+                            onClick={() => handleSelect('en')}
                             className="group relative px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all duration-300 overflow-hidden"
                         >
                             <div className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
@@ -70,7 +77,7 @@ const LanguagePopup: React.FC = () => {
                         </button>
                         {/* Dutch Option */}
                         <button
-                            onClick={() => setLanguage('nl')}
+                            onClick={() => handleSelect('nl')}
                             className="group relative px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all duration-300 overflow-hidden"
                         >
                             <div className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
@@ -79,7 +86,7 @@ const LanguagePopup: React.FC = () => {
                         </button>
                         {/* Spanish Option */}
                         <button
-                            onClick={() => setLanguage('es')}
+                            onClick={() => handleSelect('es')}
                             className="group relative px-8 py-5 rounded-2xl bg-white/5 border border-white/10 hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all duration-300 overflow-hidden"
                         >
                             <div className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />

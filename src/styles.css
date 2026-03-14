@@ -189,3 +189,300 @@ h6 {
 .transition-fast {
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Article Content — Editorial Typography
+   Uses existing design system: Inter body, Syne headings,
+   brand-primary (#2DD4BF), text-muted (#94A3B8)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.article-content {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #CBD5E1;
+  /* slate-300 — comfortable reading on dark bg */
+}
+
+/* ── Headings ─────────────────────────────────────────────────── */
+
+.article-content h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--brand-primary);
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.article-content h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text-main);
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+}
+
+.article-content h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--brand-secondary);
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+/* First heading in article: less top margin */
+.article-content > h2:first-child,
+.article-content > h3:first-child,
+.article-content > h4:first-child {
+  margin-top: 0;
+}
+
+/* ── Paragraphs ───────────────────────────────────────────────── */
+
+.article-content p {
+  margin-bottom: 1.25rem;
+}
+
+.article-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Inline emphasis ──────────────────────────────────────────── */
+
+.article-content strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.article-content em {
+  font-style: italic;
+  color: #E2E8F0;
+}
+
+/* ── Links ────────────────────────────────────────────────────── */
+
+.article-content a {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-decoration-color: rgba(45, 212, 191, 0.35);
+  text-underline-offset: 3px;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.article-content a:hover {
+  color: #5EEAD4;
+  text-decoration-color: #5EEAD4;
+}
+
+.article-content a:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.article-content a:visited {
+  color: #99F6E4;
+  text-decoration-color: rgba(153, 246, 228, 0.35);
+}
+
+/* External link indicator (for links with target=_blank) */
+.article-content a[target="_blank"]::after {
+  content: " ↗";
+  font-size: 0.75em;
+  opacity: 0.6;
+}
+
+/* ── Lists ────────────────────────────────────────────────────── */
+
+.article-content ul,
+.article-content ol {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  padding-left: 1.75rem;
+}
+
+.article-content ul {
+  list-style-type: disc;
+}
+
+.article-content ol {
+  list-style-type: decimal;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+  line-height: 1.7;
+}
+
+.article-content li::marker {
+  color: var(--brand-primary);
+}
+
+.article-content li:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Blockquote ───────────────────────────────────────────────── */
+
+.article-content blockquote {
+  margin: 2rem 0;
+  padding: 1.25rem 1.5rem;
+  border-left: 4px solid var(--brand-primary);
+  background: rgba(45, 212, 191, 0.06);
+  border-radius: 0 0.75rem 0.75rem 0;
+}
+
+.article-content blockquote p {
+  color: #E2E8F0;
+  font-style: italic;
+  font-size: 1.0625rem;
+  margin-bottom: 0;
+}
+
+/* ── Horizontal rule ──────────────────────────────────────────── */
+
+.article-content hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.1) 20%,
+    rgba(255, 255, 255, 0.1) 80%,
+    transparent
+  );
+  margin: 2.5rem 0;
+}
+
+/* ── Code ─────────────────────────────────────────────────────── */
+
+.article-content code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.875em;
+  background: rgba(255, 255, 255, 0.08);
+  color: #E2E8F0;
+  padding: 0.15em 0.4em;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.article-content pre {
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.article-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: #CBD5E1;
+}
+
+/* ── Images & figures ─────────────────────────────────────────── */
+
+.article-content figure {
+  margin: 2rem 0;
+}
+
+.article-content figure img,
+.article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  border: 1px solid var(--glass-border);
+}
+
+.article-content figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── Tables (future-proof) ────────────────────────────────────── */
+
+.article-content table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.article-content th,
+.article-content td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.article-content th {
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.article-content td {
+  color: #CBD5E1;
+}
+
+.article-content tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .article-content {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .article-content h2 {
+    font-size: 1.5rem;
+    margin-top: 2.25rem;
+  }
+
+  .article-content h3 {
+    font-size: 1.25rem;
+    margin-top: 1.75rem;
+  }
+
+  .article-content h4 {
+    font-size: 1.125rem;
+  }
+
+  .article-content blockquote {
+    padding: 1rem 1.25rem;
+  }
+
+  .article-content pre {
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .article-content ul,
+  .article-content ol {
+    padding-left: 1.25rem;
+  }
+}

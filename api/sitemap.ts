@@ -48,11 +48,11 @@ function getPageUrl(lang: string, pageId: string): string {
     return slug ? `${SITE_URL}/${lang}/${slug}/` : `${SITE_URL}/${lang}/`;
 }
 
-function hreflangAlternates(langUrls: Record<string, string>): string {
+function hreflangAlternates(langUrls: Record<string, string>, xDefaultUrl?: string): string {
     const links = Object.entries(langUrls)
         .map(([lang, url]) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${url}"/>`)
         .join('\n');
-    const defaultUrl = langUrls['fr'] || Object.values(langUrls)[0];
+    const defaultUrl = xDefaultUrl || langUrls['en'] || Object.values(langUrls)[0];
     return `${links}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${defaultUrl}"/>`;
 }
 
@@ -62,13 +62,16 @@ function staticPageEntry(pageId: string, today: string): string {
     for (const lang of LANGS) {
         langUrls[lang] = getPageUrl(lang, pageId);
     }
-    const primaryUrl = langUrls['fr'];
+    // For homepage, x-default points to bare root; primary URL is the root
+    const isHome = pageId === 'home';
+    const primaryUrl = isHome ? `${SITE_URL}/` : langUrls['en'];
+    const xDefault = isHome ? `${SITE_URL}/` : undefined;
     return `  <url>
     <loc>${primaryUrl}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${meta.changefreq}</changefreq>
     <priority>${meta.priority}</priority>
-${hreflangAlternates(langUrls)}
+${hreflangAlternates(langUrls, xDefault)}
   </url>`;
 }
 

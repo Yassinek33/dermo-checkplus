@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { parsePath, getUrl, detectBrowserLang } from './utils/routes';
+import { parsePath, getUrl, detectBrowserLang, isRootPath } from './utils/routes';
 import { Language } from './context/LanguageContext';
 import SplashScreen from './components/SplashScreen';
 import HomePage from './components/HomePage';
@@ -89,7 +89,7 @@ const NavItem: React.FC<{ label: string; active: boolean; onClick: () => void; m
 };
 
 const App: React.FC = () => {
-    const { t, language, setLanguage, isLanguageSelected } = useLanguage();
+    const { t, language, setLanguage, syncLanguageFromUrl, isLanguageSelected } = useLanguage();
     const navigate = useNavigate();
     const location = useLocation();
     const [showSplash, setShowSplash] = useState(() => {
@@ -161,16 +161,27 @@ const App: React.FC = () => {
         const { lang, pageId, articleSlug } = parsePath(location.pathname);
         setCurrentPageId(pageId);
         setCurrentArticleSlug(articleSlug);
-        if (lang !== language) setLanguage(lang);
+        // Sync language from URL without persisting to localStorage.
+        // Persisting only happens on explicit user action (language selector, popup).
+        if (lang !== language) syncLanguageFromUrl(lang);
     }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Redirect bare root "/" to "/{lang}/"
+    // On bare root "/": redirect to /{lang}/ if user has a saved preference
+    // or browser language is supported. Otherwise stay on "/" (serves English).
     useEffect(() => {
-        const p = location.pathname;
-        if (p === '/' || p === '') {
-            const lang = (localStorage.getItem('dermo_lang') as Language) || detectBrowserLang();
-            navigate(`/${lang}/`, { replace: true });
+        if (!isRootPath(location.pathname)) return;
+        const saved = localStorage.getItem('dermo_lang') as Language | null;
+        if (saved) {
+            // User previously chose a language — respect it
+            navigate(`/${saved}/`, { replace: true });
+            return;
         }
+        const detected = detectBrowserLang();
+        if (detected) {
+            // Browser language is supported — redirect to it
+            navigate(`/${detected}/`, { replace: true });
+        }
+        // Unsupported browser language → stay on "/" (English content)
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const navigateTo = useCallback((pageId: PageId, articleSlug?: ArticleSlug) => {

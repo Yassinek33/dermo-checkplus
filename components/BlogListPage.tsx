@@ -6,6 +6,14 @@ import { blogArticlesNL } from '../data/blogArticlesNL';
 import { blogArticlesES } from '../data/blogArticlesES';
 import { cmsService, Post } from '../services/cmsService';
 
+/** Format author: "Dr. Sophie Martin, Dermatologue" → "Dr. S. Martin" */
+function formatAuthor(raw: string): string {
+    const name = raw.split(',')[0].trim();
+    const match = name.match(/^((?:Dr[a]?\.|Prof\.)\s+)(\S+)\s+(.+)$/i);
+    if (match) return `${match[1]}${match[2][0]}. ${match[3]}`;
+    return name;
+}
+
 interface BlogListPageProps {
     onNavigate: (pageId: string, articleSlug?: string) => void;
 }
@@ -151,7 +159,7 @@ export const BlogListPage: React.FC<BlogListPageProps> = ({ onNavigate }) => {
 
                                     {/* Meta Info */}
                                     <div className="flex items-center justify-between text-sm text-gray-500 mb-4 mt-auto">
-                                        <span>{article.author.split(',')[0]}</span>
+                                        <span>{formatAuthor(article.author)}</span>
                                         <span>{article.readTime} {t('blog.read_time')}</span>
                                     </div>
 

@@ -30,12 +30,13 @@ export function getUrl(lang: Language, pageId: string, articleSlug?: string): st
     return slug ? `/${lang}/${slug}/` : `/${lang}/`;
 }
 
-/** Parse a pathname into { lang, pageId, articleSlug } */
+/** Parse a pathname into { lang, pageId, articleSlug }.
+ *  Bare "/" (no lang prefix) defaults to 'en' (root = English). */
 export function parsePath(pathname: string): { lang: Language; pageId: string; articleSlug?: string } {
     const parts = pathname.replace(/^\//, '').split('/').filter(Boolean);
 
     const maybeLang = parts[0] as Language;
-    const lang: Language = LANGS.includes(maybeLang) ? maybeLang : 'fr';
+    const lang: Language = LANGS.includes(maybeLang) ? maybeLang : 'en';
     const rest = LANGS.includes(maybeLang) ? parts.slice(1) : parts;
 
     const seg0 = rest[0] || '';
@@ -67,9 +68,15 @@ export function parsePath(pathname: string): { lang: Language; pageId: string; a
     return { lang, pageId: 'home' };
 }
 
-/** Detect browser preferred language */
-export function detectBrowserLang(): Language {
-    const nav = navigator.language || navigator.languages?.[0] || 'fr';
+/** Detect browser preferred language. Returns null if not a supported language. */
+export function detectBrowserLang(): Language | null {
+    const nav = navigator.language || navigator.languages?.[0] || '';
     const short = nav.slice(0, 2).toLowerCase() as Language;
-    return LANGS.includes(short) ? short : 'fr';
+    return LANGS.includes(short) ? short : null;
+}
+
+/** Check if the current path is the bare root "/" (no language prefix) */
+export function isRootPath(pathname?: string): boolean {
+    const p = (pathname || window.location.pathname).replace(/\/+$/, '');
+    return p === '' || p === '/';
 }

@@ -20,9 +20,9 @@ const PAGE_SLUGS: Record<string, Record<string, string>> = {
     'terms-of-use':       { fr: 'conditions-utilisation',        en: 'terms-of-use',              nl: 'gebruiksvoorwaarden',         es: 'terminos-de-uso' },
 };
 
-/** Returns all static page URLs for all languages */
+/** Returns all static page URLs for all languages, including root */
 export function getAllStaticUrls(): string[] {
-    const urls: string[] = [];
+    const urls: string[] = [`${SITE_URL}/`]; // Root English page
     for (const [pageId, slugs] of Object.entries(PAGE_SLUGS)) {
         for (const lang of LANGS) {
             const slug = slugs[lang];

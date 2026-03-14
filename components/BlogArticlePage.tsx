@@ -1,10 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { blogArticlesFR, blogArticlesEN, BlogArticle } from '../data/blogArticles';
 import { blogArticlesNL } from '../data/blogArticlesNL';
 import { blogArticlesES } from '../data/blogArticlesES';
 import { cmsService, Post } from '../services/cmsService';
+import { renderArticleContent } from '../lib/renderArticleContent';
+
+/** Format author: "Dr. Sophie Martin, Dermatologue" → "Dr. S. Martin" */
+function formatAuthor(raw: string): string {
+    const name = raw.split(',')[0].trim(); // Remove specialty
+    // Match prefix (Dr./Dra./Prof.) + first name + last name(s)
+    const match = name.match(/^((?:Dr[a]?\.|Prof\.)\s+)(\S+)\s+(.+)$/i);
+    if (match) {
+        return `${match[1]}${match[2][0]}. ${match[3]}`;
+    }
+    return name;
+}
 
 interface BlogArticlePageProps {
     slug: string;
@@ -51,6 +63,12 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
         expertQuote: localArticle?.expertQuote || null // Keep local expert quote if available
     } : localArticle;
 
+    // Render markdown → HTML once, memoised to avoid re-parsing on every render
+    const articleHtml = useMemo(
+        () => article ? renderArticleContent(article.content) : '',
+        [article?.content]
+    );
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-b from-brand-deep via-[#0d1117] to-black flex items-center justify-center">
@@ -91,7 +109,9 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
             case 'es': return 'es-ES';
             default: return 'fr-FR';
         }
-    }
+    };
+
+    const isoDate = new Date(article.date).toISOString().split('T')[0];
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-brand-deep via-[#0d1117] to-black py-20">
@@ -109,105 +129,105 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
                     {t('blog.back')}
                 </motion.button>
 
-                {/* Article Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-12"
-                >
-                    {/* Category Badge */}
-                    <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r ${getCategoryColor(article.category)} text-white mb-6`}>
-                        {t(`blog.categories.${article.category}`)}
-                    </span>
+                <article>
+                    {/* Article Header */}
+                    <motion.header
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-12"
+                    >
+                        {/* Category Badge */}
+                        <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r ${getCategoryColor(article.category)} text-white mb-6`}>
+                            {t(`blog.categories.${article.category}`)}
+                        </span>
 
-                    {/* Title */}
-                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-                        {article.title}
-                    </h1>
+                        {/* Title */}
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                            {article.title}
+                        </h1>
 
-                    {/* Meta Info */}
-                    <div className="flex flex-wrap items-center gap-4 text-gray-400 mb-6">
-                        <div className="flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            {article.author}
-                        </div>
-                        <div className="flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {new Date(article.date).toLocaleDateString(getLocale(language), { year: 'numeric', month: 'long', day: 'numeric' })}
-                        </div>
-                        <div className="flex items-center">
-                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {article.readTime} {t('blog.read_time')}
-                        </div>
-                    </div>
-
-                    {/* Excerpt */}
-                    <p className="text-xl text-gray-300 leading-relaxed">
-                        {article.excerpt}
-                    </p>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mt-6">
-                        {article.tags.map((tag, i) => (
-                            <span
-                                key={i}
-                                className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400"
-                            >
-                                #{tag}
+                        {/* Meta Info */}
+                        <div className="flex flex-wrap items-center gap-4 text-gray-400 text-sm mb-6">
+                            <span className="flex items-center">
+                                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                {formatAuthor(article.author)}
                             </span>
-                        ))}
-                    </div>
-                </motion.div>
+                            <span className="flex items-center">
+                                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <time dateTime={isoDate}>
+                                    {new Date(article.date).toLocaleDateString(getLocale(language), { year: 'numeric', month: 'long', day: 'numeric' })}
+                                </time>
+                            </span>
+                            <span className="flex items-center">
+                                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {article.readTime} {t('blog.read_time')}
+                            </span>
+                        </div>
 
-                {/* Expert Quote */}
-                {article.expertQuote && (
+                        {/* Excerpt / Chapeau */}
+                        <p className="text-xl text-gray-300 leading-relaxed border-l-2 border-brand-primary/40 pl-4">
+                            {article.excerpt}
+                        </p>
+
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-2 mt-6" role="list" aria-label="Tags">
+                            {article.tags.map((tag, i) => (
+                                <span
+                                    key={i}
+                                    role="listitem"
+                                    className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400"
+                                >
+                                    #{tag}
+                                </span>
+                            ))}
+                        </div>
+                    </motion.header>
+
+                    {/* Expert Quote */}
+                    {article.expertQuote && (
+                        <motion.aside
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-gradient-to-r from-brand-primary/10 to-cyan-500/10 border-l-4 border-brand-primary rounded-r-2xl p-6 mb-12"
+                            aria-label="Citation d'expert"
+                        >
+                            <figure className="flex items-start">
+                                <svg className="w-8 h-8 text-brand-primary flex-shrink-0 mr-4 mt-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                                </svg>
+                                <blockquote>
+                                    <p className="text-white text-lg italic mb-3">
+                                        &laquo;&nbsp;{article.expertQuote.text}&nbsp;&raquo;
+                                    </p>
+                                    <figcaption>
+                                        <cite className="text-brand-primary font-semibold not-italic">
+                                            — {formatAuthor(article.expertQuote.author)}
+                                        </cite>
+                                        <span className="block text-gray-400 text-sm mt-0.5">
+                                            {article.expertQuote.credentials}
+                                        </span>
+                                    </figcaption>
+                                </blockquote>
+                            </figure>
+                        </motion.aside>
+                    )}
+
+                    {/* Article Content */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="bg-gradient-to-r from-brand-primary/10 to-cyan-500/10 border-l-4 border-brand-primary rounded-r-2xl p-6 mb-12"
-                    >
-                        <div className="flex items-start">
-                            <svg className="w-8 h-8 text-brand-primary flex-shrink-0 mr-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                            </svg>
-                            <div>
-                                <p className="text-white text-lg italic mb-3">
-                                    "{article.expertQuote.text}"
-                                </p>
-                                <p className="text-brand-primary font-semibold">
-                                    — {article.expertQuote.author}
-                                </p>
-                                <p className="text-gray-400 text-sm">
-                                    {article.expertQuote.credentials}
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* Article Content */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="prose prose-invert prose-lg max-w-none
-                        prose-headings:text-white prose-headings:font-bold
-                        prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:text-brand-primary
-                        prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                        prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
-                        prose-strong:text-white prose-strong:font-bold
-                        prose-ul:text-gray-300 prose-ul:my-4
-                        prose-li:my-2
-                        prose-a:text-brand-primary prose-a:no-underline hover:prose-a:underline"
-                    dangerouslySetInnerHTML={{ __html: article.content.replace(/\n/g, '<br />').replace(/##/g, '<h2>').replace(/###/g, '<h3>') }}
-                />
+                        transition={{ delay: 0.2 }}
+                        className="article-content"
+                        dangerouslySetInnerHTML={{ __html: articleHtml }}
+                    />
+                </article>
 
                 {/* Back to Blog Button */}
                 <motion.div

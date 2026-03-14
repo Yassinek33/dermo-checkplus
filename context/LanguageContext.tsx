@@ -7,6 +7,8 @@ export type Language = 'fr' | 'en' | 'nl' | 'es';
 interface LanguageContextType {
     language: Language;
     setLanguage: (lang: Language) => void;
+    /** Update language state from URL without persisting to localStorage */
+    syncLanguageFromUrl: (lang: Language) => void;
     t: (key: string) => any;
     isLanguageSelected: boolean;
 }
@@ -26,7 +28,9 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
         const urlLang = getLangFromUrl();
         if (urlLang) return urlLang;
         const saved = localStorage.getItem('dermo_lang');
-        return (saved as Language) || 'fr';
+        if (saved && VALID_LANGS.includes(saved as Language)) return saved as Language;
+        // Bare root "/" → English
+        return 'en';
     });
     const [isLanguageSelected, setIsLanguageSelected] = useState<boolean>(() => {
         return !!(getLangFromUrl() || localStorage.getItem('dermo_lang'));
@@ -36,6 +40,15 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
         setLanguageState(lang);
         setIsLanguageSelected(true);
         localStorage.setItem('dermo_lang', lang);
+    };
+
+    /** Sync language from URL without persisting to localStorage.
+     *  Sets isLanguageSelected = true when on a /{lang}/ route. */
+    const syncLanguageFromUrl = (lang: Language) => {
+        setLanguageState(lang);
+        // If URL has an explicit lang prefix, mark language as selected
+        const urlLang = getLangFromUrl();
+        if (urlLang) setIsLanguageSelected(true);
     };
 
     // Robust t function with nested key support (e.g., "common.nav.home")
@@ -56,7 +69,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     return (
-        <LanguageContext.Provider value={{ language, setLanguage, t, isLanguageSelected }}>
+        <LanguageContext.Provider value={{ language, setLanguage, syncLanguageFromUrl, t, isLanguageSelected }}>
             {children}
         </LanguageContext.Provider>
     );
