@@ -14,7 +14,7 @@ export const blogArticlesES_1: BlogArticle[] = [
         expertQuote: {
             text: "La barrera cutánea de las manos es particularmente vulnerable en invierno. Una rutina de protección adaptada puede prevenir el 80% de los casos de dermatitis irritativa.",
             author: "Dra. Sophie Martin",
-            credentials: "Dermatóloga, Hospital Universitario de París"
+            credentials: "Dermatóloga"
         },
         content: `
 ## ¿Por qué el frío reseca la piel?

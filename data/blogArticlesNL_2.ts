@@ -212,7 +212,7 @@ Tegenwoordig is het traject voor patiënten met een zeldzame dermatologische aan
         expertQuote: {
             text: "Medische esthetiek is niet zonder risico. Een slechte injectie kan onomkeerbare gevolgen hebben. Het kiezen van een gekwalificeerde zorgprofessional is de eerste barrière tegen complicaties.",
             author: "Dr. Sophie Martin",
-            credentials: "Esthetisch Dermatoloog, Parijs"
+            credentials: "Esthetisch Dermatoloog"
         },
         content: `
 ## De normalisatie van esthetische geneeskunde

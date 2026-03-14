@@ -30,7 +30,7 @@ export const blogArticlesFR: BlogArticle[] = [
         expertQuote: {
             text: "La barrière cutanée des mains est particulièrement vulnérable en hiver. Une routine de protection adaptée peut prévenir 80% des cas de dermatite irritative.",
             author: "Dr. Sophie Martin",
-            credentials: "Dermatologue, CHU de Paris"
+            credentials: "Dermatologue"
         },
         content: `
 ## Pourquoi le froid assèche-t-il la peau ?
@@ -703,7 +703,7 @@ Aujourd'hui, le parcours du patient atteint d'une maladie dermatologique rare s'
         expertQuote: {
             text: "L'esthétique médicale n'est pas sans risque. Une mauvaise injection peut avoir des conséquences irréversibles. Le choix d'un professionnel de santé qualifié est la première barrière contre les complications.",
             author: "Dr. Sophie Martin",
-            credentials: "Dermatologue Esthétique, Paris"
+            credentials: "Dermatologue Esthétique"
         },
         content: `
 ## La banalisation de la médecine esthétique
@@ -792,7 +792,7 @@ export const blogArticlesEN: BlogArticle[] = [
         expertQuote: {
             text: "The skin barrier of the hands is particularly vulnerable in winter. An adapted protection routine can prevent 80% of irritant dermatitis cases.",
             author: "Dr. Sophie Martin",
-            credentials: "Dermatologist, Paris University Hospital"
+            credentials: "Dermatologist"
         },
         content: `
 ## Why Does Cold Dry Out the Skin?
@@ -1365,7 +1365,7 @@ Today, the patient journey for rare dermatological diseases has vastly improved 
         expertQuote: {
             text: "Medical aesthetics is not without risks. A bad injection can have irreversible consequences. Choosing a qualified healthcare professional is the first barrier against complications.",
             author: "Dr. Sophie Martin",
-            credentials: "Aesthetic Dermatologist, Paris"
+            credentials: "Aesthetic Dermatologist"
         },
         content: `
 ## The Normalization of Aesthetic Medicine

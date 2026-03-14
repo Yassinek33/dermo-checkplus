@@ -185,7 +185,7 @@ Hoy en día, el recorrido del paciente con una enfermedad dermatológica rara ha
         expertQuote: {
             text: "La estética médica no está exenta de riesgos. Una mala inyección puede tener consecuencias irreversibles. La elección de un profesional sanitario cualificado es la primera barrera frente a las complicaciones.",
             author: "Dra. Sophie Martin",
-            credentials: "Dermatóloga Estética, París"
+            credentials: "Dermatóloga Estética"
         },
         content: `
 ## La banalización de la medicina estética

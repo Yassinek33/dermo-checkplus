@@ -14,7 +14,7 @@ export const blogArticlesNL: BlogArticle[] = [
         expertQuote: {
             text: "De huidbarrière van de handen is in de winter bijzonder kwetsbaar. Een aangepaste beschermingsroutine kan 80% van de gevallen van irriterende dermatitis voorkomen.",
             author: "Dr. Sophie Martin",
-            credentials: "Dermatoloog, UMC Parijs"
+            credentials: "Dermatoloog"
         },
         content: `
 ## Waarom droogt de kou de huid uit?
