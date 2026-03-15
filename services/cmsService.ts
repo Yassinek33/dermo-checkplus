@@ -23,6 +23,15 @@ export interface Post {
     created_at: string;
     updated_at: string;
     author_name?: string; // Appended from profiles
+    // SEO Platform fields
+    language?: string;
+    focus_keyword?: string;
+    secondary_keywords?: string[];
+    schema_type?: string;
+    read_time?: number;
+    word_count?: number;
+    source?: string; // 'manual' | 'seo_platform'
+    category_id?: string;
 }
 
 export interface Page {
@@ -51,6 +60,19 @@ export interface Profile {
     role: 'patient' | 'dermatologist' | 'admin';
     created_at: string;
     email?: string;
+}
+
+export interface Category {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+    seo_title?: string;
+    seo_description?: string;
+    parent_id?: string;
+    sort_order: number;
+    language: string;
+    created_at: string;
 }
 
 // --- CMS Service API ---
@@ -144,7 +166,16 @@ export const cmsService = {
             seo_description: post.seo_description,
             featured_image_url: post.featured_image_url,
             tags: post.tags,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            // SEO Platform fields
+            language: post.language,
+            focus_keyword: post.focus_keyword,
+            secondary_keywords: post.secondary_keywords,
+            schema_type: post.schema_type,
+            read_time: post.read_time,
+            word_count: post.word_count,
+            source: post.source,
+            category_id: post.category_id,
         };
 
         // Only include author_id if it looks like a valid UUID
@@ -197,6 +228,37 @@ export const cmsService = {
     async deletePost(id: string) {
         const { error } = await supabase.from('posts').delete().eq('id', id);
         if (error) throw error;
+    },
+
+    // === CATEGORIES ===
+    async getCategories(language?: string): Promise<Category[]> {
+        let query = supabase.from('categories').select('*').order('sort_order');
+        if (language) query = query.eq('language', language);
+        const { data, error } = await query;
+        if (error) {
+            console.warn('Error fetching categories:', error.message);
+            return [];
+        }
+        return data || [];
+    },
+
+    async createCategory(category: { name: string; slug: string; description?: string; language?: string; sort_order?: number }): Promise<Category | null> {
+        const { data, error } = await supabase
+            .from('categories')
+            .insert({
+                name: category.name,
+                slug: category.slug,
+                description: category.description || null,
+                language: category.language || 'fr',
+                sort_order: category.sort_order || 0,
+            })
+            .select()
+            .single();
+        if (error) {
+            console.error('Error creating category:', error.message);
+            return null;
+        }
+        return data;
     },
 
     // === PAGES ===

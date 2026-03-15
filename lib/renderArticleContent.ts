@@ -10,6 +10,7 @@
  *   --- horizontal rule
  *   ```code blocks```
  *   inline `code`
+ *   Raw HTML blocks (<div>, <table>, <figure>, <section>, <aside>)
  *
  * The function returns sanitised HTML wrapped in semantic tags.
  * It is designed to work with the `.article-content` CSS class
@@ -57,10 +58,26 @@ function inlineMarkdown(text: string): string {
     return out;
 }
 
+// ── HTML block detection ──────────────────────────────────────────
+
+/** Tags that indicate a raw HTML block which should NOT be markdown-processed */
+const HTML_BLOCK_TAGS = ['div', 'table', 'figure', 'section', 'aside', 'details', 'nav', 'style'];
+
+/** Check if a trimmed line opens an HTML block tag */
+function getHtmlBlockTag(line: string): string | null {
+    const trimmed = line.trim();
+    for (const tag of HTML_BLOCK_TAGS) {
+        if (trimmed.startsWith(`<${tag}`) && (trimmed[tag.length + 1] === ' ' || trimmed[tag.length + 1] === '>' || trimmed[tag.length + 1] === undefined)) {
+            return tag;
+        }
+    }
+    return null;
+}
+
 // ── block parser ───────────────────────────────────────────────────
 
 interface Block {
-    type: 'p' | 'h2' | 'h3' | 'h4' | 'blockquote' | 'ul' | 'ol' | 'hr' | 'code' | 'figure';
+    type: 'p' | 'h2' | 'h3' | 'h4' | 'blockquote' | 'ul' | 'ol' | 'hr' | 'code' | 'figure' | 'html';
     content: string;
     lang?: string;
 }
@@ -77,6 +94,44 @@ function parseBlocks(raw: string): Block[] {
         if (line.trim() === '') {
             i++;
             continue;
+        }
+
+        // ── Raw HTML block ──────────────────────────────────────
+        // Detect lines starting with an HTML block tag and collect
+        // everything until the matching closing tag, preserving the
+        // HTML exactly as-is (no markdown transformation).
+        const htmlTag = getHtmlBlockTag(line);
+        if (htmlTag) {
+            const htmlLines: string[] = [line];
+            let depth = 1;
+            i++;
+            // Collect lines until we find the matching closing tag
+            while (i < lines.length && depth > 0) {
+                const currentLine = lines[i];
+                // Count opening tags of the same type
+                const openRegex = new RegExp(`<${htmlTag}[\\s>]`, 'gi');
+                const closeRegex = new RegExp(`</${htmlTag}>`, 'gi');
+                const opens = (currentLine.match(openRegex) || []).length;
+                const closes = (currentLine.match(closeRegex) || []).length;
+                depth += opens - closes;
+                htmlLines.push(currentLine);
+                i++;
+            }
+            blocks.push({ type: 'html', content: htmlLines.join('\n') });
+            continue;
+        }
+
+        // ── Self-closing / void HTML (e.g. <br/>, <hr/>, <img ... />) ──
+        if (line.trim().startsWith('<') && !line.trim().startsWith('</')) {
+            // Standalone single-line HTML that isn't a block tag (e.g. <br>, <img>)
+            // but starts with < — treat as raw HTML
+            const trimmed = line.trim();
+            // Only if it looks like a proper tag (not a less-than comparison)
+            if (/^<[a-zA-Z]/.test(trimmed)) {
+                blocks.push({ type: 'html', content: trimmed });
+                i++;
+                continue;
+            }
         }
 
         // Fenced code block
@@ -171,7 +226,9 @@ function parseBlocks(raw: string): Block[] {
             !/^---+\s*$/.test(lines[i].trim()) &&
             !/^\s*[-*]\s/.test(lines[i]) &&
             !/^\s*\d+\.\s/.test(lines[i]) &&
-            !/^!\[.*\]\(.*\)\s*$/.test(lines[i].trim())
+            !/^!\[.*\]\(.*\)\s*$/.test(lines[i].trim()) &&
+            !getHtmlBlockTag(lines[i]) &&
+            !(lines[i].trim().startsWith('<') && /^<[a-zA-Z]/.test(lines[i].trim()))
         ) {
             paraLines.push(lines[i]);
             i++;
@@ -206,6 +263,9 @@ function renderBlock(block: Block): string {
             return `<pre><code${block.lang ? ` class="language-${escapeHtml(block.lang)}"` : ''}>${escapeHtml(block.content)}</code></pre>`;
         case 'figure':
             return inlineMarkdown(block.content);
+        case 'html':
+            // Raw HTML blocks — return as-is, no transformation
+            return block.content;
         default:
             return `<p>${inlineMarkdown(block.content)}</p>`;
     }
@@ -213,6 +273,8 @@ function renderBlock(block: Block): string {
 
 /**
  * Converts markdown content to semantic HTML for the article content zone.
+ * Supports inline HTML blocks (div, table, section, etc.) which are preserved
+ * as-is without markdown transformation.
  */
 export function renderArticleContent(markdown: string): string {
     if (!markdown) return '';
