@@ -114,11 +114,6 @@ type HomeContent = {
         h2: string;
         items: { title: string; desc: string }[];
     };
-    testimonials: {
-        h2: string;
-        items: { name: string; age: number; country: string; quote: string; color: string }[];
-        ageLabel: string;
-    };
     faq: {
         h2: string;
         items: { q: string; a: string }[];
@@ -184,15 +179,6 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
                 { title: 'Gratuit', desc: 'Aucun frais, aucun abonnement.' },
                 { title: 'Sur tous les appareils', desc: 'Smartphone, tablette, ordinateur.' },
             ],
-        },
-        testimonials: {
-            h2: 'Ce que disent nos utilisateurs',
-            items: [
-                { name: 'Marie', age: 34, country: 'France', quote: 'J\'avais remarqué un bouton persistant sur le bras de mon fils. DermatoCheck m\'a permis de savoir si je devais consulter en urgence.', color: '#2DD4BF' },
-                { name: 'Julien', age: 47, country: 'Belgique', quote: 'Un grain de beauté me préoccupait depuis des semaines. L\'analyse m\'a orienté vers un dermatologue rapidement, et il s\'est avéré bénin. Quel soulagement !', color: '#6366F1' },
-                { name: 'Amina', age: 31, country: 'France', quote: 'En tant que maman, pouvoir vérifier une éruption cutanée à 23h sans urgences, c\'est précieux. Résultat clair en 5 minutes.', color: '#F472B6' },
-            ],
-            ageLabel: 'ans',
         },
         faq: {
             h2: 'Questions fréquentes sur l\'analyse de peau par IA',
@@ -270,15 +256,6 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
                 { title: 'On any device', desc: 'Smartphone, tablet, computer. Your digital skin guide follows you everywhere.' },
             ],
         },
-        testimonials: {
-            h2: 'What our users say',
-            items: [
-                { name: 'Rachel', age: 39, country: 'United Kingdom', quote: 'I had a mole that changed colour and was terrified. DermatoCheck\'s report gave me the confidence to book a dermatologist the same week.', color: '#2DD4BF' },
-                { name: 'David', age: 52, country: 'Canada', quote: 'Living in a rural area, seeing a skin specialist takes months. This tool gave me a solid first assessment I could share with my GP.', color: '#6366F1' },
-                { name: 'Priya', age: 26, country: 'United States', quote: 'My eczema flared up badly and I didn\'t know if it was serious. Got a clear, detailed report in under 5 minutes — completely free.', color: '#F472B6' },
-            ],
-            ageLabel: 'years old',
-        },
         faq: {
             h2: 'Frequently asked questions about AI skin analysis',
             items: [
@@ -355,15 +332,6 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
                 { title: 'En cualquier dispositivo', desc: 'Smartphone, tablet, ordenador. Tu guía dermatológica digital te acompaña en todo momento.' },
             ],
         },
-        testimonials: {
-            h2: 'Lo que dicen nuestros usuarios',
-            items: [
-                { name: 'Elena', age: 36, country: 'España', quote: 'Tenía un lunar que me preocupaba mucho. El informe de DermatoCheck fue tan detallado que mi dermatólogo lo usó como referencia en la consulta.', color: '#2DD4BF' },
-                { name: 'Andrés', age: 45, country: 'Colombia', quote: 'Conseguir cita con un dermatólogo en mi ciudad es casi imposible. Esta herramienta me dio tranquilidad mientras esperaba meses para la consulta.', color: '#6366F1' },
-                { name: 'Isabel', age: 29, country: 'México', quote: 'Mi bebé tenía una erupción rara a las 11 de la noche. En 5 minutos supe que no era grave. Herramienta imprescindible para padres.', color: '#F472B6' },
-            ],
-            ageLabel: 'años',
-        },
         faq: {
             h2: 'Preguntas frecuentes sobre el análisis de piel con IA',
             items: [
@@ -439,15 +407,6 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
                 { title: 'Gratis', desc: 'Geen kosten, geen abonnement. Analyseer je huid in alle vrijheid.' },
                 { title: 'Op elk apparaat', desc: 'Smartphone, tablet, computer. Je digitale huidgids gaat overal mee.' },
             ],
-        },
-        testimonials: {
-            h2: 'Wat onze gebruikers zeggen',
-            items: [
-                { name: 'Lotte', age: 33, country: 'Nederland', quote: 'Een moedervlek op mijn rug veranderde van kleur. DermatoCheck gaf me binnen minuten een duidelijk rapport, waardoor ik meteen een afspraak maakte bij de dermatoloog.', color: '#2DD4BF' },
-                { name: 'Pieter', age: 48, country: 'België', quote: 'Als zelfstandige heb ik geen tijd om wekenlang op een afspraak te wachten. Deze tool gaf me direct een betrouwbare eerste beoordeling.', color: '#6366F1' },
-                { name: 'Femke', age: 27, country: 'Nederland', quote: 'Mijn dochtertje had plots rode vlekjes. Om 22u kon ik snel checken of het ernstig was. Geruststelling in 5 minuten, helemaal gratis.', color: '#F472B6' },
-            ],
-            ageLabel: 'jaar',
         },
         faq: {
             h2: 'Veelgestelde vragen over huidanalyse met AI',
@@ -750,41 +709,7 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
                 </div>
             </FadeInSection>
 
-            {/* ══════════ SECTION 6 — TESTIMONIALS ══════════ */}
-            <FadeInSection className="max-w-7xl mx-auto px-4 md:px-8 py-20 md:py-28">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white text-center mb-16">
-                    {c.testimonials.h2}
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                    {c.testimonials.items.map((testimonial, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: i * 0.15 }}
-                            className="p-8 rounded-[2rem] bg-white/[0.03] backdrop-blur-[16px] border border-white/10 hover:bg-white/[0.06] transition-all duration-300"
-                        >
-                            <div className="flex items-center gap-4 mb-6">
-                                <div
-                                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-                                    style={{ backgroundColor: testimonial.color + '30', color: testimonial.color }}
-                                >
-                                    {testimonial.name[0]}
-                                </div>
-                                <div>
-                                    <div className="font-semibold text-white">{testimonial.name}, {testimonial.age} {c.testimonials.ageLabel}</div>
-                                    <div className="text-xs text-[#94A3B8]">{testimonial.country}</div>
-                                </div>
-                            </div>
-                            <p className="text-[#94A3B8] text-sm leading-relaxed italic">"{testimonial.quote}"</p>
-                        </motion.div>
-                    ))}
-                </div>
-            </FadeInSection>
-
-            {/* ══════════ SECTION 6b — USER REVIEWS (Supabase) ══════════ */}
+            {/* ══════════ SECTION 6 — USER REVIEWS (Supabase) ══════════ */}
             <ReviewSection onNavigateToAuth={() => onNavigate('auth')} />
 
             {/* ══════════ SECTION 7 — FAQ ══════════ */}
