@@ -3,6 +3,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase } from '../services/supabaseClient';
 
+/* ── Security: sanitize user input to prevent XSS ── */
+function sanitize(input: string): string {
+    return input
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+}
+
+/* ── Rate limiter: prevent spam (1 review per 60s) ── */
+let lastReviewSubmit = 0;
+function canSubmitReview(): boolean {
+    return Date.now() - lastReviewSubmit >= 60_000;
+}
+
 interface Review {
     id: string;
     author_name: string;
@@ -159,11 +176,12 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
             .from('reviews')
             .select('*')
             .eq('approved', true)
+            .eq('language', language)
             .order('created_at', { ascending: false })
             .limit(9);
         setReviews(data || []);
         setLoadingReviews(false);
-    }, []);
+    }, [language]);
 
     useEffect(() => { fetchReviews(); }, [fetchReviews]);
 
@@ -200,21 +218,33 @@ export const ReviewSection: React.FC<{ onNavigateToAuth?: () => void }> = ({ onN
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim() || rating === 0) return;
+
+        // Rate limiting
+        if (!canSubmitReview()) {
+            setSubmitError('Veuillez attendre 60 secondes avant de soumettre un nouvel avis.');
+            return;
+        }
+
         setSubmitting(true);
         setSubmitError(null);
 
+        const sanitizedName = sanitize(name.trim()).slice(0, 40);
+        const sanitizedComment = comment.trim() ? sanitize(comment.trim()).slice(0, 500) : null;
+
         const { error } = await supabase.from('reviews').insert({
             user_id: currentUser?.id || null,
-            author_name: name.trim(),
+            author_name: sanitizedName,
             rating,
-            comment: comment.trim() || null,
+            comment: sanitizedComment,
             language,
+            approved: false,
         });
 
         if (error) {
             setSubmitError(form.error || 'Error');
             setSubmitting(false);
         } else {
+            lastReviewSubmit = Date.now();
             setSubmitSuccess(true);
             setSubmitting(false);
             setTimeout(() => {

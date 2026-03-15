@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { PageConfig } from '../types';
 import MagneticButton from './MagneticButton';
 import { useLanguage, Language } from '../context/LanguageContext';
+import { ReviewSection } from './ReviewSection';
 
 interface HomePageProps {
     config?: PageConfig;
@@ -188,8 +189,8 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
             h2: 'Ce que disent nos utilisateurs',
             items: [
                 { name: 'Marie', age: 34, country: 'France', quote: 'J\'avais remarqué un bouton persistant sur le bras de mon fils. DermatoCheck m\'a permis de savoir si je devais consulter en urgence.', color: '#2DD4BF' },
-                { name: 'Thomas', age: 42, country: 'France', quote: 'Mon rendez-vous dermato était dans 3 mois. DermatoCheck m\'a rassuré en attendant avec une première évaluation.', color: '#6366F1' },
-                { name: 'Sofia', age: 28, country: 'France', quote: 'Rapide, clair, gratuit. J\'ai eu ma réponse en 5 minutes sans bouger de chez moi.', color: '#F472B6' },
+                { name: 'Julien', age: 47, country: 'Belgique', quote: 'Un grain de beauté me préoccupait depuis des semaines. L\'analyse m\'a orienté vers un dermatologue rapidement, et il s\'est avéré bénin. Quel soulagement !', color: '#6366F1' },
+                { name: 'Amina', age: 31, country: 'France', quote: 'En tant que maman, pouvoir vérifier une éruption cutanée à 23h sans urgences, c\'est précieux. Résultat clair en 5 minutes.', color: '#F472B6' },
             ],
             ageLabel: 'ans',
         },
@@ -272,9 +273,9 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
         testimonials: {
             h2: 'What our users say',
             items: [
-                { name: 'Sarah', age: 34, country: 'United Kingdom', quote: 'I\'d noticed a persistent spot on my son\'s arm. DermatoCheck helped me understand whether I needed to see a doctor urgently.', color: '#2DD4BF' },
-                { name: 'James', age: 42, country: 'United Kingdom', quote: 'My dermatologist appointment was 3 months away. DermatoCheck gave me reassurance with an initial assessment while I waited.', color: '#6366F1' },
-                { name: 'Emma', age: 28, country: 'United States', quote: 'Quick, clear, free. I had my answer in 5 minutes without leaving home.', color: '#F472B6' },
+                { name: 'Rachel', age: 39, country: 'United Kingdom', quote: 'I had a mole that changed colour and was terrified. DermatoCheck\'s report gave me the confidence to book a dermatologist the same week.', color: '#2DD4BF' },
+                { name: 'David', age: 52, country: 'Canada', quote: 'Living in a rural area, seeing a skin specialist takes months. This tool gave me a solid first assessment I could share with my GP.', color: '#6366F1' },
+                { name: 'Priya', age: 26, country: 'United States', quote: 'My eczema flared up badly and I didn\'t know if it was serious. Got a clear, detailed report in under 5 minutes — completely free.', color: '#F472B6' },
             ],
             ageLabel: 'years old',
         },
@@ -357,9 +358,9 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
         testimonials: {
             h2: 'Lo que dicen nuestros usuarios',
             items: [
-                { name: 'María', age: 34, country: 'España', quote: 'Había notado un grano persistente en el brazo de mi hijo. DermatoCheck me ayudó a saber si debía consultar con urgencia.', color: '#2DD4BF' },
-                { name: 'Carlos', age: 42, country: 'España', quote: 'Mi cita con el dermatólogo era dentro de 3 meses. DermatoCheck me tranquilizó con una primera evaluación mientras esperaba.', color: '#6366F1' },
-                { name: 'Lucía', age: 28, country: 'México', quote: 'Rápido, claro, gratuito. Tuve mi respuesta en 5 minutos sin salir de casa.', color: '#F472B6' },
+                { name: 'Elena', age: 36, country: 'España', quote: 'Tenía un lunar que me preocupaba mucho. El informe de DermatoCheck fue tan detallado que mi dermatólogo lo usó como referencia en la consulta.', color: '#2DD4BF' },
+                { name: 'Andrés', age: 45, country: 'Colombia', quote: 'Conseguir cita con un dermatólogo en mi ciudad es casi imposible. Esta herramienta me dio tranquilidad mientras esperaba meses para la consulta.', color: '#6366F1' },
+                { name: 'Isabel', age: 29, country: 'México', quote: 'Mi bebé tenía una erupción rara a las 11 de la noche. En 5 minutos supe que no era grave. Herramienta imprescindible para padres.', color: '#F472B6' },
             ],
             ageLabel: 'años',
         },
@@ -442,9 +443,9 @@ const content: Record<'fr' | 'en' | 'es' | 'nl', HomeContent> = {
         testimonials: {
             h2: 'Wat onze gebruikers zeggen',
             items: [
-                { name: 'Anna', age: 34, country: 'Nederland', quote: 'Ik had een aanhoudende plek op de arm van mijn zoon opgemerkt. DermatoCheck hielp me te begrijpen of ik met spoed naar de huisarts moest.', color: '#2DD4BF' },
-                { name: 'Mark', age: 42, country: 'Nederland', quote: 'Mijn afspraak bij de dermatoloog was pas over 3 maanden. DermatoCheck gaf me rust met een eerste beoordeling terwijl ik wachtte.', color: '#6366F1' },
-                { name: 'Sophie', age: 28, country: 'België', quote: 'Snel, duidelijk, gratis. Ik had mijn antwoord in 5 minuten zonder het huis te verlaten.', color: '#F472B6' },
+                { name: 'Lotte', age: 33, country: 'Nederland', quote: 'Een moedervlek op mijn rug veranderde van kleur. DermatoCheck gaf me binnen minuten een duidelijk rapport, waardoor ik meteen een afspraak maakte bij de dermatoloog.', color: '#2DD4BF' },
+                { name: 'Pieter', age: 48, country: 'België', quote: 'Als zelfstandige heb ik geen tijd om wekenlang op een afspraak te wachten. Deze tool gaf me direct een betrouwbare eerste beoordeling.', color: '#6366F1' },
+                { name: 'Femke', age: 27, country: 'Nederland', quote: 'Mijn dochtertje had plots rode vlekjes. Om 22u kon ik snel checken of het ernstig was. Geruststelling in 5 minuten, helemaal gratis.', color: '#F472B6' },
             ],
             ageLabel: 'jaar',
         },
@@ -782,6 +783,9 @@ const HomePage: React.FC<HomePageProps> = ({ config, onStart, onNavigate, user }
                     ))}
                 </div>
             </FadeInSection>
+
+            {/* ══════════ SECTION 6b — USER REVIEWS (Supabase) ══════════ */}
+            <ReviewSection onNavigateToAuth={() => onNavigate('auth')} />
 
             {/* ══════════ SECTION 7 — FAQ ══════════ */}
             <FadeInSection className="max-w-3xl mx-auto px-4 md:px-8 py-20 md:py-28">

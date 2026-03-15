@@ -6,6 +6,7 @@ import { blogArticlesNL } from '../data/blogArticlesNL';
 import { blogArticlesES } from '../data/blogArticlesES';
 import { cmsService, Post } from '../services/cmsService';
 import { renderArticleContent } from '../lib/renderArticleContent';
+import { CommentSection } from './CommentSection';
 
 /** Format author: "Dr. Sophie Martin, Dermatologue" → "Dr. S. Martin" */
 function formatAuthor(raw: string): string {
@@ -228,6 +229,12 @@ export const BlogArticlePageComponent: React.FC<BlogArticlePageProps> = ({ slug,
                         dangerouslySetInnerHTML={{ __html: articleHtml }}
                     />
                 </article>
+
+                {/* Comments Section */}
+                <CommentSection
+                    articleSlug={slug}
+                    onNavigateToAuth={() => onNavigate('auth')}
+                />
 
                 {/* Back to Blog Button */}
                 <motion.div

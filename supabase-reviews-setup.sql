@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS public.reviews (
   rating      INTEGER       NOT NULL CHECK (rating >= 1 AND rating <= 5),
   comment     TEXT,
   language    TEXT          DEFAULT 'fr' CHECK (language IN ('fr', 'nl', 'en', 'es')),
-  approved    BOOLEAN       DEFAULT true,
+  approved    BOOLEAN       DEFAULT false,
   created_at  TIMESTAMPTZ   DEFAULT NOW()
 );
 
